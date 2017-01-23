@@ -1,0 +1,8 @@
+[submodule "doc/gh-pages"]
+	path = doc/gh-pages
+	url = https://github.com/Cognexa/cxtream.git
+	branch = gh-pages
+[submodule "third_party/range-v3"]
+	path = third_party/range-v3
+	url = https://github.com/ericniebler/range-v3.git
+	branch = master
