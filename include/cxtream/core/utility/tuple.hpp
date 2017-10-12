@@ -173,13 +173,14 @@ constexpr auto tuple_type_view(Tuple& tuple)
 /// \code
 ///     auto tpl = std::make_tuple(0, 5., 'c');
 ///     auto subtpl = tuple_index_view<2, 0>(t1);
+///     // or equivalently: auto subtpl = tuple_index_view(t1, std::index_sequence<2, 0>{});
 ///     static_assert(std::is_same<std::tuple<char&, int&>, decltype(subtpl)>{});
 ///     assert(subtpl == std::tuple<char, int>{'c', 0});
 /// \endcode
 ///
 /// \returns The view of the original tuple.
 template<std::size_t... Idxs, typename Tuple>
-constexpr auto tuple_index_view(Tuple& tuple)
+constexpr auto tuple_index_view(Tuple& tuple, std::index_sequence<Idxs...> = {})
 {
     return std::make_tuple(std::ref(std::get<Idxs>(tuple))...);
 }

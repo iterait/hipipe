@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(test_tuple_index_view)
 {
     auto t1 = std::make_tuple(0, 5., 'c');
     auto t2 = tuple_index_view<1, 0>(t1);
-    auto t3 = tuple_index_view<2, 0>(t1);
+    auto t3 = tuple_index_view(t1, std::index_sequence<2, 0>{});
     static_assert(std::is_same<std::tuple<char&, int&>, decltype(t3)>{});
     BOOST_TEST(t2 == std::make_tuple(5., 0));
     BOOST_TEST(t2 == std::make_tuple(5., 0));
