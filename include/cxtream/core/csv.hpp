@@ -240,6 +240,7 @@ dataframe<> read_csv(std::istream& in,
 
 /// \ingroup CSV
 /// \brief Same as read_csv() but read directly from a file.
+/// \throws std::runtime_error If the specified file does not exist.
 dataframe<> read_csv(const std::experimental::filesystem::path& file,
                      int drop = 0,
                      bool header = true,
@@ -247,6 +248,9 @@ dataframe<> read_csv(const std::experimental::filesystem::path& file,
                      char quote = '"',
                      char escape = '\\')
 {
+    if (!std::experimental::filesystem::is_regular_file(file)) {
+        throw std::runtime_error{"CSV file " + file.string() + " not found."};
+    }
     std::ifstream fin{file};
     return read_csv(fin, drop, header, separator, quote, escape);
 }

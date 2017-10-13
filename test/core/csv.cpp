@@ -118,6 +118,11 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream)
     test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | ranges::view::slice(1, ranges::end));
 }
 
+BOOST_AUTO_TEST_CASE(test_read_csv_from_no_file)
+{
+    BOOST_CHECK_THROW(read_csv("no_file.csv"), std::runtime_error);
+}
+
 BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
 {
     std::istringstream simple_csv_ss{simple_csv};
