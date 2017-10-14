@@ -100,7 +100,7 @@ public:
     {
         assert(n_rows() == 0 || ranges::size(rng) == n_rows());
         assert((!header_.size() || col_name.size()) &&
-               "The dataframe has a header, please provide the name of column.");
+               "The dataframe has a header, please provide the name for the new column.");
         if (col_name.size()) header_.insert(col_name);
         data_.emplace_back(rng | ranges::view::transform(cvt));
         return n_cols() - 1;
@@ -120,7 +120,7 @@ public:
         assert(n_cols() == 0 || sizeof...(Ts) == n_cols());
         utility::tuple_for_each_with_index(std::move(row_tuple),
           [this, &cvts](auto&& field, auto index) {
-              this->data_[index].emplace_back(std::get<index>(cvts)(field));
+              this->data_[index].push_back(std::get<index>(cvts)(field));
         });
         return n_rows() - 1;
     }
@@ -128,9 +128,11 @@ public:
     // drop //
 
     /// Drop a column with the given index.
+    ///
+    /// \throws std::out_of_range If the column is not in the dataframe.
     void icol_drop(std::size_t col_index)
     {
-        assert(col_index < n_cols());
+        throw_check_col_idx(col_index);
         // remove the column from the header
         if (header_.size()) {
             std::vector<std::string> new_header = header_.values();
@@ -142,16 +144,20 @@ public:
     }
 
     /// Drop a column with the given name.
+    ///
+    /// \throws std::out_of_range If the column is not in the dataframe.
     void col_drop(const std::string& col_name)
     {
-        assert(header_.size() && "Dataframe has no header, cannot drop by column name.");
+        throw_check_col_name(col_name);
         return icol_drop(header_.index_for(col_name));
     }
 
     /// Drop a row.
+    ///
+    /// \throws std::out_of_range If the row is not in the dataframe.
     void row_drop(const std::size_t row_idx)
     {
-        assert(row_idx < n_rows());
+        throw_check_row_idx(row_idx);
         for (auto& column : data_) {
             column.erase(column.begin() + row_idx);
         }
@@ -169,16 +175,20 @@ public:
     /// \endcode
     ///
     /// \returns A of range of std::string&.
+    /// \throws std::out_of_range If the column is not in the dataframe.
     auto raw_icol(std::size_t col_index)
     {
+        throw_check_col_idx(col_index);
         return raw_cols()[col_index] | ranges::view::all;
     }
 
     /// Return a raw view of a column.
     ///
     /// \returns A of range of const std::string&.
+    /// \throws std::out_of_range If the column is not in the dataframe.
     auto raw_icol(std::size_t col_index) const
     {
+        throw_check_col_idx(col_index);
         return raw_cols()[col_index] | ranges::view::all;
     }
 
@@ -192,9 +202,10 @@ public:
     /// \endcode
     ///
     /// \returns A of range of std::string&.
+    /// \throws std::out_of_range If the column is not in the dataframe.
     auto raw_col(const std::string& col_name)
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        throw_check_col_name(col_name);
         return raw_icol(header_.index_for(col_name));
     }
 
@@ -203,9 +214,10 @@ public:
     /// This is just a const overload of the non-const raw_col().
     ///
     /// \returns A of range of const std::string&.
+    /// \throws std::out_of_range If the column is not in the dataframe.
     auto raw_col(const std::string& col_name) const
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        throw_check_col_name(col_name);
         return raw_icol(header_.index_for(col_name));
     }
 
@@ -222,6 +234,7 @@ public:
     /// \endcode
     ///
     /// \returns A range of T.
+    /// \throws std::out_of_range If the column is not in the dataframe.
     template<typename T>
     auto icol(std::size_t col_index,
               std::function<T(std::string)> cvt = utility::string_to<T>) const
@@ -240,11 +253,12 @@ public:
     /// \endcode
     ///
     /// \returns A range of T.
+    /// \throws std::out_of_range If the column is not in the dataframe.
     template<typename T>
     auto col(const std::string& col_name,
              std::function<T(std::string)> cvt = utility::string_to<T>) const
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        throw_check_col_name(col_name);
         return icol<T>(header_.index_for(col_name), std::move(cvt));
     }
 
@@ -287,8 +301,10 @@ public:
     /// \endcode
     ///
     /// \returns A range of ranges of std::string&.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     auto raw_icols(std::vector<std::size_t> col_indexes)
     {
+        for (auto& col_idx : col_indexes) throw_check_col_idx(col_idx);
         return raw_icols_impl(this, std::move(col_indexes));
     }
 
@@ -297,8 +313,10 @@ public:
     /// This is just a const overload of the non-const raw_icols().
     ///
     /// \returns A range of ranges of const std::string&.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     auto raw_icols(std::vector<std::size_t> col_indexes) const
     {
+        for (auto& col_idx : col_indexes) throw_check_col_idx(col_idx);
         return raw_icols_impl(this, std::move(col_indexes));
     }
 
@@ -313,9 +331,10 @@ public:
     /// \endcode
     ///
     /// \returns A range of ranges of std::string&.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     auto raw_cols(const std::vector<std::string>& col_names)
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        for (auto& col_name : col_names) throw_check_col_name(col_name);
         return raw_icols(header_.index_for(col_names));
     }
 
@@ -324,9 +343,10 @@ public:
     /// This is just a const overload of the non-const raw_cols().
     ///
     /// \returns A range of ranges of const std::string&.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     auto raw_cols(const std::vector<std::string>& col_names) const
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        for (auto& col_name : col_names) throw_check_col_name(col_name);
         return raw_icols(header_.index_for(col_names));
     }
 
@@ -340,6 +360,7 @@ public:
     /// \endcode
     ///
     /// \returns A tuple of ranges of Ts.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename... Ts>
     auto icols(std::vector<std::size_t> col_indexes,
                std::tuple<std::function<Ts(std::string)>...> cvts =
@@ -361,12 +382,13 @@ public:
     /// \endcode
     ///
     /// \returns A tuple of ranges of Ts.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename... Ts>
     auto cols(const std::vector<std::string>& col_names,
               std::tuple<std::function<Ts(std::string)>...> cvts =
                 std::make_tuple(utility::string_to<Ts>...)) const
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        for (auto& col_name : col_names) throw_check_col_name(col_name);
         return icols<Ts...>(header_.index_for(col_names), std::move(cvts));
     }
 
@@ -403,8 +425,10 @@ public:
     /// \endcode
     ///
     /// \returns A range of ranges of std::string&.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     auto raw_irows(std::vector<std::size_t> col_indexes)
     {
+        for (auto& col_idx : col_indexes) throw_check_col_idx(col_idx);
         return raw_irows_impl(this, std::move(col_indexes));
     }
 
@@ -413,8 +437,10 @@ public:
     /// This is just a const overload of the non-const raw_irows().
     ///
     /// \returns A range of ranges of const std::string&.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     auto raw_irows(std::vector<std::size_t> col_indexes) const
     {
+        for (auto& col_idx : col_indexes) throw_check_col_idx(col_idx);
         return raw_irows_impl(this, std::move(col_indexes));
     }
 
@@ -427,9 +453,10 @@ public:
     /// \endcode
     ///
     /// \returns A range of ranges of std::string&.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     auto raw_rows(const std::vector<std::string>& col_names)
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        for (auto& col_name : col_names) throw_check_col_name(col_name);
         return raw_irows(header_.index_for(col_names));
     }
 
@@ -438,9 +465,10 @@ public:
     /// This is just a const overload of the non-const raw_rows().
     ///
     /// \returns A range of ranges of const std::string&.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     auto raw_rows(const std::vector<std::string>& col_names) const
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        for (auto& col_name : col_names) throw_check_col_name(col_name);
         return raw_irows(header_.index_for(col_names));
     }
 
@@ -457,6 +485,7 @@ public:
     /// \endcode
     ///
     /// \returns A range of tuples of Ts.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename... Ts>
     auto irows(std::vector<std::size_t> col_indexes,
                std::tuple<std::function<Ts(std::string)>...> cvts =
@@ -478,12 +507,13 @@ public:
     /// \endcode
     ///
     /// \returns A range of tuples of Ts.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename... Ts>
     auto rows(const std::vector<std::string>& col_names,
               std::tuple<std::function<Ts(std::string)>...> cvts =
                 std::make_tuple(utility::string_to<Ts>...)) const
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        for (auto& col_name : col_names) throw_check_col_name(col_name);
         return irows<Ts...>(header_.index_for(col_names), std::move(cvts));
     }
 
@@ -505,6 +535,7 @@ public:
     /// \param key_col_cvt Function that is used to convert the keys from std::string to IndexT.
     /// \param val_col_cvt Function that is used to convert the values from std::string to ValueT.
     /// \returns A range of tuples <key, value>.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template <typename IndexT, typename ColT>
     auto index_icol(std::size_t key_col_index,
                     std::size_t val_col_index,
@@ -523,13 +554,15 @@ public:
     /// \endcode
     ///
     /// This function is the same as index_icol(), but columns are selected by name.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename IndexT, typename ColT>
     auto index_col(const std::string& key_col_name,
                    const std::string& val_col_name,
                    std::function<IndexT(std::string)> key_col_cvt = utility::string_to<IndexT>,
                    std::function<ColT(std::string)> val_col_cvt = utility::string_to<ColT>) const
     {
-        assert(header_.size() && "Dataframe has no header, cannot index by column name.");
+        throw_check_col_name(key_col_name);
+        throw_check_col_name(val_col_name);
         return index_icol(header_.index_for(key_col_name),
                           header_.index_for(val_col_name),
                           std::move(key_col_cvt),
@@ -548,6 +581,7 @@ public:
     /// \endcode
     ///
     /// This function is similar to index_icol(), but value type is a tuple of Ts.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename IndexT, typename... Ts>
     auto index_icols(std::size_t key_col_index,
                      std::vector<std::size_t> val_col_indexes,
@@ -571,6 +605,7 @@ public:
     /// \endcode
     ///
     /// This function is similar to index_icols(), but columns are selected by name.
+    /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename IndexT, typename... Ts>
     auto index_cols(const std::string& key_col_name,
                     const std::vector<std::string>& val_col_names,
@@ -579,6 +614,8 @@ public:
                     std::tuple<std::function<Ts(std::string)>...> val_col_cvts =
                       std::make_tuple(utility::string_to<Ts>...)) const
     {
+        throw_check_col_name(key_col_name);
+        for (auto& col_name : val_col_names) throw_check_col_name(col_name);
         assert(header_.size() && "Dataframe has no header, cannot index by column name.");
         return index_icols(header_.index_for(key_col_name),
                            header_.index_for(val_col_names),
@@ -614,6 +651,32 @@ public:
     }
 
 private:
+    void throw_check_row_idx(std::size_t row_idx) const
+    {
+        if (row_idx < 0 || row_idx >= n_rows()) {
+            throw std::out_of_range{"Row index " + std::to_string(row_idx) +
+              " is not in a dataframe with " + std::to_string(n_rows()) + " rows."};
+        }
+    }
+
+    void throw_check_col_idx(std::size_t col_idx) const
+    {
+        if (col_idx < 0 || col_idx >= n_cols()) {
+            throw std::out_of_range{"Column index " + std::to_string(col_idx) +
+              " is not in a dataframe with " + std::to_string(n_cols()) + " columns."};
+        }
+    }
+
+    void throw_check_col_name(const std::string& col_name) const
+    {
+        if (header_.size() == 0) {
+            throw std::out_of_range{"Dataframe has no header, cannot index by column name."};
+        }
+        if (!header_.contains(col_name)) {
+            throw std::out_of_range{"Column " + col_name + " not found in the dataframe."};
+        }
+    }
+
     template <typename This>
     static auto raw_irows_impl(This this_ptr, std::vector<std::size_t> col_indexes)
     {

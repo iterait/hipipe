@@ -48,6 +48,8 @@ BOOST_AUTO_TEST_CASE(test_column_insertion)
 BOOST_AUTO_TEST_CASE(test_column_drop)
 {
     dataframe<> df{simple_df};
+    BOOST_CHECK_THROW(df.col_drop("X"), std::out_of_range);
+    BOOST_CHECK_THROW(df.icol_drop(3), std::out_of_range);
     df.col_drop("B");
     BOOST_TEST(df.n_cols() == 2UL);
     BOOST_TEST(df.n_rows() == 3UL);
@@ -63,6 +65,7 @@ BOOST_AUTO_TEST_CASE(test_column_drop)
 BOOST_AUTO_TEST_CASE(test_row_drop)
 {
     dataframe<> df{simple_df};
+    BOOST_CHECK_THROW(df.row_drop(3), std::out_of_range);
     df.row_drop(1);
     BOOST_TEST(df.n_cols() == 3UL);
     BOOST_TEST(df.n_rows() == 2UL);
@@ -82,6 +85,8 @@ BOOST_AUTO_TEST_CASE(test_row_insertion)
 BOOST_AUTO_TEST_CASE(test_raw_col_read)
 {
     const dataframe<> df{simple_df};
+    BOOST_CHECK_THROW(df.raw_icol(3), std::out_of_range);
+    BOOST_CHECK_THROW(df.raw_col("D"), std::out_of_range);
     for (int i = 0; i < 3; ++i) {
         BOOST_TEST(df.raw_icol(i).size() == 3UL);
         // compare index based and name based access
@@ -104,6 +109,8 @@ BOOST_AUTO_TEST_CASE(test_raw_col_write)
 BOOST_AUTO_TEST_CASE(test_col)
 {
     const dataframe<> df{simple_df};
+    BOOST_CHECK_THROW(df.col<std::string>("D"), std::out_of_range);
+    BOOST_CHECK_THROW(df.icol<double>(3), std::out_of_range);
     auto b_col = df.col<double>("B");
     test_ranges_equal(b_col, std::vector<double>{1.1, 1.2, 1.3});
     test_ranges_equal(b_col, df.icol<double>(2));
@@ -112,6 +119,8 @@ BOOST_AUTO_TEST_CASE(test_col)
 BOOST_AUTO_TEST_CASE(test_raw_cols_read)
 {
     const dataframe<> df{simple_df};
+    BOOST_CHECK_THROW((df.raw_icols({0, 3})), std::out_of_range);
+    BOOST_CHECK_THROW((df.raw_cols({"Id", "D"})), std::out_of_range);
     test_ranges_equal(df.raw_icols({0, 2})[0], std::vector<std::string>{"1", "2", "3"});
     test_ranges_equal(df.raw_cols()[1], std::vector<std::string>{"a1", "a2", "a3"});
     test_ranges_equal(df.raw_cols({"Id", "B"})[1], std::vector<std::string>{"1.1", "1.2", "1.3"});
@@ -132,6 +141,8 @@ BOOST_AUTO_TEST_CASE(test_raw_cols_write)
 BOOST_AUTO_TEST_CASE(test_cols)
 {
     const dataframe<> df{simple_df};
+    BOOST_CHECK_THROW((df.cols<std::string, double>({"A", "D"})), std::out_of_range);
+    BOOST_CHECK_THROW((df.icols<std::string, double>({0, 3})), std::out_of_range);
     auto cols = df.cols<std::string, double>({"A", "B"});
     test_ranges_equal(std::get<1>(cols), std::vector<double>{1.1, 1.2, 1.3});
     test_ranges_equal(std::get<0>(cols), std::vector<std::string>{"a1", "a2", "a3"});
@@ -142,6 +153,8 @@ BOOST_AUTO_TEST_CASE(test_cols)
 BOOST_AUTO_TEST_CASE(test_raw_rows_read)
 {
     const dataframe<> df{simple_df};
+    BOOST_CHECK_THROW((df.raw_rows({"X", "Id"})), std::out_of_range);
+    BOOST_CHECK_THROW((df.raw_irows({3, 0})), std::out_of_range);
     test_ranges_equal(df.raw_rows()[0], std::vector<std::string>{"1", "a1", "1.1"});
     test_ranges_equal(df.raw_rows({"A", "B"})[1], std::vector<std::string>{"a2", "1.2"});
     test_ranges_equal(df.raw_irows({2, 0})[2], std::vector<std::string>{"1.3", "3"});
@@ -196,6 +209,8 @@ BOOST_AUTO_TEST_CASE(test_no_header)
 BOOST_AUTO_TEST_CASE(test_index_col)
 {
     const dataframe<> df{simple_df};
+    BOOST_CHECK_THROW((df.index_icol<char, bool>(3, 0)), std::out_of_range);
+    BOOST_CHECK_THROW((df.index_col<int, double>("Id", "X")), std::out_of_range);
     std::unordered_map<int, double> indexed_irow = df.index_icol<int, double>(0, 2);
     std::unordered_map<int, double> indexed_row = df.index_col<int, double>("Id", "B");
     std::unordered_map<int, double> desired{
@@ -210,6 +225,8 @@ BOOST_AUTO_TEST_CASE(test_index_col)
 BOOST_AUTO_TEST_CASE(test_index_cols)
 {
     const dataframe<> df{simple_df};
+    BOOST_CHECK_THROW((df.index_icols<char, bool>(0, {1, 3})), std::out_of_range);
+    BOOST_CHECK_THROW((df.index_cols<bool, bool>("Id", {"X", "Id"})), std::out_of_range);
     std::map<int, std::tuple<std::string, double>> indexed_irows =
       df.index_icols<int, std::string, double>(0, {1, 2});
     std::map<int, std::tuple<std::string, double>> indexed_rows =
