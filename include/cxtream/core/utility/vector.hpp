@@ -61,7 +61,7 @@ struct ndims<T, true>
 ///
 /// Example:
 /// \code
-///     using rng_type = ndim_type<std::vector<std::list<int>>>::type;
+///     using rng_type = ndim_type_t<std::vector<std::list<int>>>;
 ///     // rng_type is int
 ///     using rng1_type = ndim_type<std::list<std::vector<int>>, 1>::type;
 ///     // rng1_type is std::vector<int>
@@ -83,6 +83,10 @@ template<typename Rng>
 struct ndim_type<Rng, -1L>
   : ndim_type<Rng, ndims<Rng>{}> {
 };
+
+/// Template alias for quick access to ndim_type<>::type.
+template<typename T, long Dim = -1L>
+using ndim_type_t = typename ndim_type<T, Dim>::type;
 
 // multidimensional range size //
 
@@ -202,7 +206,7 @@ namespace detail {
 /// \param vec_size The requested size created by ndim_size.
 /// \param val The value to pad with.
 /// \returns The reference to the given vector after resizing.
-template<typename T, typename ValT = typename ndim_type<std::vector<T>>::type>
+template<typename T, typename ValT = ndim_type_t<std::vector<T>>>
 std::vector<T>& ndim_resize(std::vector<T>& vec,
                             const std::vector<std::vector<long>>& vec_size,
                             ValT val = ValT{})
