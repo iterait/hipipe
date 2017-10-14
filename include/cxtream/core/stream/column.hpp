@@ -27,6 +27,9 @@ private:
 
 public:
 
+    using batch_type = std::vector<T>;
+    using value_type = T;
+
     // constructors //
 
     column_base() = default;
