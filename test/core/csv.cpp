@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream)
 
 BOOST_AUTO_TEST_CASE(test_read_csv_from_no_file)
 {
-    BOOST_CHECK_THROW(read_csv("no_file.csv"), std::runtime_error);
+    BOOST_CHECK_THROW(read_csv("no_file.csv"), std::ios_base::failure);
 }
 
 BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
@@ -172,6 +172,16 @@ BOOST_AUTO_TEST_CASE(test_compare_after_write_and_read)
     std::vector<std::vector<std::string>> df1_cols = df1.raw_cols();
     std::vector<std::vector<std::string>> df2_cols = df2.raw_cols();
     BOOST_CHECK(df1_cols == df2_cols);
+}
+
+BOOST_AUTO_TEST_CASE(test_write_to_no_file)
+{
+    namespace fs = std::experimental::filesystem;
+    std::istringstream simple_csv_ss{simple_csv};
+    const dataframe<> df = read_csv(simple_csv_ss);
+    fs::path dir{"dummy_directory"};
+    fs::create_directory(dir);
+    BOOST_CHECK_THROW(write_csv(dir, df), std::ios_base::failure);
 }
 
 BOOST_AUTO_TEST_CASE(test_file_write_and_read)

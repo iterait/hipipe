@@ -240,7 +240,7 @@ dataframe<> read_csv(std::istream& in,
 
 /// \ingroup CSV
 /// \brief Same as read_csv() but read directly from a file.
-/// \throws std::runtime_error If the specified file does not exist.
+/// \throws std::ios_base::failure If the specified file cannot be opened.
 dataframe<> read_csv(const std::experimental::filesystem::path& file,
                      int drop = 0,
                      bool header = true,
@@ -248,10 +248,10 @@ dataframe<> read_csv(const std::experimental::filesystem::path& file,
                      char quote = '"',
                      char escape = '\\')
 {
-    if (!std::experimental::filesystem::is_regular_file(file)) {
-        throw std::runtime_error{"CSV file " + file.string() + " not found."};
-    }
     std::ifstream fin{file};
+    if (!fin) {
+        throw std::ios_base::failure{"Cannot open " + file.string() + " CSV file for reading."};
+    }
     return read_csv(fin, drop, header, separator, quote, escape);
 }
 
@@ -270,7 +270,7 @@ std::ostream& write_csv_row(std::ostream& out,
 {
     // temporarily set badbit exception mask
     auto orig_exceptions = out.exceptions();
-    out.exceptions(orig_exceptions | std::ofstream::badbit);
+    out.exceptions(orig_exceptions | std::ostream::badbit);
 
     for (std::size_t i = 0; i < ranges::size(row); ++i) {
         auto& field = row[i];
@@ -314,6 +314,7 @@ std::ostream& write_csv(std::ostream& out,
 
 /// \ingroup CSV
 /// \brief Same as write_csv(std::ostream...), but write directly to a file.
+/// \throws std::ios_base::failure If the specified file cannot be opened.
 template <typename DataTable>
 void write_csv(const std::experimental::filesystem::path& file,
                const dataframe<DataTable>& df,
@@ -322,6 +323,9 @@ void write_csv(const std::experimental::filesystem::path& file,
                char escape = '\\')
 {
     std::ofstream fout{file};
+    if (!fout) {
+        throw std::ios_base::failure{"Cannot open " + file.string() + " CSV file for writing."};
+    }
     write_csv(fout, df, separator, quote, escape);
 }
 
