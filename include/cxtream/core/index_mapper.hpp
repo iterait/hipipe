@@ -46,9 +46,12 @@ public:
     // index_for //
 
     /// Returns the index of the given value.
-    /// \throws std::out_of_range if the value does not exist.
+    /// \throws std::out_of_range If the value does not exist.
     std::size_t index_for(const T& val) const
     {
+        if (!contains(val)) {
+            throw std::out_of_range{"The index_mapper does not contain the given value."};
+        }
         return val2idx_.at(val);
     }
 
@@ -61,7 +64,7 @@ public:
     }
 
     /// Returns the indexes of the given values.
-    /// \throws std::out_of_range if any value does not exist.
+    /// \throws std::out_of_range If any of the values does not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals) const
     {
         return vals
@@ -82,13 +85,19 @@ public:
     // at //
 
     /// Returns the value at the given index.
+    /// \throws std::out_of_range If the index does not exist in the mapper.
     const T& at(const std::size_t& idx) const
     {
-        return idx2val_.at(idx);
+        if (idx >= size()) {
+            throw std::out_of_range{"Index " + std::to_string(idx) + " cannot be found in "
+                                    "index_mapper of size " + std::to_string(size()) + "."};
+        }
+        return idx2val_[idx];
     }
 
 
     /// Returns the values at the given indexes.
+    /// \throws std::out_of_range If any of the indexes does not exist in the mapper.
     std::vector<T> at(const std::vector<std::size_t>& idxs) const
     {
         return idxs

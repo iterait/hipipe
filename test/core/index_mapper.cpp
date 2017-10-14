@@ -42,6 +42,7 @@ BOOST_AUTO_TEST_CASE(test_mapping)
     BOOST_TEST(mapper.at(2UL) == "third");
     BOOST_TEST(mapper.at(1UL) == "second");
     BOOST_TEST(mapper.at(0UL) == "first");
+    BOOST_CHECK_THROW(mapper.at(3UL), std::out_of_range);
     BOOST_TEST(mapper.contains("first"));
     BOOST_TEST(mapper.contains("second"));
     BOOST_TEST(!mapper.contains("fourth"));
@@ -56,6 +57,7 @@ BOOST_AUTO_TEST_CASE(test_multi_mapping)
     test_ranges_equal(mapper.index_for(vals), idxs);
     // index to value
     test_ranges_equal(mapper.at(idxs), vals);
+    BOOST_CHECK_THROW(mapper.at({3UL}), std::out_of_range);
     // value to index - also non-existing with default value
     vals = {"second", "bogus", "first", "third", "fourth"};
     idxs = {1UL, 10UL, 0UL, 2UL, 10UL};
