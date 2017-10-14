@@ -18,6 +18,7 @@
 #include <range/v3/experimental/view/shared.hpp>
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/iota.hpp>
+#include <range/v3/view/move.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
 
@@ -55,7 +56,7 @@ public:
         assert(header.empty() || header.size() == columns.size());
         for (std::size_t i = 0; i < columns.size(); ++i) {
             std::string col_name = header.empty() ? "" : std::move(header[i]);
-            col_insert(std::move(columns[i]), std::move(col_name));
+            col_insert(columns[i] | ranges::view::move, std::move(col_name));
         }
     }
 
@@ -75,13 +76,13 @@ public:
     ///     };
     /// \endcode
     template<typename... Ts>
-    dataframe(std::tuple<Ts...> columns, std::vector<std::string> header = {})
+    dataframe(std::tuple<std::vector<Ts>...> columns, std::vector<std::string> header = {})
     {
         assert(header.empty() || header.size() == sizeof...(Ts));
         utility::tuple_for_each_with_index(std::move(columns),
-          [this, &header](auto&& column, auto index) {
+          [this, &header](auto& column, auto index) {
               std::string col_name = header.empty() ? "" : std::move(header[index]);
-              this->col_insert(std::move(column), std::move(col_name));
+              this->col_insert(column | ranges::view::move, std::move(col_name));
         });
     }
 
@@ -94,7 +95,7 @@ public:
     ///     df.col_insert(std::vector<int>{5, 6, 7}, "C");
     /// \endcode
     template<typename Rng, typename ToStrFun = std::string (*)(ranges::range_value_type_t<Rng>)>
-    std::size_t col_insert(Rng rng, std::string col_name = {},
+    std::size_t col_insert(Rng&& rng, std::string col_name = {},
                            std::function<std::string(ranges::range_value_type_t<Rng>)> cvt =
                              static_cast<ToStrFun>(utility::to_string))
     {
@@ -119,8 +120,8 @@ public:
     {
         assert(n_cols() == 0 || sizeof...(Ts) == n_cols());
         utility::tuple_for_each_with_index(std::move(row_tuple),
-          [this, &cvts](auto&& field, auto index) {
-              this->data_[index].push_back(std::get<index>(cvts)(field));
+          [this, &cvts](auto& field, auto index) {
+              this->data_[index].push_back(std::get<index>(cvts)(std::move(field)));
         });
         return n_rows() - 1;
     }
