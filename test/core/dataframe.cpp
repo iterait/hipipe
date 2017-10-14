@@ -225,8 +225,8 @@ BOOST_AUTO_TEST_CASE(test_index_col)
 BOOST_AUTO_TEST_CASE(test_index_cols)
 {
     const dataframe<> df{simple_df};
-    BOOST_CHECK_THROW((df.index_icols<char, bool>(0, {1, 3})), std::out_of_range);
-    BOOST_CHECK_THROW((df.index_cols<bool, bool>("Id", {"X", "Id"})), std::out_of_range);
+    BOOST_CHECK_THROW((df.index_icols<int, char, bool>(0, {1, 3})), std::out_of_range);
+    BOOST_CHECK_THROW((df.index_cols<double, bool, bool>("Id", {"X", "Id"})), std::out_of_range);
     std::map<int, std::tuple<std::string, double>> indexed_irows =
       df.index_icols<int, std::string, double>(0, {1, 2});
     std::map<int, std::tuple<std::string, double>> indexed_rows =
