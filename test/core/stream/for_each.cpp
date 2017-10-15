@@ -26,40 +26,6 @@
 
 using namespace cxtream::stream;
 
-BOOST_AUTO_TEST_CASE(test_partial_for_each)
-{
-    // partial_for_each
-    std::vector<int> generated;
-  
-    ranges::view::iota(1, 5)
-      | ranges::view::transform(std::make_tuple<int>)
-      | partial_for_each(from<int>, [&generated](const std::tuple<int> &t) {
-            generated.push_back(std::get<0>(t));
-            return 42;
-        })
-      | ranges::to_vector;
-  
-    test_ranges_equal(generated, ranges::view::iota(1, 5));
-}
-
-BOOST_AUTO_TEST_CASE(test_partial_for_each_move_only)
-{
-    // partial_for_each of a move-only column
-    std::vector<int> generated;
-  
-    ranges::view::iota(1, 5)
-      | ranges::view::transform([](int i) {
-            return std::make_tuple(std::make_unique<int>(i));
-        })
-      | partial_for_each(from<std::unique_ptr<int>>,
-          [&generated](const std::tuple<std::unique_ptr<int>&>& t) {
-              generated.push_back(*std::get<0>(t));
-        })
-      | ranges::to_vector;
-  
-    test_ranges_equal(generated, ranges::view::iota(1, 5));
-}
-
 BOOST_AUTO_TEST_CASE(test_for_each_of_two)
 {
     // for_each of two columns

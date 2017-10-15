@@ -10,67 +10,26 @@
 #ifndef CXTREAM_CORE_STREAM_FOR_EACH_HPP
 #define CXTREAM_CORE_STREAM_FOR_EACH_HPP
 
-#include <cxtream/build_config.hpp>
 #include <cxtream/core/stream/template_arguments.hpp>
+#include <cxtream/core/stream/transform.hpp>
 #include <cxtream/core/utility/tuple.hpp>
-#include <cxtream/core/utility/vector.hpp>
-
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/view/transform.hpp>
-#include <range/v3/view/zip.hpp>
-
-#include <functional>
-#include <utility>
 
 namespace cxtream::stream {
 
-/// Apply a function to a subset of tuple elements for each tuple in a range.
-///
-/// The transformed range is the same as the input range, no elements are actually changed.
-/// The function is applied lazily, i.e., only when the range is iterated.
-template<typename... FromTypes, typename Fun, typename Projection = ref_wrap_t>
-constexpr auto partial_for_each(from_t<FromTypes...>, Fun fun, Projection proj = Projection{})
-{
-    return ranges::view::transform([fun = std::move(fun), proj = std::move(proj)]
-      (auto&& source) CXTREAM_MUTABLE_LAMBDA_V {
-          // build the view for the transformer, i.e., slice and project
-          auto slice_view =
-            utility::tuple_transform(utility::tuple_type_view<FromTypes...>(source), proj);
-          // apply the function
-          std::invoke(fun, std::move(slice_view));
-          // return the original
-          return std::forward<decltype(source)>(source);
-    });
-}
-
-
 namespace detail {
 
-    // apply fun to each element in tuple of ranges in given dimension
-    // the return value of the function is ignored
-    template<int Dim>
-    struct wrap_void_fun_for_dim {
-        template<typename Fun>
-        static constexpr auto impl(Fun fun)
-        {
-            return [fun = std::move(fun)](auto&& tuple_of_ranges) CXTREAM_MUTABLE_LAMBDA_V {
-                assert(utility::same_size(tuple_of_ranges));
-                auto range_of_tuples = std::experimental::apply(
-                  ranges::view::zip, std::forward<decltype(tuple_of_ranges)>(tuple_of_ranges));
+    // Wrap the given function so that its return value is ignored
+    // and so that it can be forwarded to stream::transform.
+    template<typename Fun, typename... FromTypes>
+    struct wrap_void_fun_for_transform {
+        Fun fun;
 
-                ranges::for_each(range_of_tuples, wrap_void_fun_for_dim<Dim - 1>::impl(fun));
-            };
-        }
-    };
-
-    template<>
-    struct wrap_void_fun_for_dim<0> {
-        template<typename Fun>
-        static constexpr auto impl(Fun fun)
+        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... args) const
         {
-            return [fun = std::move(fun)](auto&& tuple) CXTREAM_MUTABLE_LAMBDA_V {
-                std::experimental::apply(fun, std::forward<decltype(tuple)>(tuple));
-            };
+            std::invoke(fun, args...);
+            // we can force std::move here because the old
+            // data are going to be ignored anyway
+            return {std::move(args)...};
         }
     };
 
@@ -99,11 +58,12 @@ namespace detail {
 template<typename... FromColumns, typename Fun, int Dim = 1>
 constexpr auto for_each(from_t<FromColumns...> f, Fun fun, dim_t<Dim> d = dim_t<1>{})
 {
-    // wrap the function to be applied in the appropriate dimension
-    auto fun_wrapper = detail::wrap_void_fun_for_dim<Dim>::impl(std::move(fun));
-
-    return stream::partial_for_each(f, std::move(fun_wrapper),
-                                    [](auto& column) { return std::ref(column.value()); });
+    // wrap the function to be compatible with stream::transform
+    detail::wrap_void_fun_for_transform<
+      Fun, utility::ndim_type_t<typename FromColumns::batch_type, Dim>...>
+        fun_wrapper{std::move(fun)};
+    // apply the dummy transformation
+    return stream::transform(f, to<FromColumns...>, std::move(fun_wrapper), d);
 }
 
 }  // namespace cxtream::stream
