@@ -45,6 +45,28 @@ struct variadic_find<T, T, Ts...> : std::integral_constant<std::size_t, 0> {
 };
 
 /// \ingroup Tuple
+/// \brief Wrap variadic template pack in a tuple if there is more than one type.
+///
+/// Example:
+/// \code
+///     static_assert(std::is_same_v<maybe_tuple<int, double>, std::tuple<int, double>>);
+///     static_assert(std::is_same_v<maybe_tuple<int>, int>);
+///     static_assert(std::is_same_v<maybe_tuple<>, std::tuple<>>);
+/// \endcode
+template<std::size_t N, typename... Ts>
+struct maybe_tuple_impl {
+    using type = std::tuple<Ts...>;
+};
+
+template<typename T>
+struct maybe_tuple_impl<1, T> {
+    using type = T;
+};
+
+template<typename... Ts>
+using maybe_tuple = typename maybe_tuple_impl<sizeof...(Ts), Ts...>::type;
+
+/// \ingroup Tuple
 /// \brief Add a number to all values in std::index_sequence.
 ///
 /// Example:
@@ -383,6 +405,61 @@ template<bool Enable, typename RangeT>
 decltype(auto) unzip_if(RangeT&& range)
 {
     return detail::unzip_if_impl<Enable>::impl(std::forward<RangeT>(range));
+}
+
+// maybe untuple //
+
+namespace detail {
+
+    template<std::size_t Size>
+    struct maybe_untuple_impl
+    {
+        template<typename Tuple>
+        static Tuple&& impl(Tuple&& tuple)
+        {
+            return std::forward<Tuple>(tuple);
+        }
+    };
+
+    template<>
+    struct maybe_untuple_impl<1>
+    {
+        template<typename Tuple>
+        static decltype(auto) impl(Tuple&& tuple)
+        {
+            return std::get<0>(std::forward<Tuple>(tuple));
+        }
+    };
+
+}  // namespace detail
+
+/// \ingroup Tuple
+/// \brief Extract a value from a tuple if the tuple contains only a single value.
+///
+/// If the tuple contains zero or more than one element, this is an identity.
+///
+/// Example:
+/// \code
+///     std::tuple<int, double> t1{1, 3.};
+///     auto t2 = maybe_untuple(t1);
+///     static_assert(std::is_same_v<decltype(t2), std::tuple<int, double>>);
+/// 
+///     std::tuple<int> t3{1};
+///     auto t4 = maybe_untuple(t3);
+///     static_assert(std::is_same_v<decltype(t4), int>);
+///  
+///     int i = 1;
+///     std::tuple<int&> t5{i};
+///     auto& t6 = maybe_untuple(t5);
+///     static_assert(std::is_same_v<decltype(t6), int&>);
+///     t6 = 2;
+///     BOOST_TEST(i == 2);
+/// \endcode
+template<typename Tuple>
+decltype(auto) maybe_untuple(Tuple&& tuple)
+{
+    constexpr std::size_t tuple_size = std::tuple_size<std::decay_t<Tuple>>{};
+    return detail::maybe_untuple_impl<tuple_size>::impl(std::forward<Tuple>(tuple));
 }
 
 // range to tuple //
