@@ -14,10 +14,9 @@
 #include <cxtream/core/stream/transform.hpp>
 #include <cxtream/core/utility/tuple.hpp>
 
-#include <range/v3/view/zip.hpp>
 #include <range/v3/view/filter.hpp>
 #include <range/v3/view/move.hpp>
-#include <range/v3/view/transform.hpp>
+#include <range/v3/view/zip.hpp>
 
 #include <functional>
 #include <utility>
@@ -26,105 +25,80 @@ namespace cxtream::stream {
 
 namespace detail {
 
-    // returns a function which takes a single tuple as argument and
-    // applies the given function to its subtuple
-    // all the columns are projected to their value()
-    template<typename... Types>
-    struct filter_fun_for_subtuple_by_type
+    // Filter the stream using the given function.
+    // This function wrapper is to be applied in one lower
+    // dimension than the wrapped function itself.
+    // This function wrapper is to be called in dimensions higher than 0.
+    template<typename Fun, typename From, typename ByIdxs>
+    struct wrap_filter_fun_for_transform;
+    template<typename Fun, typename... FromTypes, std::size_t... ByIdxs>
+    struct wrap_filter_fun_for_transform<Fun, from_t<FromTypes...>, std::index_sequence<ByIdxs...>>
     {
-        template<typename Fun>
-        static constexpr auto impl(Fun fun)
+        Fun fun;
+
+        // Properly zips/unzips the data and applies the filter function.
+        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... cols) const
         {
-            return [fun = std::move(fun)](auto&& tuple) {
-                auto proj = [](auto& column) { return std::ref(column.value()); };
-                auto slice_view =
-                  utility::tuple_transform(utility::tuple_type_view<Types...>(tuple), proj);
-                return std::experimental::apply(fun, std::move(slice_view));
-            };
+            auto range_of_tuples =
+                ranges::view::zip(cols...)
+              | ranges::view::filter([this](const auto& tuple) -> bool {
+                    auto slice_view = utility::tuple_index_view<ByIdxs...>(tuple);
+                    return std::experimental::apply(this->fun, std::move(slice_view));
+                })
+              | ranges::view::move;
+            return utility::maybe_untuple(utility::unzip(std::move(range_of_tuples)));
         }
     };
 
-    // similar to above, but
-    // no projection is performed, the contents of columns in the given dimension
-    // are presented to the function as is
-    template<std::size_t... Idxs>
-    struct filter_fun_for_subtuple_by_idx_no_proj
+    // Helper function wrapper for dimension 0.
+    // This wrapper takes a single tuple of columns as argument and
+    // applies the stored function to a subset of columns selected by types.
+    // The columns are projected to their value().
+    template<typename Fun, typename... ByColumns>
+    struct apply_filter_fun_to_columns
     {
-        template<typename Fun>
-        static constexpr auto impl(Fun fun)
+        Fun fun;
+
+        template<typename... SourceColumns>
+        constexpr bool operator()(const std::tuple<SourceColumns...>& tuple) const
         {
-            return [fun = std::move(fun)](auto&& tuple) {
-                auto slice_view = utility::tuple_index_view<Idxs...>(tuple);
-                return std::experimental::apply(fun, std::move(slice_view));
-            };
+            auto proj = [](auto& column) { return std::ref(column.value()); };
+            auto slice_view = utility::tuple_type_view<ByColumns...>(tuple);
+            auto values = utility::tuple_transform(std::move(slice_view), std::move(proj));
+            return std::experimental::apply(fun, std::move(values));
         }
     };
 
-
-    // filter the stream using the given function in the selected dimension
-    // recurse through dimensions
-    template<int Dim, std::size_t... ByIdxs>
-    struct wrap_filter_fun_for_dim
-    {
-        template<typename Fun>
-        static constexpr auto impl(Fun fun)
-        {
-            return [fun = std::move(fun)](auto&& tuple_of_ranges) {
-                auto range_of_tuples =
-                  std::experimental::apply(ranges::view::zip,
-                                           std::forward<decltype(tuple_of_ranges)>(tuple_of_ranges))
-                  | ranges::view::transform(wrap_filter_fun_for_dim<Dim-1, ByIdxs...>::impl(fun));
-                return utility::unzip(std::move(range_of_tuples));
-            };
-        }
-    };
-
-    // recursion bottom for the above, applies the function and filters
-    template<std::size_t... ByIdxs>
-    struct wrap_filter_fun_for_dim<1, ByIdxs...>
-    {
-        template<typename Fun>
-        static constexpr auto impl(Fun fun)
-        {
-            return [fun = std::move(fun)](auto&& tuple_of_ranges) {
-                auto range_of_tuples =
-                  std::experimental::apply(ranges::view::zip,
-                                           std::forward<decltype(tuple_of_ranges)>(tuple_of_ranges))
-                  | ranges::view::filter(
-                      filter_fun_for_subtuple_by_idx_no_proj<ByIdxs...>::impl(fun))
-                  | ranges::view::move;
-                return utility::unzip(std::move(range_of_tuples));
-            };
-        }
-    };
-
-    // entry point for filter
-    // for dimension 0, just apply view::filter with the given function
-    // for larger dimensions, use partial_transform until you reach the dimension to be filtered
+    // Entry point for stream::filter.
+    // For dimensions higher than 0, use stream::transform to Dim-1 and
+    // wrap_filter_fun_for_transform wrapper.
     template<int Dim>
     struct filter_impl
     {
         template<typename... FromColumns, typename... ByColumns, typename Fun>
         static constexpr auto impl(from_t<FromColumns...> f, by_t<ByColumns...> b, Fun fun)
         {
-            auto fun_wrapper =
-              detail::wrap_filter_fun_for_dim<
-                Dim,
-                utility::variadic_find<ByColumns, FromColumns...>::value...>
-                  ::impl(std::move(fun));
-            return stream::partial_transform(f, to<FromColumns...>, std::move(fun_wrapper),
-                                             [](auto& column) { return std::ref(column.value()); });
+            static_assert(sizeof...(ByColumns) <= sizeof...(FromColumns),
+              "Cannot have more ByColumns than FromColumns.");
+
+            detail::wrap_filter_fun_for_transform<
+              Fun, from_t<utility::ndim_type_t<typename FromColumns::batch_type, Dim-1>...>,
+              std::index_sequence<utility::variadic_find<ByColumns, FromColumns...>::value...>>
+                fun_wrapper{std::move(fun)};
+
+            return stream::transform(f, to<FromColumns...>, std::move(fun_wrapper), dim<Dim-1>);
         }
     };
 
+    // Special case for batch filtering (Dim == 0).
     template<>
     struct filter_impl<0>
     {
-        template<typename... FromColumns, typename... ByColumns, typename Fun>
-        static constexpr auto impl(from_t<FromColumns...> f, by_t<ByColumns...> b, Fun fun)
+        template<typename From, typename... ByColumns, typename Fun>
+        static constexpr auto impl(From, by_t<ByColumns...>, Fun fun)
         {
-            return ranges::view::filter(
-              filter_fun_for_subtuple_by_type<ByColumns...>::impl(std::move(fun)));
+            apply_filter_fun_to_columns<Fun, ByColumns...> fun_wrapper{std::move(fun)};
+            return ranges::view::filter(std::move(fun_wrapper));
         }
     };
 
