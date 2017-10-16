@@ -74,9 +74,9 @@ if(BUILD_DOC)
 endif()
 
 if(BUILD_TEST)
-  find_package(Boost COMPONENTS system thread unit_test_framework REQUIRED)
+  find_package(Boost 1.61 COMPONENTS system thread unit_test_framework REQUIRED)
 else()
-  find_package(Boost COMPONENTS system thread REQUIRED)
+  find_package(Boost 1.61 COMPONENTS system thread REQUIRED)
 endif()
 
 # ------------------
