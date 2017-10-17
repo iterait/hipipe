@@ -134,6 +134,15 @@ public:
     {
         return {ranges::view::all(std::forward<Rng>(rng)), n};
     }
+
+    /// \cond
+    template<typename Rng, CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+    void operator()(Rng&&, std::size_t n = 0) const
+    {
+        CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
+          "stream::buffer only works on ranges satisfying the ForwardRange concept.");
+    }
+    /// \endcond
 };
 
 /// \ingroup Stream
