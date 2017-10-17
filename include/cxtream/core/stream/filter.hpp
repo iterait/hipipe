@@ -37,7 +37,7 @@ namespace detail {
         Fun fun;
 
         // Properly zips/unzips the data and applies the filter function.
-        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... cols) const
+        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... cols)
         {
             auto range_of_tuples =
                 ranges::view::zip(cols...)
@@ -60,7 +60,7 @@ namespace detail {
         Fun fun;
 
         template<typename... SourceColumns>
-        constexpr bool operator()(const std::tuple<SourceColumns...>& tuple) const
+        constexpr bool operator()(const std::tuple<SourceColumns...>& tuple)
         {
             auto proj = [](auto& column) { return std::ref(column.value()); };
             auto slice_view = utility::tuple_type_view<ByColumns...>(tuple);

@@ -14,6 +14,30 @@
 
 using namespace cxtream::stream;
 
+BOOST_AUTO_TEST_CASE(test_mutable)
+{
+    CXTREAM_DEFINE_COLUMN(IntVec, std::vector<int>)
+    const std::vector<std::tuple<int, std::vector<int>>> data = {
+      {{3, {1, 5}}, {1, {2, 4}}, {2, {7, 1}}, {6, {3, 5}}}};
+
+    std::size_t i = 0;
+    auto generated = data
+      | create<Int, IntVec>(2)
+      | filter(from<Int, IntVec>, by<Int>, [i = 0](int v) mutable { return i++ % 2 == 0; })
+      | for_each(from<Int, IntVec>, [&i](auto& ints, auto& intvecs) {
+            switch (i++) {
+            case 0: BOOST_TEST(ints    == (std::vector<int>{3}));
+                    BOOST_TEST(intvecs == (std::vector<std::vector<int>>{{1, 5}}));
+                    break;
+            case 1: BOOST_TEST(ints    == (std::vector<int>{2}));
+                    BOOST_TEST(intvecs == (std::vector<std::vector<int>>{{7, 1}}));
+                    break;
+            }
+        }, dim<0>)
+      | ranges::to_vector;
+    BOOST_TEST(i == 2);
+}
+
 BOOST_AUTO_TEST_CASE(test_dim2_partial)
 {
     CXTREAM_DEFINE_COLUMN(IntVec, std::vector<int>)

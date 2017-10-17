@@ -39,7 +39,7 @@ namespace detail {
         Projection proj;
 
         template<typename... SourceTypes>
-        constexpr auto operator()(std::tuple<SourceTypes...> source) const
+        constexpr auto operator()(std::tuple<SourceTypes...> source)
         {
             // build the view for the transformer, i.e., slice and project
             auto slice_view =
@@ -99,17 +99,17 @@ namespace detail {
              typename... FromTypes, typename... ToTypes>
     struct wrap_fun_for_dim<Fun, Dim, NOuts, from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
-        using FunRef = decltype(std::cref(fun));
+        using FunRef = decltype(std::ref(fun));
 
         constexpr utility::maybe_tuple<ToTypes...>
-        operator()(std::tuple<FromTypes&...> tuple_of_ranges) const
+        operator()(std::tuple<FromTypes&...> tuple_of_ranges)
         {
             assert(utility::same_size(tuple_of_ranges));
             // build the function to be applied
             wrap_fun_for_dim<FunRef, Dim-1, NOuts,
               from_t<ranges::range_value_type_t<FromTypes>...>,
               to_t<ranges::range_value_type_t<ToTypes>...>>
-                fun_wrapper{std::cref(fun)};
+                fun_wrapper{std::ref(fun)};
             // transform
             auto range_of_tuples =
                 std::experimental::apply(ranges::view::zip, std::move(tuple_of_ranges))
@@ -123,7 +123,7 @@ namespace detail {
         Fun fun;
 
         constexpr utility::maybe_tuple<ToTypes...>
-        operator()(std::tuple<FromTypes&...> tuple) const
+        operator()(std::tuple<FromTypes&...> tuple)
         {
             return std::experimental::apply(fun, std::move(tuple));
         }
@@ -184,7 +184,7 @@ namespace detail {
                               from_t<CondCol, Cols...>, to_t<ToTypes...>> {
         Fun fun;
 
-        constexpr utility::maybe_tuple<ToTypes...> operator()(CondCol& cond, Cols&... cols) const
+        constexpr utility::maybe_tuple<ToTypes...> operator()(CondCol& cond, Cols&... cols)
         {
             // make a tuple of all arguments, except for the condition
             std::tuple<Cols&...> args_view{cols...};
@@ -310,7 +310,7 @@ namespace detail {
         std::reference_wrapper<Prng> prng;
         const double prob;
 
-        utility::maybe_tuple<ToTypes...> operator()(FromTypes&... cols) const
+        utility::maybe_tuple<ToTypes...> operator()(FromTypes&... cols)
         {
             assert(prob >= 0. && prob <= 1.);
             std::uniform_real_distribution<> dis{0, 1};

@@ -73,7 +73,6 @@ BOOST_AUTO_TEST_CASE(test_move_only)
 
 BOOST_AUTO_TEST_CASE(test_mutable)
 {
-#ifdef CXTREAM_MUTABLE_LAMBDA
     std::vector<std::tuple<Int>> data = {{{1, 3}}, {{5, 7}}};
 
     auto generated = data
@@ -83,11 +82,8 @@ BOOST_AUTO_TEST_CASE(test_mutable)
         })
       | ranges::to_vector;
 
-    std::vector<std::tuple<Int>> desired = {{{0, 1}}, {{0, 1}}};
+    std::vector<std::tuple<Int>> desired = {{{0, 1}}, {{2, 3}}};
     test_ranges_equal(generated, desired);
-#else
-    BOOST_TEST_MESSAGE("Cxtream does not support mutable lambdas in this compiler version.");
-#endif
 }
 
 BOOST_AUTO_TEST_CASE(test_two_to_one)
@@ -156,7 +152,6 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only)
 
 BOOST_AUTO_TEST_CASE(test_dim2_move_only_mutable)
 {
-#ifdef CXTREAM_MUTABLE_LAMBDA
     auto data = generate_move_only_data();
 
     auto rng = data
@@ -169,9 +164,6 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only_mutable)
       | unique_vec_to_int_vec();
 
     std::vector<std::vector<std::vector<int>>> generated = unpack(rng, from<IntVec>, dim<0>);
-    std::vector<std::vector<std::vector<int>>> desired = {{{4, 5}, {4, 5}}, {{4, 5}}};
+    std::vector<std::vector<std::vector<int>>> desired = {{{4, 5}, {6, 7}}, {{8, 9}}};
     BOOST_CHECK(generated == desired);
-#else
-    BOOST_TEST_MESSAGE("Cxtream does not support mutable lambdas in this compiler version.");
-#endif
 }

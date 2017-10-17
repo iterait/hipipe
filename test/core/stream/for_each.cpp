@@ -42,7 +42,6 @@ BOOST_AUTO_TEST_CASE(test_for_each_of_two)
 
 BOOST_AUTO_TEST_CASE(test_for_each_mutable)
 {
-#ifdef CXTREAM_MUTABLE_LAMBDA
     std::vector<std::tuple<Int>> data = {{{1, 3}}, {{5, 7}}};
     struct {
         int i = 0;
@@ -53,10 +52,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_mutable)
     auto generated = data
       | for_each(from<Int>, func)
       | ranges::to_vector;
-    BOOST_TEST(*(func.i_ptr) == 2);
-#else
-    BOOST_TEST_MESSAGE("Cxtream does not support mutable lambdas in this compiler version.");
-#endif
+    BOOST_TEST(*(func.i_ptr) == 4);
 }
 
 BOOST_AUTO_TEST_CASE(test_for_each_move_only)
@@ -117,7 +113,6 @@ BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only)
 
 BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only_mutable)
 {
-#ifdef CXTREAM_MUTABLE_LAMBDA
     auto data = generate_move_only_data();
 
     std::vector<int> generated;
@@ -130,9 +125,6 @@ BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only_mutable)
           }, dim<2>)
       | ranges::to_vector;
 
-    std::vector<int> desired = {4, 5, 4, 5, 4, 5};
+    std::vector<int> desired = {4, 5, 6, 7, 8, 9};
     BOOST_CHECK(generated == desired);
-#else
-    BOOST_TEST_MESSAGE("Cxtream does not support mutable lambdas in this compiler version.");
-#endif
 }

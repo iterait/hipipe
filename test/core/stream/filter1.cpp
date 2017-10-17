@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(test_dim1)
     std::size_t i = 0;
     data
       | create<Int, Double>(2)
-      | filter(from<Int, Double>, by<Double>, [](double v) { return v >= 5.; }, dim<1>)
+      | filter(from<Int, Double>, by<Double>, [](double v) { return v >= 5.; })
       | for_each(from<Int, Double>, [&i](auto& ints, auto& doubles) {
             switch (i++) {
             case 0: BOOST_TEST(ints    == (std::vector<int>{3}));
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(test_dim1_partial)
     std::size_t i = 0;
     data
       | create<Int, Double>(2)
-      | filter(from<Double>, by<Double>, [](double v) { return v >= 5.; }, dim<1>)
+      | filter(from<Double>, by<Double>, [](double v) { return v >= 5.; })
       | for_each(from<Int, Double>, [&i](auto& a, auto& b) {
             switch (i++) {
             case 0: BOOST_CHECK(a == (std::vector<int>{3, 1}));
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_dim1_move_only)
     std::size_t i = 0;
     data
       | ranges::view::move
-      | filter(from<Unique>, by<Unique>, [](auto& ptr) { return *ptr >= 5.; }, dim<1>)
+      | filter(from<Unique>, by<Unique>, [](auto& ptr) { return *ptr >= 5.; })
       | for_each(from<Int, Unique>, [&i](auto& a, auto& b) {
             switch (i++) {
             case 0: BOOST_CHECK(a == (std::vector<int>{3}));

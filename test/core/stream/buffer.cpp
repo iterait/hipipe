@@ -13,6 +13,7 @@
 #include "../common.hpp"
 
 #include <cxtream/core/stream/buffer.hpp>
+#include <cxtream/core/stream/transform.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/indirect.hpp>
@@ -136,4 +137,18 @@ BOOST_AUTO_TEST_CASE(test_buffer_whole_range)
     BOOST_CHECK(it == ranges::end(rng));
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {1, 1, 1, 1, 1});
+}
+
+BOOST_AUTO_TEST_CASE(test_buffer_transformed_stream)
+{
+    std::vector<std::tuple<Int, Double>> data = {{{3, 7}, {5., 1.}}, {1, 2.}};
+
+    auto generated = data
+      | transform(from<Int, Double>, to<Double>, [](int i, double d) {
+            return (double)(i + d);
+        })
+      | buffer(3);
+
+    std::vector<std::tuple<Double, Int>> desired = {{{3 + 5., 7 + 1.}, {3, 7}}, {1 + 2., 1}};
+    test_ranges_equal(generated, desired);
 }

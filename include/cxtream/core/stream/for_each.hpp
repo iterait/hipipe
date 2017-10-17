@@ -24,7 +24,7 @@ namespace detail {
     struct wrap_void_fun_for_transform {
         Fun fun;
 
-        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... args) const
+        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... args)
         {
             std::invoke(fun, args...);
             // we can force std::move here because the old
