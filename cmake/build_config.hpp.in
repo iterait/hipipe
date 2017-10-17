@@ -28,14 +28,4 @@
   #undef BUILD_TENSORFLOW
 #endif
 
-// only use mutable lambdas if the compiler is recent enough
-#if __GNUC__ >= 7
-// maybe clang will improve its support in the future,
-// then add `|| __clang_major__ >= 4` to the condition
-#define CXTREAM_MUTABLE_LAMBDA
-#define CXTREAM_MUTABLE_LAMBDA_V mutable
-#else
-#define CXTREAM_MUTABLE_LAMBDA_V
-#endif
-
 #endif
