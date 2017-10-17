@@ -16,6 +16,7 @@
 #include <cxtream/core/utility/tuple.hpp>
 #include <cxtream/core/utility/vector.hpp>
 
+#include <range/v3/view/any_view.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
 
@@ -24,29 +25,69 @@
 
 namespace cxtream::stream {
 
-/// Transform a subset of tuple elements for each tuple in a range and concatenate the result
-/// with the source tuple.
-///
-/// The result tuple overrides the corresponding types from the source tuple.
-template<typename... FromTypes, typename... ToTypes,
-         typename Fun, typename Projection = ref_wrap_t>
-constexpr auto partial_transform(from_t<FromTypes...>, to_t<ToTypes...>,
-                                 Fun fun, Projection proj = Projection{})
-{
-    static_assert(sizeof...(ToTypes) > 0, "For non-transforming operations, please"
-                                          " use the partial_for_each.");
+// partial transform //
 
-    return ranges::view::transform([fun = std::move(fun), proj = std::move(proj)]
-      (auto&& source) CXTREAM_MUTABLE_LAMBDA_V {
-        // build the view for the transformer, i.e., slice and project
-        auto slice_view =
-          utility::tuple_transform(utility::tuple_type_view<FromTypes...>(source), proj);
-        // process the transformer's result and convert it to the requested types
-        std::tuple<ToTypes...> result{std::invoke(fun, std::move(slice_view))};
-        // replace the corresponding fields
-        return utility::tuple_cat_unique(std::move(result), std::forward<decltype(source)>(source));
-    });
-}
+namespace detail {
+
+    // Implementation of partial_transform.
+    template<typename Fun, typename Projection, typename From, typename To>
+    struct partial_transformer;
+
+    template<typename Fun, typename Projection, typename... FromTypes, typename... ToTypes>
+    struct partial_transformer<Fun, Projection, from_t<FromTypes...>, to_t<ToTypes...>> {
+        Fun fun;
+        Projection proj;
+
+        template<typename... SourceTypes>
+        constexpr auto operator()(std::tuple<SourceTypes...> source) const
+        {
+            // build the view for the transformer, i.e., slice and project
+            auto slice_view =
+              utility::tuple_transform(utility::tuple_type_view<FromTypes...>(source), proj);
+            // process the transformer's result and convert it to the requested types
+            std::tuple<ToTypes...> result{std::invoke(fun, std::move(slice_view))};
+            // replace the corresponding fields
+            return utility::tuple_cat_unique(std::move(result), std::move(source));
+        }
+    };
+
+}  // namespace detail
+
+class partial_transform_fn {
+private:
+    friend ranges::view::view_access;
+
+    template <typename From, typename To, typename Fun, typename Projection = ref_wrap_t>
+    static auto bind(partial_transform_fn transformer, From f, To t, Fun fun,
+                     Projection proj = Projection{})
+    {
+        return ranges::make_pipeable(
+          std::bind(transformer, std::placeholders::_1, f, t, std::move(fun), std::move(proj)));
+    }
+
+public:
+    template <typename Rng, typename... FromTypes,
+              typename... ToTypes, typename Fun, typename Projection = ref_wrap_t>
+    constexpr auto operator()(Rng&& rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun,
+                              Projection proj = Projection{}) const
+    {
+        static_assert(sizeof...(ToTypes) > 0, "For non-transforming operations, please"
+                                              " use stream::for_each.");
+
+        auto trans_fun = detail::partial_transformer<Fun, Projection,
+          from_t<FromTypes...>, to_t<ToTypes...>>
+          {std::move(fun), std::move(proj)};
+
+        // any_view is used to erase types and speed up compilation time
+        using RefType = ranges::range_reference_t<Rng>;
+        return ranges::any_view<RefType, ranges::category::forward>{std::forward<Rng>(rng)}
+          | ranges::view::transform(std::move(trans_fun));
+    }
+};
+
+constexpr ranges::view::view<partial_transform_fn> partial_transform;
+
+// transform //
 
 namespace detail {
 
