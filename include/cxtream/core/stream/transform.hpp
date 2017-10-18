@@ -30,15 +30,16 @@ namespace cxtream::stream {
 namespace detail {
 
     // Implementation of partial_transform.
-    template<typename Fun, typename Projection, typename From, typename To>
+    template<typename Fun, typename Projection, typename Source, typename From, typename To>
     struct partial_transformer;
 
-    template<typename Fun, typename Projection, typename... FromTypes, typename... ToTypes>
-    struct partial_transformer<Fun, Projection, from_t<FromTypes...>, to_t<ToTypes...>> {
+    template<typename Fun, typename Projection, typename... SourceTypes,
+             typename... FromTypes, typename... ToTypes>
+    struct partial_transformer<Fun, Projection, std::tuple<SourceTypes...>,
+                               from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
         Projection proj;
 
-        template<typename... SourceTypes>
         constexpr auto operator()(std::tuple<SourceTypes...> source)
         {
             // build the view for the transformer, i.e., slice and project
@@ -74,9 +75,10 @@ public:
         static_assert(sizeof...(ToTypes) > 0, "For non-transforming operations, please"
                                               " use stream::for_each.");
 
-        auto trans_fun = detail::partial_transformer<Fun, Projection,
-          from_t<FromTypes...>, to_t<ToTypes...>>
-          {std::move(fun), std::move(proj)};
+        using StreamType = ranges::range_value_type_t<Rng>;
+        detail::partial_transformer<Fun, Projection,
+          StreamType, from_t<FromTypes...>, to_t<ToTypes...>>
+          trans_fun{std::move(fun), std::move(proj)};
 
         // any_view is used to erase types and speed up compilation time
         using RefType = ranges::range_reference_t<Rng>;
