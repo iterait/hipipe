@@ -207,6 +207,73 @@ constexpr auto tuple_index_view(Tuple& tuple, std::index_sequence<Idxs...> = {})
     return std::make_tuple(std::ref(std::get<Idxs>(tuple))...);
 }
 
+// tuple cat unique //
+
+namespace detail {
+
+    // This finds the indices of the first elements of each unique type in
+    // a tuple. E.g, for tuple<int, double, int, char, double>, the
+    // unique_indices class inherits from std::index_sequence<0, 1, 3>
+    //
+    // This implementation is sligthly faster than the previous one
+    // which was using boost::hana.
+    template<typename Tuple,
+             typename Known = std::tuple<>,
+             typename Is = std::index_sequence<>,
+             std::size_t I = 0,
+             bool In = tuple_contains<std::tuple_element_t<0, Tuple>, Known>::value>
+    struct unique_indices_impl;
+
+    template<typename THead1, typename THead2, typename... TTail, typename... Types,
+             std::size_t... Is, std::size_t I>
+    struct unique_indices_impl<std::tuple<THead1, THead2, TTail...>, std::tuple<Types...>,
+                               std::index_sequence<Is...>, I, true>
+      : unique_indices_impl<std::tuple<THead2, TTail...>, std::tuple<Types...>,
+                            std::index_sequence<Is...>, I + 1>
+    { };
+
+    template<typename THead1, typename THead2, typename... TTail, typename... Types,
+             std::size_t... Is, std::size_t I>
+    struct unique_indices_impl<std::tuple<THead1, THead2, TTail...>, std::tuple<Types...>,
+                               std::index_sequence<Is...>, I, false>
+      : unique_indices_impl<std::tuple<THead2, TTail...>, std::tuple<THead1, Types...>,
+                            std::index_sequence<Is..., I>, I + 1>
+    { };
+
+    template<typename THead, typename Known, std::size_t... Is, std::size_t I>
+    struct unique_indices_impl<std::tuple<THead>, Known, std::index_sequence<Is...>, I, false>
+      : std::index_sequence<Is..., I>
+    { };
+
+    template<typename THead, typename Known, std::size_t... Is, std::size_t I>
+    struct unique_indices_impl<std::tuple<THead>, Known, std::index_sequence<Is...>, I, true>
+      : std::index_sequence<Is...>
+    { };
+
+    template<typename Tuple>
+    struct unique_indices
+      : unique_indices_impl<Tuple>
+    { };
+
+    template<>
+    struct unique_indices<std::tuple<>>
+      : std::index_sequence<>
+    { };
+
+    template<std::size_t... Idxs, typename Tuple>
+    constexpr auto make_tuple_by_idxs(Tuple&& tuple, std::index_sequence<Idxs...> = {})
+    {
+        return std::make_tuple(std::get<Idxs>(std::forward<Tuple>(tuple))...);
+    }
+
+    template<typename Tuple>
+    constexpr auto make_unique_tuple(Tuple tuple)
+    {
+        return detail::make_tuple_by_idxs(std::move(tuple), unique_indices<Tuple>{});
+    }
+
+}  // namespace detail
+
 /// \ingroup Tuple
 /// \brief Concatenate two tuples and keep only the first element of each type.
 ///
@@ -223,12 +290,8 @@ constexpr auto tuple_index_view(Tuple& tuple, std::index_sequence<Idxs...> = {})
 template <typename... Tuples>
 constexpr auto tuple_cat_unique(Tuples&&... tuples)
 {
-    auto values = std::tuple_cat(std::forward<Tuples>(tuples)...);
-    auto type_value_pairs = boost::hana::transform(std::move(values), [](auto v) {
-        return boost::hana::make_pair(boost::hana::type_c<decltype(v)>, std::move(v));
-    });
-    auto map = boost::hana::to_map(std::move(type_value_pairs));
-    return boost::hana::to<boost::hana::ext::std::tuple_tag>(boost::hana::values(std::move(map)));
+    auto all = std::tuple_cat(std::forward<Tuples>(tuples)...);
+    return detail::make_unique_tuple(std::move(all));
 }
 
 /// \ingroup Tuple
