@@ -114,7 +114,7 @@ namespace detail {
                 fun_wrapper{std::ref(fun)};
             // transform
             auto range_of_tuples =
-                std::experimental::apply(ranges::view::zip, std::move(tuple_of_ranges))
+                boost::hana::unpack(std::move(tuple_of_ranges), ranges::view::zip)
               | ranges::view::transform(std::move(fun_wrapper));
             return utility::unzip_if<(NOuts > 1)>(std::move(range_of_tuples));
         }
@@ -127,7 +127,7 @@ namespace detail {
         constexpr utility::maybe_tuple<ToTypes...>
         operator()(std::tuple<FromTypes&...> tuple)
         {
-            return std::experimental::apply(fun, std::move(tuple));
+            return boost::hana::unpack(std::move(tuple), fun);
         }
     };
 
@@ -194,8 +194,8 @@ namespace detail {
             if (cond) {
                 // the function is applied only on a subset of the arguments
                 // representing FromColumns
-                return std::experimental::apply(fun,
-                  utility::tuple_index_view(args_view, FromIdxs{}));
+                return boost::hana::unpack(
+                  utility::tuple_index_view(args_view, FromIdxs{}), fun);
             }
             // return the original arguments if the condition is false
             // only a subset of the arguments representing ToColumns is returned
@@ -322,8 +322,8 @@ namespace detail {
             if (prob == 1. || (prob > 0. && dis(prng.get()) < prob)) {
                 // the function is applied only on a subset of the arguments
                 // representing FromColumns
-                return std::experimental::apply(fun,
-                  utility::tuple_index_view(args_view, FromIdxs{}));
+                return boost::hana::unpack(
+                  utility::tuple_index_view(args_view, FromIdxs{}), fun);
             }
             // return the original arguments if the dice roll fails
             // only a subset of the arguments representing ToColumns is returned

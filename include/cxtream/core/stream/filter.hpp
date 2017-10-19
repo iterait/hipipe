@@ -43,7 +43,7 @@ namespace detail {
                 ranges::view::zip(cols...)
               | ranges::view::filter([this](const auto& tuple) -> bool {
                     auto slice_view = utility::tuple_index_view<ByIdxs...>(tuple);
-                    return std::experimental::apply(this->fun, std::move(slice_view));
+                    return boost::hana::unpack(std::move(slice_view), this->fun);
                 })
               | ranges::view::move;
             return utility::maybe_untuple(utility::unzip(std::move(range_of_tuples)));
@@ -65,7 +65,7 @@ namespace detail {
             auto proj = [](auto& column) { return std::ref(column.value()); };
             auto slice_view = utility::tuple_type_view<ByColumns...>(tuple);
             auto values = utility::tuple_transform(std::move(slice_view), std::move(proj));
-            return std::experimental::apply(fun, std::move(values));
+            return boost::hana::unpack(std::move(values), fun);
         }
     };
 
