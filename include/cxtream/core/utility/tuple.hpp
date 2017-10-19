@@ -521,7 +521,7 @@ namespace detail {
 template<typename Tuple>
 decltype(auto) maybe_untuple(Tuple&& tuple)
 {
-    constexpr std::size_t tuple_size = std::tuple_size<std::decay_t<Tuple>>{};
+    constexpr std::size_t tuple_size = std::tuple_size<std::decay_t<Tuple>>::value;
     return detail::maybe_untuple_impl<tuple_size>::impl(std::forward<Tuple>(tuple));
 }
 
