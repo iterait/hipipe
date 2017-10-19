@@ -11,9 +11,6 @@
 #ifndef CXTREAM_CORE_INDEX_MAPPER_HPP
 #define CXTREAM_CORE_INDEX_MAPPER_HPP
 
-#include <cxtream/core/utility/string.hpp>
-#include <cxtream/core/utility/tuple.hpp>
-
 #include <range/v3/view/transform.hpp>
 
 #include <unordered_map>

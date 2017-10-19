@@ -110,10 +110,10 @@ public:
     /// \throws std::invalid_argument 1) If the dataframe has a header but no column
     ///                               name was provided. 2) If the column size is not equal
     ///                               to n_rows.
-    template<typename Rng, typename ToStrFun = std::string (*)(ranges::range_value_type_t<Rng>)>
+    template<typename Rng, typename ValueT = ranges::range_value_type_t<Rng>>
     std::size_t insert_col(Rng&& rng, std::string col_name = {},
-                           std::function<std::string(ranges::range_value_type_t<Rng>)> cvt =
-                             static_cast<ToStrFun>(utility::to_string))
+                           std::function<std::string(const ValueT&)> cvt =
+                             static_cast<std::string (*)(const ValueT&)>(utility::to_string))
     {
         throw_check_insert_col_name(col_name);
         throw_check_insert_col_size(ranges::size(rng));
@@ -133,8 +133,9 @@ public:
     /// \throws std::invalid_argument If the row size is not equal to n_cols.
     template<typename... Ts>
     std::size_t insert_row(std::tuple<Ts...> row_tuple,
-                           std::tuple<std::function<std::string(Ts)>...> cvts = std::make_tuple(
-                             static_cast<std::string (*)(Ts)>(utility::to_string)...))
+                           std::tuple<std::function<std::string(const Ts&)>...> cvts =
+                             std::make_tuple(
+                               static_cast<std::string (*)(const Ts&)>(utility::to_string)...))
     {
         throw_check_insert_row_size(sizeof...(Ts));
         utility::tuple_for_each_with_index(std::move(row_tuple),
@@ -274,7 +275,7 @@ public:
     /// \throws std::out_of_range If the column is not in the dataframe.
     template<typename T>
     auto icol(std::size_t col_index,
-              std::function<T(std::string)> cvt = utility::string_to<T>) const
+              std::function<T(const std::string&)> cvt = utility::string_to<T>) const
     {
         return raw_icol(col_index) | ranges::view::transform(cvt);
     }
@@ -293,7 +294,7 @@ public:
     /// \throws std::out_of_range If the column is not in the dataframe.
     template<typename T>
     auto col(const std::string& col_name,
-             std::function<T(std::string)> cvt = utility::string_to<T>) const
+             std::function<T(const std::string&)> cvt = utility::string_to<T>) const
     {
         throw_check_col_name(col_name);
         return icol<T>(header_.index_for(col_name), std::move(cvt));
@@ -400,7 +401,7 @@ public:
     /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename... Ts>
     auto icols(std::vector<std::size_t> col_indexes,
-               std::tuple<std::function<Ts(std::string)>...> cvts =
+               std::tuple<std::function<Ts(const std::string&)>...> cvts =
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
         assert(sizeof...(Ts) == ranges::size(col_indexes));
@@ -422,7 +423,7 @@ public:
     /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename... Ts>
     auto cols(const std::vector<std::string>& col_names,
-              std::tuple<std::function<Ts(std::string)>...> cvts =
+              std::tuple<std::function<Ts(const std::string&)>...> cvts =
                 std::make_tuple(utility::string_to<Ts>...)) const
     {
         for (auto& col_name : col_names) throw_check_col_name(col_name);
@@ -525,7 +526,7 @@ public:
     /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename... Ts>
     auto irows(std::vector<std::size_t> col_indexes,
-               std::tuple<std::function<Ts(std::string)>...> cvts =
+               std::tuple<std::function<Ts(const std::string&)>...> cvts =
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
         return std::experimental::apply(
@@ -547,7 +548,7 @@ public:
     /// \throws std::out_of_range If any of the columns is not in the dataframe.
     template<typename... Ts>
     auto rows(const std::vector<std::string>& col_names,
-              std::tuple<std::function<Ts(std::string)>...> cvts =
+              std::tuple<std::function<Ts(const std::string&)>...> cvts =
                 std::make_tuple(utility::string_to<Ts>...)) const
     {
         for (auto& col_name : col_names) throw_check_col_name(col_name);
@@ -576,8 +577,10 @@ public:
     template <typename IndexT, typename ColT>
     auto index_icol(std::size_t key_col_index,
                     std::size_t val_col_index,
-                    std::function<IndexT(std::string)> key_col_cvt = utility::string_to<IndexT>,
-                    std::function<ColT(std::string)> val_col_cvt = utility::string_to<ColT>) const
+                    std::function<IndexT(const std::string&)> key_col_cvt =
+                      utility::string_to<IndexT>,
+                    std::function<ColT(const std::string&)> val_col_cvt =
+                      utility::string_to<ColT>) const
     {
         auto key_col = icol<IndexT>(key_col_index, std::move(key_col_cvt));
         auto val_col = icol<ColT>(val_col_index, std::move(val_col_cvt));
@@ -595,8 +598,10 @@ public:
     template<typename IndexT, typename ColT>
     auto index_col(const std::string& key_col_name,
                    const std::string& val_col_name,
-                   std::function<IndexT(std::string)> key_col_cvt = utility::string_to<IndexT>,
-                   std::function<ColT(std::string)> val_col_cvt = utility::string_to<ColT>) const
+                   std::function<IndexT(const std::string&)> key_col_cvt =
+                     utility::string_to<IndexT>,
+                   std::function<ColT(const std::string&)> val_col_cvt =
+                     utility::string_to<ColT>) const
     {
         throw_check_col_name(key_col_name);
         throw_check_col_name(val_col_name);
@@ -622,9 +627,9 @@ public:
     template<typename IndexT, typename... Ts>
     auto index_icols(std::size_t key_col_index,
                      std::vector<std::size_t> val_col_indexes,
-                     std::function<IndexT(std::string)> key_col_cvt =
+                     std::function<IndexT(const std::string&)> key_col_cvt =
                        utility::string_to<IndexT>,
-                     std::tuple<std::function<Ts(std::string)>...> val_col_cvts =
+                     std::tuple<std::function<Ts(const std::string&)>...> val_col_cvts =
                        std::make_tuple(utility::string_to<Ts>...)) const
     {
         auto key_col = icol<IndexT>(key_col_index, std::move(key_col_cvt));
@@ -646,9 +651,9 @@ public:
     template<typename IndexT, typename... Ts>
     auto index_cols(const std::string& key_col_name,
                     const std::vector<std::string>& val_col_names,
-                    std::function<IndexT(std::string)> key_col_cvt =
+                    std::function<IndexT(const std::string&)> key_col_cvt =
                       utility::string_to<IndexT>,
-                    std::tuple<std::function<Ts(std::string)>...> val_col_cvts =
+                    std::tuple<std::function<Ts(const std::string&)>...> val_col_cvts =
                       std::make_tuple(utility::string_to<Ts>...)) const
     {
         throw_check_col_name(key_col_name);

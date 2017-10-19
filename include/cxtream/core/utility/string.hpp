@@ -11,10 +11,12 @@
 #ifndef CXTREAM_CORE_UTILITY_STRING_HPP
 #define CXTREAM_CORE_UTILITY_STRING_HPP
 
+#include <boost/lexical_cast.hpp>
 #include <range/v3/view/transform.hpp>
 
 #include <algorithm>
 #include <locale>
+#include <experimental/filesystem>
 #include <sstream>
 #include <string>
 
@@ -23,24 +25,29 @@ namespace cxtream::utility {
 /// \ingroup String
 /// \brief Convert std::string to the given type.
 ///
-/// This function is similar to boost::lexical_cast,
-/// however, it always uses C locale.
+/// This function is either specialized for the given type or internally uses boost::lexical_cast.
+///
+/// \throws std::ios_base::failure If the conversion fails.
 template<typename T>
-T string_to(std::string str)
+T string_to(const std::string& str)
 {
-    std::istringstream ss{std::move(str)};
-    ss.imbue(std::locale::classic());
-    T val;
-    ss >> val;
-    if (!ss.eof() || ss.fail()) {
-        throw std::ios_base::failure(std::string("Failed to read type <") + typeid(T).name() +
-                                     "> from string \"" + ss.str() + "\"");
+    try {
+        return boost::lexical_cast<T>(str);
+    } catch(const boost::bad_lexical_cast &) {
+        throw std::ios_base::failure{std::string{"Failed to read type <"} + typeid(T).name() +
+                                     "> from string \"" + str + "\"."};
     }
-    return val;
 }
 
 template<>
-std::string string_to<std::string>(std::string str)
+std::string string_to<std::string>(const std::string& str)
+{
+    return str;
+}
+
+template<>
+std::experimental::filesystem::path
+string_to<std::experimental::filesystem::path>(const std::string& str)
 {
     return str;
 }
@@ -48,37 +55,38 @@ std::string string_to<std::string>(std::string str)
 /// \ingroup String
 /// \brief Convert the given type to std::string.
 ///
-/// This function is similar to boost::lexical_cast and
-/// uses std::to_string wherever possible.
-std::string to_string(std::string str)
+/// This function is either overloaded for the given type or internally uses boost::lexical_cast.
+///
+/// \throws std::ios_base::failure If the conversion fails.
+template<typename T>
+std::string to_string(const T& value)
+{
+    try {
+        return boost::lexical_cast<std::string>(value);
+    } catch(const boost::bad_lexical_cast &) {
+        throw std::ios_base::failure{std::string{"Failed to read string from type <"}
+                                     + typeid(T).name() + ">."};
+    }
+}
+
+std::string to_string(const std::experimental::filesystem::path& path)
+{
+    return path.string();
+}
+
+std::string to_string(const std::string& str)
 {
     return str;
 }
 
-std::string to_string(const char* str)
+std::string to_string(const char* const& str)
 {
     return str;
 }
 
-std::string to_string(bool b)
+std::string to_string(const bool& b)
 {
     return b ? "true" : "false";
-}
-
-using std::to_string;
-
-/// \ingroup String
-/// \brief Removes whitespace characters from the beginning and the end of a string.
-///
-/// This function is similar to boost::trimmed,
-/// however, it always uses C locale.
-std::string trim(const std::string& str)
-{
-    auto isspace = [](char c) { return std::isspace(c, std::locale::classic()); };
-    auto begin = std::find_if_not(str.begin(), str.end(), isspace);
-    auto end = std::find_if_not(str.rbegin(), str.rend(), isspace).base();
-    if (begin < end) return std::string(begin, end);
-    return std::string{};
 }
 
 }  // namespace cxtream

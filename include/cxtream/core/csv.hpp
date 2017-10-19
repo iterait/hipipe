@@ -12,12 +12,13 @@
 #define CXTREAM_CORE_CSV_HPP
 
 #include <cxtream/core/dataframe.hpp>
-#include <cxtream/core/utility/string.hpp>
 
+#include <boost/algorithm/string.hpp>
 #include <range/v3/algorithm/find_first_of.hpp>
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/move.hpp>
 
+#include <cctype>
 #include <climits>
 #include <deque>
 #include <experimental/filesystem>
@@ -130,9 +131,9 @@ private:
             // process unquoted fields
             else {
                 std::tie(field, has_next) = parse_field();
-                field = utility::trim(std::move(field));
+                boost::trim(field);
             }
-            row_.emplace_back(std::move(field));
+            row_.push_back(std::move(field));
         }
 
         // detect whether end of file is reached
@@ -232,7 +233,7 @@ dataframe<> read_csv(std::istream& in,
         }
         // store columns
         for (std::size_t j = 0; j < ranges::size(csv_row); ++j) {
-            data[j].emplace_back(std::move(csv_row[j]));
+            data[j].push_back(std::move(csv_row[j]));
         }
     }
     return {std::move(data), std::move(header)};
@@ -255,6 +256,16 @@ dataframe<> read_csv(const std::experimental::filesystem::path& file,
     return read_csv(fin, drop, header, separator, quote, escape);
 }
 
+namespace detail {
+
+    inline bool trimmable(const std::string& str)
+    {
+        if (str.length() == 0) return false;
+        return std::isspace(str.front()) || std::isspace(str.back());
+    }
+
+}  // namespace detail
+
 /// \ingroup CSV
 /// \brief Write a single csv row to an std::ostream.
 /// 
@@ -276,8 +287,8 @@ std::ostream& write_csv_row(std::ostream& out,
         auto& field = row[i];
         // output quoted string if it contains separator, double quote, newline or
         // starts or ends with a whitespace
-        if (ranges::find_first_of(field, {separator, quote, '\n'}) != ranges::end(field) ||
-            field != utility::trim(field)) {
+        if (ranges::find_first_of(field, {separator, quote, '\n'}) != ranges::end(field)
+            || detail::trimmable(field)) {
             out << std::quoted(field, quote, escape);
         } else {
             out << field;

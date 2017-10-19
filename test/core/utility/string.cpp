@@ -14,6 +14,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <experimental/filesystem>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -28,6 +29,16 @@ BOOST_AUTO_TEST_CASE(test_string_to__string)
     BOOST_TEST(str2 == "test");
     str1[0] = 'b';
     BOOST_TEST(str2 == "test");
+}
+
+BOOST_AUTO_TEST_CASE(test_string_to__path)
+{
+    namespace fs = std::experimental::filesystem;
+    auto p1 = fs::path{"ro ot"} / "this is folder" / "my file.txt";
+    std::string str1 = p1.string();
+    auto p2 = string_to<fs::path>(str1);
+    static_assert(std::is_same<fs::path, decltype(p2)>{});
+    BOOST_TEST(p2 == p1);
 }
 
 BOOST_AUTO_TEST_CASE(test_string_to__float)
@@ -54,22 +65,19 @@ BOOST_AUTO_TEST_CASE(test_string__to_string)
     BOOST_TEST(str2 == "test");
 }
 
+BOOST_AUTO_TEST_CASE(test_path__to_string)
+{
+    namespace fs = std::experimental::filesystem;
+    auto p1 = fs::path{"rooty root"} / "this is folder" / "nice file .csv";
+    auto str = to_string(std::move(p1));
+    static_assert(std::is_same<std::string, decltype(str)>{});
+    BOOST_TEST(fs::path{str} == p1);
+}
+
 BOOST_AUTO_TEST_CASE(test_float__to_string)
 {
     float flt = 0.25;
     auto str = to_string(flt);
     static_assert(std::is_same<std::string, decltype(str)>{});
     BOOST_TEST(std::stof(str) == 0.25);
-}
-
-BOOST_AUTO_TEST_CASE(test_trim)
-{
-    BOOST_TEST(trim("") == "");
-    BOOST_TEST(trim(" \t\n\t  ") == "");
-    BOOST_TEST(trim("hello") == "hello");
-    BOOST_TEST(trim(" hello") == "hello");
-    BOOST_TEST(trim("hello ") == "hello");
-    BOOST_TEST(trim(" hello ") == "hello");
-    BOOST_TEST(trim("\t\n hello\n\t ") == "hello");
-    BOOST_TEST(trim("\t\t\n\n   hello \t\t\n\n  ") == "hello");
 }
