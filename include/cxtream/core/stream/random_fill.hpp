@@ -18,6 +18,37 @@
 
 namespace cxtream::stream {
 
+namespace detail {
+
+    // Create a random_fill transformation function that can be sent to stream::transform.
+    template<typename FromColumn, typename ToColumn, typename Prng, typename Dist>
+    struct wrap_random_fill_fun_for_transform {
+        long rnddims;
+        Dist dist;
+        std::reference_wrapper<Prng> prng;
+
+        typename ToColumn::batch_type operator()(typename FromColumn::batch_type& source)
+        {
+            using SourceVector = typename FromColumn::batch_type;
+            using TargetVector = typename ToColumn::batch_type;
+            constexpr long SourceDims = utility::ndims<SourceVector>::value;
+            constexpr long TargetDims = utility::ndims<TargetVector>::value;
+            static_assert(TargetDims <= SourceDims, "stream::random_fill requires"
+              " the target column to have at most the same number of dimensions"
+              " as the source column.");
+            // get the size of the source up to the dimension of the target
+            std::vector<std::vector<long>> target_size = utility::ndim_size<TargetDims>(source);
+            // create, resize, and fill the target with random values
+            TargetVector target;
+            utility::ndim_resize(target, target_size);
+            // make a copy of the stored distribution to avoid races when buffering
+            utility::random_fill(target, rnddims, Dist{dist}, prng.get());
+            return target;
+        }
+    };
+
+}  // namespace detail
+
 /// \ingroup Stream
 /// \brief Fill the selected column of a stream with random values.
 ///
@@ -54,20 +85,9 @@ constexpr auto random_fill(from_t<FromColumn> size_from,
                            Dist dist = Dist{0, 1},
                            Prng& gen = cxtream::utility::random_generator)
 {
-    auto fun = [rnddims, &gen, dist](const auto& source) -> ToColumn {
-        using SourceVector = std::decay_t<decltype(source)>;
-        using TargetVector = std::decay_t<decltype(std::declval<ToColumn>().value())>;
-        constexpr long TargetDims = utility::ndims<TargetVector>::value;
-        static_assert(TargetDims <= utility::ndims<SourceVector>::value);
-        // get the size of the source up to the dimension of the target
-        std::vector<std::vector<long>> target_size = utility::ndim_size<TargetDims>(source);
-        // create, resize, and fill the target with random values
-        TargetVector target;
-        utility::ndim_resize(target, target_size);
-        utility::random_fill(target, rnddims, Dist{dist}, gen);
-        return target;
-    };
-    return ::cxtream::stream::transform(from<FromColumn>, to<ToColumn>, std::move(fun), dim<0>);
+    detail::wrap_random_fill_fun_for_transform<FromColumn, ToColumn, Prng, Dist>
+      trans_fun{rnddims, std::move(dist), gen};
+    return stream::transform(from<FromColumn>, to<ToColumn>, std::move(trans_fun), dim<0>);
 }
 
 }  // namespace cxtream::stream
