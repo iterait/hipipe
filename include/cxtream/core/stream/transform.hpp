@@ -52,42 +52,59 @@ namespace detail {
         }
     };
 
+    class partial_transform_fn {
+    private:
+        friend ranges::view::view_access;
+    
+        template <typename From, typename To, typename Fun, typename Projection = ref_wrap_t>
+        static auto bind(partial_transform_fn transformer, From f, To t, Fun fun,
+                         Projection proj = Projection{})
+        {
+            return ranges::make_pipeable(
+              std::bind(transformer, std::placeholders::_1, f, t, std::move(fun), std::move(proj)));
+        }
+    
+    public:
+        template <typename Rng, typename... FromTypes, typename... ToTypes,
+                  typename Fun, typename Projection = ref_wrap_t,
+                  CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
+        constexpr auto operator()(Rng&& rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun,
+                                  Projection proj = Projection{}) const
+        {
+            static_assert(sizeof...(ToTypes) > 0, "For non-transforming operations, please"
+                                                  " use stream::for_each.");
+    
+            using StreamType = ranges::range_value_type_t<Rng>;
+            detail::partial_transformer<Fun, Projection,
+              StreamType, from_t<FromTypes...>, to_t<ToTypes...>>
+              trans_fun{std::move(fun), std::move(proj)};
+    
+            // any_view is used to erase types and speed up compilation time
+            using RefType = ranges::range_reference_t<Rng>;
+            return ranges::view::transform(
+              ranges::any_view<RefType, ranges::category::forward>{std::forward<Rng>(rng)},
+              std::move(trans_fun));
+        }
+    
+        /// \cond
+        template <typename Rng, typename From, typename To,
+                  typename Fun, typename Proj = ref_wrap_t,
+                  CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+        constexpr auto operator()(Rng&& rng, From, To, Fun, Proj, Proj proj = Proj{}) const
+        {
+            CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
+              "Stream transformations only work on ranges satisfying the ForwardRange concept.");
+        }
+        /// \endcond
+    };
+
 }  // namespace detail
 
-class partial_transform_fn {
-private:
-    friend ranges::view::view_access;
-
-    template <typename From, typename To, typename Fun, typename Projection = ref_wrap_t>
-    static auto bind(partial_transform_fn transformer, From f, To t, Fun fun,
-                     Projection proj = Projection{})
-    {
-        return ranges::make_pipeable(
-          std::bind(transformer, std::placeholders::_1, f, t, std::move(fun), std::move(proj)));
-    }
-
-public:
-    template <typename Rng, typename... FromTypes,
-              typename... ToTypes, typename Fun, typename Projection = ref_wrap_t>
-    constexpr auto operator()(Rng&& rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun,
-                              Projection proj = Projection{}) const
-    {
-        static_assert(sizeof...(ToTypes) > 0, "For non-transforming operations, please"
-                                              " use stream::for_each.");
-
-        using StreamType = ranges::range_value_type_t<Rng>;
-        detail::partial_transformer<Fun, Projection,
-          StreamType, from_t<FromTypes...>, to_t<ToTypes...>>
-          trans_fun{std::move(fun), std::move(proj)};
-
-        // any_view is used to erase types and speed up compilation time
-        using RefType = ranges::range_reference_t<Rng>;
-        return ranges::any_view<RefType, ranges::category::forward>{std::forward<Rng>(rng)}
-          | ranges::view::transform(std::move(trans_fun));
-    }
-};
-
-constexpr ranges::view::view<partial_transform_fn> partial_transform;
+// Transform a subset of tuple elements for each tuple in a range and concatenate the result
+// with the original tuple.
+//
+// The result tuple overrides the corresponding types from the original tuple.
+constexpr ranges::view::view<detail::partial_transform_fn> partial_transform{};
 
 // transform //
 
@@ -114,8 +131,9 @@ namespace detail {
                 fun_wrapper{std::ref(fun)};
             // transform
             auto range_of_tuples =
-                boost::hana::unpack(std::move(tuple_of_ranges), ranges::view::zip)
-              | ranges::view::transform(std::move(fun_wrapper));
+              ranges::view::transform(
+                boost::hana::unpack(std::move(tuple_of_ranges), ranges::view::zip),
+                std::move(fun_wrapper));
             return utility::unzip_if<(NOuts > 1)>(std::move(range_of_tuples));
         }
     };
