@@ -17,6 +17,51 @@
 
 namespace cxtream::stream {
 
+namespace detail {
+
+    template<typename... Columns>
+    struct create_impl {
+
+        template<typename Source>
+        constexpr std::tuple<Columns...> operator()(Source&& source) const
+        {
+            return std::tuple<Columns...>{
+              utility::unzip_if<(sizeof...(Columns) > 1)>(std::forward<Source>(source))};
+        }
+
+    };
+
+    template<typename... Columns>
+    class create_fn {
+    private:
+        friend ranges::view::view_access;
+
+        static auto bind(create_fn<Columns...> fun, std::size_t batch_size = 1)
+        {
+            return ranges::make_pipeable(std::bind(fun, std::placeholders::_1, batch_size));
+        }
+
+    public:
+        template<typename Rng, CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
+        constexpr auto operator()(Rng&& rng, std::size_t batch_size = 1) const
+        {
+            return ranges::view::transform(
+              ranges::view::chunk(std::forward<Rng>(rng), batch_size),
+              create_impl<Columns...>{});
+        }
+
+        /// \cond
+        template<typename Rng, CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+        void operator()(Rng&&, std::size_t batch_size = 1) const
+        {
+            CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
+              "stream::create only works on ranges satisfying the ForwardRange concept.");
+        }
+        /// \endcond
+    };
+
+}  // namespace detail
+
 /// \ingroup Stream
 /// \brief Converts a range to a stream (i.e., to a range of tuples of columns).
 ///
@@ -41,15 +86,7 @@ namespace cxtream::stream {
 ///
 /// \param batch_size The requested batch size for the provided data.
 template<typename... Columns>
-constexpr auto create(std::size_t batch_size = 1)
-{
-    assert(batch_size >= 1);
-    return ranges::view::chunk(batch_size)
-      | ranges::view::transform([](auto&& source) {
-            return std::tuple<Columns...>{
-              utility::unzip_if<(sizeof...(Columns) > 1)>(std::forward<decltype(source)>(source))};
-        });
-}
+constexpr ranges::view::view<detail::create_fn<Columns...>> create{};
 
 } // end namespace cxtream::stream
 #endif
