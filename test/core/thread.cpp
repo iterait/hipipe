@@ -74,3 +74,23 @@ BOOST_AUTO_TEST_CASE(test_enqueue_move)
     std::future<int> f = tp.enqueue(std::move(task), std::make_unique<int>(10));
     BOOST_TEST(f.get() == 10);
 }
+
+BOOST_AUTO_TEST_CASE(test_graceful_destruction)
+{
+    std::vector<std::future<int>> futures;
+    auto task = [](int i) {
+        std::this_thread::sleep_for(50ms);
+        return i;
+    };
+
+    {
+        cxtream::thread_pool tp{2};
+        for (int i = 0; i < 5; ++i) futures.push_back(tp.enqueue(task, i));
+        // at the end of this block, the thread pool is destroyed
+    }
+
+    for (int i = 0; i < 5; ++i) {
+        BOOST_CHECK(futures[i].wait_for(0ms) == std::future_status::ready);
+        BOOST_TEST(futures[i].get() == i);
+    }
+}

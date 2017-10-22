@@ -17,6 +17,7 @@
 #include <cmath>
 #include <functional>
 #include <future>
+#include <experimental/optional>
 #include <thread>
 #include <experimental/tuple>
 
@@ -30,7 +31,7 @@ namespace cxtream {
 class thread_pool {
 private:
     boost::asio::io_service service_;
-    boost::asio::io_service::work work_{service_};
+    std::experimental::optional<boost::asio::io_service::work> work_{service_};
     boost::thread_group threads_;
 
 public:
@@ -78,6 +79,15 @@ public:
         };
         service_.post(std::move(asio_task));
         return future;
+    }
+
+    /// Thread pool destructor.
+    ///
+    /// The destructor blocks until all the enqueued tasks are finished.
+    ~thread_pool()
+    {
+        work_ = std::experimental::nullopt;
+        threads_.join_all();
     }
 };
 
