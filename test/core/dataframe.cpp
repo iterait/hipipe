@@ -34,52 +34,81 @@ const dataframe<> simple_df{
     std::vector<std::string>{"Id", "A", "B"}
 };
 
-BOOST_AUTO_TEST_CASE(test_column_insertion)
+BOOST_AUTO_TEST_CASE(test_constructor_exceptions)
+{
+    BOOST_CHECK_THROW((dataframe<>{simple_df.data(), {"short", "header"}}), std::out_of_range);
+    BOOST_CHECK_THROW((dataframe<>{simple_df.data(), {"invalid", "", "header"}}), std::logic_error);
+    auto invalid_data = simple_df.data();
+    invalid_data[1].pop_back();
+    BOOST_CHECK_THROW(dataframe<>{invalid_data}, std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE(test_insert_col)
 {
     dataframe<> df{simple_df};
-    df.col_insert(std::vector<int>{5, 6, 7}, "C");
+    BOOST_CHECK_THROW(df.insert_col(
+      std::vector<int>{5, 6, 7} /* missing header */), std::logic_error);
+    BOOST_CHECK_THROW(df.insert_col(
+      std::vector<std::string>{"only", "two"}, "X"), std::out_of_range);
+    BOOST_CHECK_THROW(df.insert_col(
+      std::vector<std::string>{"t", "o", "o", "m", "uch"}, "X"), std::out_of_range);
+    df.insert_col(std::vector<int>{5, 6, 7}, "C");
     BOOST_TEST(df.n_cols() == 4UL);
     BOOST_TEST(df.n_rows() == 3UL);
     test_ranges_equal(df.header(), std::vector<std::string>{"Id", "A", "B", "C"});
     test_ranges_equal(df.raw_cols()[3], std::vector<std::string>{"5", "6", "7"});
     BOOST_TEST(df.raw_rows()[0][3] == "5");
+
+    dataframe<> df2{simple_df.data()};
+    BOOST_CHECK_THROW(df2.insert_col(
+      std::vector<int>{5, 6, 7}, /* extra header */ "X"), std::logic_error);
 }
 
-BOOST_AUTO_TEST_CASE(test_column_drop)
+BOOST_AUTO_TEST_CASE(test_drop_col)
 {
     dataframe<> df{simple_df};
-    BOOST_CHECK_THROW(df.col_drop("X"), std::out_of_range);
-    BOOST_CHECK_THROW(df.icol_drop(3), std::out_of_range);
-    df.col_drop("B");
+    BOOST_CHECK_THROW(df.drop_col("X"), std::out_of_range);
+    BOOST_CHECK_THROW(df.drop_icol(3), std::out_of_range);
+    df.drop_col("B");
     BOOST_TEST(df.n_cols() == 2UL);
     BOOST_TEST(df.n_rows() == 3UL);
     test_ranges_equal(df.header(), std::vector<std::string>{"Id", "A"});
     test_ranges_equal(df.raw_rows()[2], std::vector<std::string>{"3", "a3"});
-    df.icol_drop(1);
+    df.drop_icol(1);
     BOOST_TEST(df.n_cols() == 1UL);
     BOOST_TEST(df.n_rows() == 3UL);
     test_ranges_equal(df.header(), std::vector<std::string>{"Id"});
     test_ranges_equal(df.raw_rows()[2], std::vector<std::string>{"3"});
 }
 
-BOOST_AUTO_TEST_CASE(test_row_drop)
+BOOST_AUTO_TEST_CASE(test_drop_row)
 {
     dataframe<> df{simple_df};
-    BOOST_CHECK_THROW(df.row_drop(3), std::out_of_range);
-    df.row_drop(1);
+    BOOST_CHECK_THROW(df.drop_row(3), std::out_of_range);
+    df.drop_row(1);
     BOOST_TEST(df.n_cols() == 3UL);
     BOOST_TEST(df.n_rows() == 2UL);
     test_ranges_equal(df.header(), std::vector<std::string>{"Id", "A", "B"});
     test_ranges_equal(df.raw_icol(1), std::vector<std::string>{"a1", "a3"});
 }
 
-BOOST_AUTO_TEST_CASE(test_row_insertion)
+BOOST_AUTO_TEST_CASE(test_insert_row)
 {
     dataframe<> df{simple_df};
-    df.row_insert(std::make_tuple(4, "a3", true));
+    // tuple variant
+    BOOST_CHECK_THROW(df.insert_row(std::make_tuple("too few")), std::out_of_range);
+    BOOST_CHECK_THROW(df.insert_row(std::make_tuple("t", "o", "o", "much")), std::out_of_range);
+    df.insert_row(std::make_tuple(4, "a3", true));
     BOOST_TEST(df.n_cols() == 3UL);
     BOOST_TEST(df.n_rows() == 4UL);
     test_ranges_equal(df.raw_rows()[3], std::vector<std::string>{"4", "a3", "true"});
+    // vector variant
+    BOOST_CHECK_THROW(df.insert_row({"too", "few"}), std::out_of_range);
+    BOOST_CHECK_THROW(df.insert_row({"t", "o", "o", "m", "uch"}), std::out_of_range);
+    df.insert_row({"5", "a4", "false"});
+    BOOST_TEST(df.n_cols() == 3UL);
+    BOOST_TEST(df.n_rows() == 5UL);
+    test_ranges_equal(df.raw_rows()[4], std::vector<std::string>{"5", "a4", "false"});
 }
 
 BOOST_AUTO_TEST_CASE(test_raw_col_read)

@@ -50,13 +50,17 @@ public:
     ///       std::vector<std::string>{"A", "B", "C"}
     ///     };
     /// \endcode
+    ///
+    /// \throws std::out_of_range If the column sizes mismatch or the provided header does not
+    ///                           match the number of provided columns.
+    /// \throws std::logic_error If the header is provided, but some of the column names are empty.
     template<typename T>
     dataframe(std::vector<std::vector<T>> columns, std::vector<std::string> header = {})
     {
-        assert(header.empty() || header.size() == columns.size());
+        throw_check_construction_header(columns.size(), header);
         for (std::size_t i = 0; i < columns.size(); ++i) {
             std::string col_name = header.empty() ? "" : std::move(header[i]);
-            col_insert(columns[i] | ranges::view::move, std::move(col_name));
+            insert_col(columns[i] | ranges::view::move, std::move(col_name));
         }
     }
 
@@ -75,14 +79,18 @@ public:
     ///       std::vector<std::string>{"Id", "A", "B"}
     ///     };
     /// \endcode
+    ///
+    /// \throws std::out_of_range If the column sizes mismatch or the provided header does not
+    ///                           match the number of provided columns.
+    /// \throws std::logic_error If the header is provided, but some of the column names are empty.
     template<typename... Ts>
     dataframe(std::tuple<std::vector<Ts>...> columns, std::vector<std::string> header = {})
     {
-        assert(header.empty() || header.size() == sizeof...(Ts));
+        throw_check_construction_header(sizeof...(Ts), header);
         utility::tuple_for_each_with_index(std::move(columns),
           [this, &header](auto& column, auto index) {
               std::string col_name = header.empty() ? "" : std::move(header[index]);
-              this->col_insert(column | ranges::view::move, std::move(col_name));
+              this->insert_col(column | ranges::view::move, std::move(col_name));
         });
     }
 
@@ -92,37 +100,60 @@ public:
     ///
     /// Example:
     /// \code
-    ///     df.col_insert(std::vector<int>{5, 6, 7}, "C");
+    ///     df.insert_col(std::vector<int>{5, 6, 7}, "C");
     /// \endcode
+    ///
+    /// \throws std::out_of_range If the column size is not equal to n_rows.
+    /// \throws std::logic_error If the dataframe has a header but no column name was provided.
     template<typename Rng, typename ToStrFun = std::string (*)(ranges::range_value_type_t<Rng>)>
-    std::size_t col_insert(Rng&& rng, std::string col_name = {},
+    std::size_t insert_col(Rng&& rng, std::string col_name = {},
                            std::function<std::string(ranges::range_value_type_t<Rng>)> cvt =
                              static_cast<ToStrFun>(utility::to_string))
     {
-        assert(n_rows() == 0 || ranges::size(rng) == n_rows());
-        assert((!header_.size() || col_name.size()) &&
-               "The dataframe has a header, please provide the name for the new column.");
+        throw_check_insert_col_name(col_name);
+        throw_check_insert_col_size(ranges::size(rng));
         if (col_name.size()) header_.insert(col_name);
         data_.emplace_back(rng | ranges::view::transform(cvt));
         return n_cols() - 1;
     }
 
-    /// Inserts a new row to the dataframe.
+    /// Inserts a new typed row to the dataframe.
     ///
     /// Example:
     /// \code
-    ///     df.row_insert(std::make_tuple(4, "a3", true));
+    ///     df.insert_row(std::make_tuple(4, "a3", true));
     /// \endcode
+    ///
+    /// \returns The index of the new row.
+    /// \throws std::out_of_range If the row size is not equal to n_cols.
     template<typename... Ts>
-    std::size_t row_insert(std::tuple<Ts...> row_tuple,
+    std::size_t insert_row(std::tuple<Ts...> row_tuple,
                            std::tuple<std::function<std::string(Ts)>...> cvts = std::make_tuple(
                              static_cast<std::string (*)(Ts)>(utility::to_string)...))
     {
-        assert(n_cols() == 0 || sizeof...(Ts) == n_cols());
+        throw_check_insert_row_size(sizeof...(Ts));
         utility::tuple_for_each_with_index(std::move(row_tuple),
           [this, &cvts](auto& field, auto index) {
-              this->data_[index].push_back(std::get<index>(cvts)(std::move(field)));
+              this->data_.at(index).push_back(std::get<index>(cvts)(std::move(field)));
         });
+        return n_rows() - 1;
+    }
+
+    /// Inserts a new raw row to the dataframe.
+    ///
+    /// Example:
+    /// \code
+    ///     df.insert_row({"field 1", "field 2", "field 3"});
+    /// \endcode
+    ///
+    /// \returns The index of the new row.
+    /// \throws std::out_of_range If the row size is not equal to n_cols.
+    std::size_t insert_row(std::vector<std::string> row)
+    {
+        throw_check_insert_row_size(row.size());
+        for (std::size_t i = 0; i < n_cols(); ++i) {
+            data_[i].push_back(std::move(row[i]));
+        }
         return n_rows() - 1;
     }
 
@@ -131,7 +162,7 @@ public:
     /// Drop a column with the given index.
     ///
     /// \throws std::out_of_range If the column is not in the dataframe.
-    void icol_drop(std::size_t col_index)
+    void drop_icol(std::size_t col_index)
     {
         throw_check_col_idx(col_index);
         // remove the column from the header
@@ -147,16 +178,16 @@ public:
     /// Drop a column with the given name.
     ///
     /// \throws std::out_of_range If the column is not in the dataframe.
-    void col_drop(const std::string& col_name)
+    void drop_col(const std::string& col_name)
     {
         throw_check_col_name(col_name);
-        return icol_drop(header_.index_for(col_name));
+        return drop_icol(header_.index_for(col_name));
     }
 
     /// Drop a row.
     ///
     /// \throws std::out_of_range If the row is not in the dataframe.
-    void row_drop(const std::size_t row_idx)
+    void drop_row(const std::size_t row_idx)
     {
         throw_check_row_idx(row_idx);
         for (auto& column : data_) {
@@ -645,13 +676,65 @@ public:
         return header_.values();
     }
 
-    /// Return the reference to the raw data table.
+    /// Return a reference to the raw data table.
     DataTable& data()
     {
         return data_;
     }
 
+    /// Return a const reference to the raw data table.
+    const DataTable& data() const
+    {
+        return data_;
+    }
+
 private:
+
+    static void throw_check_construction_header(
+      std::size_t n_cols,
+      const std::vector<std::string>& header)
+    {
+        if (header.size() && header.size() != n_cols) {
+            throw std::out_of_range{"The dataframe cannot be constructed with "
+              " a header of size " + std::to_string(header.size()) + " and " +
+              std::to_string(n_cols) + " columns."};
+        }
+        for (const std::string& h : header) {
+            if (!h.size()) {
+                throw std::logic_error{"When providing a header to dataframe constructor,"
+                  " all the column names have to be non-empty."};
+            }
+        }
+    }
+
+    void throw_check_insert_col_name(const std::string& name) const
+    {
+        if (header_.size() && !name.size()) {
+            throw std::logic_error{"The dataframe has a header, please provide"
+              " a column name when inserting a new column."};
+        }
+        if (n_cols() != 0 && !header_.size() && name.size()) {
+            throw std::logic_error{"The dataframe has no header, but a column"
+              " name \"" + name + "\" was provided when inserting a new column."};
+        }
+    }
+
+    void throw_check_insert_col_size(std::size_t col_size) const
+    {
+        if (n_rows() != 0 && col_size != n_rows()) {
+            throw std::out_of_range{"Cannot insert a column of size " + std::to_string(col_size) +
+              " to a dataframe with " + std::to_string(n_rows()) + " rows."};
+        }
+    }
+
+    void throw_check_insert_row_size(std::size_t row_size) const
+    {
+        if (n_cols() != 0 && row_size != n_cols()) {
+            throw std::out_of_range{"Cannot insert a row of size " + std::to_string(row_size) +
+              " to a dataframe with " + std::to_string(n_cols()) + " columns."};
+        }
+    }
+
     void throw_check_row_idx(std::size_t row_idx) const
     {
         if (row_idx < 0 || row_idx >= n_rows()) {
