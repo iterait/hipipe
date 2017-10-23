@@ -36,22 +36,24 @@ const dataframe<> simple_df{
 
 BOOST_AUTO_TEST_CASE(test_constructor_exceptions)
 {
-    BOOST_CHECK_THROW((dataframe<>{simple_df.data(), {"short", "header"}}), std::out_of_range);
-    BOOST_CHECK_THROW((dataframe<>{simple_df.data(), {"invalid", "", "header"}}), std::logic_error);
+    BOOST_CHECK_THROW((dataframe<>{simple_df.data(), {"short", "header"}}),
+      std::invalid_argument);
+    BOOST_CHECK_THROW((dataframe<>{simple_df.data(), {"invalid", "", "header"}}),
+      std::invalid_argument);
     auto invalid_data = simple_df.data();
     invalid_data[1].pop_back();
-    BOOST_CHECK_THROW(dataframe<>{invalid_data}, std::out_of_range);
+    BOOST_CHECK_THROW(dataframe<>{invalid_data}, std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(test_insert_col)
 {
     dataframe<> df{simple_df};
     BOOST_CHECK_THROW(df.insert_col(
-      std::vector<int>{5, 6, 7} /* missing header */), std::logic_error);
+      std::vector<int>{5, 6, 7} /* missing header */), std::invalid_argument);
     BOOST_CHECK_THROW(df.insert_col(
-      std::vector<std::string>{"only", "two"}, "X"), std::out_of_range);
+      std::vector<std::string>{"only", "two"}, "X"), std::invalid_argument);
     BOOST_CHECK_THROW(df.insert_col(
-      std::vector<std::string>{"t", "o", "o", "m", "uch"}, "X"), std::out_of_range);
+      std::vector<std::string>{"t", "o", "o", "m", "uch"}, "X"), std::invalid_argument);
     df.insert_col(std::vector<int>{5, 6, 7}, "C");
     BOOST_TEST(df.n_cols() == 4UL);
     BOOST_TEST(df.n_rows() == 3UL);
@@ -61,7 +63,7 @@ BOOST_AUTO_TEST_CASE(test_insert_col)
 
     dataframe<> df2{simple_df.data()};
     BOOST_CHECK_THROW(df2.insert_col(
-      std::vector<int>{5, 6, 7}, /* extra header */ "X"), std::logic_error);
+      std::vector<int>{5, 6, 7}, /* extra header */ "X"), std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(test_drop_col)
@@ -96,15 +98,15 @@ BOOST_AUTO_TEST_CASE(test_insert_row)
 {
     dataframe<> df{simple_df};
     // tuple variant
-    BOOST_CHECK_THROW(df.insert_row(std::make_tuple("too few")), std::out_of_range);
-    BOOST_CHECK_THROW(df.insert_row(std::make_tuple("t", "o", "o", "much")), std::out_of_range);
+    BOOST_CHECK_THROW(df.insert_row(std::make_tuple("too few")), std::invalid_argument);
+    BOOST_CHECK_THROW(df.insert_row(std::make_tuple("t", "o", "o", "much")), std::invalid_argument);
     df.insert_row(std::make_tuple(4, "a3", true));
     BOOST_TEST(df.n_cols() == 3UL);
     BOOST_TEST(df.n_rows() == 4UL);
     test_ranges_equal(df.raw_rows()[3], std::vector<std::string>{"4", "a3", "true"});
     // vector variant
-    BOOST_CHECK_THROW(df.insert_row({"too", "few"}), std::out_of_range);
-    BOOST_CHECK_THROW(df.insert_row({"t", "o", "o", "m", "uch"}), std::out_of_range);
+    BOOST_CHECK_THROW(df.insert_row({"too", "few"}), std::invalid_argument);
+    BOOST_CHECK_THROW(df.insert_row({"t", "o", "o", "m", "uch"}), std::invalid_argument);
     df.insert_row({"5", "a4", "false"});
     BOOST_TEST(df.n_cols() == 3UL);
     BOOST_TEST(df.n_rows() == 5UL);
@@ -267,4 +269,22 @@ BOOST_AUTO_TEST_CASE(test_index_cols)
     };
     BOOST_CHECK(indexed_irows == desired);
     BOOST_CHECK(indexed_rows == desired);
+}
+
+BOOST_AUTO_TEST_CASE(test_set_header)
+{
+    // insert new header
+    dataframe<> df{simple_df.data()};
+    BOOST_CHECK_THROW(df.header({"too", "few"}), std::invalid_argument);
+    BOOST_CHECK_THROW(df.header({"wa", "ay", "too", "many"}), std::invalid_argument);
+    BOOST_CHECK_THROW(df.header({"invalid", "", "header"}), std::invalid_argument);
+    df.header(simple_df.header());
+    BOOST_TEST(df.header() == simple_df.header());
+    BOOST_TEST(df.data() == simple_df.data());
+    // remove header
+    df = simple_df;
+    df.header({});
+    BOOST_TEST(df.header() == std::vector<std::string>{});
+    BOOST_TEST(df.data() == simple_df.data());
+    BOOST_CHECK_THROW(df.col<double>("B"), std::out_of_range);
 }

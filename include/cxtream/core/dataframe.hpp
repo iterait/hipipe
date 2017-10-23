@@ -51,13 +51,15 @@ public:
     ///     };
     /// \endcode
     ///
-    /// \throws std::out_of_range If the column sizes mismatch or the provided header does not
-    ///                           match the number of provided columns.
-    /// \throws std::logic_error If the header is provided, but some of the column names are empty.
+    /// \throws std::invalid_argument 1) If the header is provided, but some of the column
+    ///                                  names are empty.
+    ///                               2) If the column sizes mismatch.
+    ///                               3) If the provided header does not match the number of
+    ///                                  provided columns.
     template<typename T>
     dataframe(std::vector<std::vector<T>> columns, std::vector<std::string> header = {})
     {
-        throw_check_construction_header(columns.size(), header);
+        throw_check_new_header(columns.size(), header);
         for (std::size_t i = 0; i < columns.size(); ++i) {
             std::string col_name = header.empty() ? "" : std::move(header[i]);
             insert_col(columns[i] | ranges::view::move, std::move(col_name));
@@ -80,13 +82,15 @@ public:
     ///     };
     /// \endcode
     ///
-    /// \throws std::out_of_range If the column sizes mismatch or the provided header does not
-    ///                           match the number of provided columns.
-    /// \throws std::logic_error If the header is provided, but some of the column names are empty.
+    /// \throws std::invalid_argument 1) If the header is provided, but some of the column
+    ///                                  names are empty.
+    ///                               2) If the column sizes mismatch.
+    ///                               3) If the provided header does not match the number of
+    ///                                  provided columns.
     template<typename... Ts>
     dataframe(std::tuple<std::vector<Ts>...> columns, std::vector<std::string> header = {})
     {
-        throw_check_construction_header(sizeof...(Ts), header);
+        throw_check_new_header(sizeof...(Ts), header);
         utility::tuple_for_each_with_index(std::move(columns),
           [this, &header](auto& column, auto index) {
               std::string col_name = header.empty() ? "" : std::move(header[index]);
@@ -103,8 +107,9 @@ public:
     ///     df.insert_col(std::vector<int>{5, 6, 7}, "C");
     /// \endcode
     ///
-    /// \throws std::out_of_range If the column size is not equal to n_rows.
-    /// \throws std::logic_error If the dataframe has a header but no column name was provided.
+    /// \throws std::invalid_argument 1) If the dataframe has a header but no column
+    ///                               name was provided. 2) If the column size is not equal
+    ///                               to n_rows.
     template<typename Rng, typename ToStrFun = std::string (*)(ranges::range_value_type_t<Rng>)>
     std::size_t insert_col(Rng&& rng, std::string col_name = {},
                            std::function<std::string(ranges::range_value_type_t<Rng>)> cvt =
@@ -125,7 +130,7 @@ public:
     /// \endcode
     ///
     /// \returns The index of the new row.
-    /// \throws std::out_of_range If the row size is not equal to n_cols.
+    /// \throws std::invalid_argument If the row size is not equal to n_cols.
     template<typename... Ts>
     std::size_t insert_row(std::tuple<Ts...> row_tuple,
                            std::tuple<std::function<std::string(Ts)>...> cvts = std::make_tuple(
@@ -147,7 +152,7 @@ public:
     /// \endcode
     ///
     /// \returns The index of the new row.
-    /// \throws std::out_of_range If the row size is not equal to n_cols.
+    /// \throws std::invalid_argument If the row size is not equal to n_cols.
     std::size_t insert_row(std::vector<std::string> row)
     {
         throw_check_insert_row_size(row.size());
@@ -670,6 +675,16 @@ public:
         return data_.front().size();
     }
 
+    /// Set the column names.
+    ///
+    /// \throws std::invalid_argument 1) If some of the column names are empty.
+    ///                               2) If the header does not match the number of columns.
+    void header(std::vector<std::string> new_header)
+    {
+        throw_check_new_header(n_cols(), new_header);
+        header_ = std::move(new_header);
+    }
+
     /// Return the names of columns.
     std::vector<std::string> header() const
     {
@@ -690,18 +705,17 @@ public:
 
 private:
 
-    static void throw_check_construction_header(
+    static void throw_check_new_header(
       std::size_t n_cols,
       const std::vector<std::string>& header)
     {
         if (header.size() && header.size() != n_cols) {
-            throw std::out_of_range{"The dataframe cannot be constructed with "
-              " a header of size " + std::to_string(header.size()) + " and " +
-              std::to_string(n_cols) + " columns."};
+            throw std::invalid_argument{"The dataframe with " + std::to_string(n_cols) +
+              " columns cannot have a header of size " + std::to_string(header.size()) + "."};
         }
         for (const std::string& h : header) {
             if (!h.size()) {
-                throw std::logic_error{"When providing a header to dataframe constructor,"
+                throw std::invalid_argument{"When providing a header to a dataframe,"
                   " all the column names have to be non-empty."};
             }
         }
@@ -710,11 +724,11 @@ private:
     void throw_check_insert_col_name(const std::string& name) const
     {
         if (header_.size() && !name.size()) {
-            throw std::logic_error{"The dataframe has a header, please provide"
+            throw std::invalid_argument{"The dataframe has a header, please provide"
               " a column name when inserting a new column."};
         }
         if (n_cols() != 0 && !header_.size() && name.size()) {
-            throw std::logic_error{"The dataframe has no header, but a column"
+            throw std::invalid_argument{"The dataframe has no header, but a column"
               " name \"" + name + "\" was provided when inserting a new column."};
         }
     }
@@ -722,16 +736,18 @@ private:
     void throw_check_insert_col_size(std::size_t col_size) const
     {
         if (n_rows() != 0 && col_size != n_rows()) {
-            throw std::out_of_range{"Cannot insert a column of size " + std::to_string(col_size) +
-              " to a dataframe with " + std::to_string(n_rows()) + " rows."};
+            throw std::invalid_argument{"Cannot insert a column of size "
+              + std::to_string(col_size) + " to a dataframe with "
+              + std::to_string(n_rows()) + " rows."};
         }
     }
 
     void throw_check_insert_row_size(std::size_t row_size) const
     {
         if (n_cols() != 0 && row_size != n_cols()) {
-            throw std::out_of_range{"Cannot insert a row of size " + std::to_string(row_size) +
-              " to a dataframe with " + std::to_string(n_cols()) + " columns."};
+            throw std::invalid_argument{"Cannot insert a row of size "
+              + std::to_string(row_size) + " to a dataframe with "
+              + std::to_string(n_cols()) + " columns."};
         }
     }
 
