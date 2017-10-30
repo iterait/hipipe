@@ -62,6 +62,18 @@ struct identity_t {
     }
 };
 
+template<typename T>
+T&& operator|(identity_t, T&& val)
+{
+    return std::forward<T>(val);
+}
+
+template<typename T>
+T&& operator|(T&& val, identity_t)
+{
+    return std::forward<T>(val);
+}
+
 /// Function object type forwarding the given object back to the caller.
 auto identity = identity_t{};
 
