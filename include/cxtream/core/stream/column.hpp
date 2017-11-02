@@ -28,7 +28,7 @@ private:
 public:
 
     using batch_type = std::vector<T>;
-    using value_type = T;
+    using example_type = T;
 
     // constructors //
 
