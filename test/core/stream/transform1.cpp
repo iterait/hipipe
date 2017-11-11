@@ -131,39 +131,3 @@ BOOST_AUTO_TEST_CASE(test_dim0)
     BOOST_CHECK(generated == desired);
     BOOST_CHECK(data == data_orig);
 }
-
-BOOST_AUTO_TEST_CASE(test_dim2_move_only)
-{
-    auto data = generate_move_only_data();
-
-    auto rng = data
-      | ranges::view::move
-      | create<Int, UniqueVec>(2)
-      | transform(from<UniqueVec>, to<UniqueVec>, [](std::unique_ptr<int>& ptr) {
-            return std::make_unique<int>(*ptr + 1);
-        }, dim<2>)
-      | drop<Int>
-      | unique_vec_to_int_vec();
-
-    std::vector<std::vector<std::vector<int>>> generated = unpack(rng, from<IntVec>, dim<0>);
-    std::vector<std::vector<std::vector<int>>> desired = {{{2, 5}, {9, 3}}, {{3, 6}}};
-    BOOST_CHECK(generated == desired);
-}
-
-BOOST_AUTO_TEST_CASE(test_dim2_move_only_mutable)
-{
-    auto data = generate_move_only_data();
-
-    auto rng = data
-      | ranges::view::move
-      | create<Int, UniqueVec>(2)
-      | transform(from<UniqueVec>, to<UniqueVec>, [i = 4](std::unique_ptr<int>&) mutable {
-            return std::make_unique<int>(i++);
-        }, dim<2>)
-      | drop<Int>
-      | unique_vec_to_int_vec();
-
-    std::vector<std::vector<std::vector<int>>> generated = unpack(rng, from<IntVec>, dim<0>);
-    std::vector<std::vector<std::vector<int>>> desired = {{{4, 5}, {6, 7}}, {{8, 9}}};
-    BOOST_CHECK(generated == desired);
-}

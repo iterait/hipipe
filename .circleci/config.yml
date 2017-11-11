@@ -48,6 +48,7 @@ references:
         cmake -DCMAKE_BUILD_TYPE=Debug ..
         make
         make install
+      no_output_timeout: 20m
 
   build_by_clang: &build_by_clang
     run:
@@ -57,6 +58,7 @@ references:
         cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ ..
         make
         make install
+      no_output_timeout: 20m
 
   build_with_tf_static: &build_with_tf_static
     run:
@@ -66,6 +68,7 @@ references:
         cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ -DBUILD_TENSORFLOW=ON ..
         make
         make install
+      no_output_timeout: 20m
 
   test: &test
     run:

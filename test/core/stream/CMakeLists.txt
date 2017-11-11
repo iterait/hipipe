@@ -22,4 +22,8 @@ add_boost_test("test.core.stream.transform2" "transform2.cpp" "")
 
 add_boost_test("test.core.stream.transform3" "transform3.cpp" "")
 
+add_boost_test("test.core.stream.transform4" "transform4.cpp" "")
+
+add_boost_test("test.core.stream.transform5" "transform5.cpp" "")
+
 add_boost_test("test.core.stream.unpack" "unpack.cpp" "")

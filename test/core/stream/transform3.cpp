@@ -16,39 +16,20 @@
 
 using namespace cxtream::stream;
 
-BOOST_AUTO_TEST_CASE(test_probabilistic_dim2_move_only)
+BOOST_AUTO_TEST_CASE(test_dim2_move_only_mutable)
 {
     auto data = generate_move_only_data();
 
     auto rng = data
       | ranges::view::move
       | create<Int, UniqueVec>(2)
-      | drop<Int>
-      // create IntVec column
-      | transform(from<UniqueVec>, to<IntVec>, [](auto&&) {
-            return 7;
+      | transform(from<UniqueVec>, to<UniqueVec>, [i = 4](std::unique_ptr<int>&) mutable {
+            return std::make_unique<int>(i++);
         }, dim<2>)
-      // probabilistically transform a single columns to a different column
-      | transform(from<IntVec>, to<UniqueVec>, 1.0,
-          [](int) {
-            return std::make_unique<int>(18);
-        }, prng, dim<2>)
-      // probabilistically transform two columns to two columns
-      | transform(from<UniqueVec, IntVec>, to<IntVec, UniqueVec>, 0.5,
-          [](std::unique_ptr<int>& ptr, int val) {
-            return std::make_tuple(val, std::make_unique<int>(19));
-        }, prng, dim<2>)
-      // probabilistically transform two columns to one column
-      | transform(from<IntVec, UniqueVec>, to<UniqueVec>, 0.5,
-          [](int, std::unique_ptr<int>& ptr) {
-            return std::make_unique<int>(19);
-        }, prng, dim<2>)
-      | unique_vec_to_int_vec();  // the original IntVec gets overwritten here
+      | drop<Int>
+      | unique_vec_to_int_vec();
 
-    std::vector<int> generated = unpack(rng, from<IntVec>, dim<2>);
-    long number18 = ranges::count(generated, 18);
-    long number19 = ranges::count(generated, 19);
-    BOOST_TEST(generated.size() == 6);
-    BOOST_TEST(number19 >= 3);
-    BOOST_TEST(number19 == 6 - number18);
+    std::vector<std::vector<std::vector<int>>> generated = unpack(rng, from<IntVec>, dim<0>);
+    std::vector<std::vector<std::vector<int>>> desired = {{{4, 5}, {6, 7}}, {{8, 9}}};
+    BOOST_CHECK(generated == desired);
 }
