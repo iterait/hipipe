@@ -74,6 +74,7 @@ references:
     run:
       name: Run tests.
       command: |
+        cd build
         make test
 
 jobs:
