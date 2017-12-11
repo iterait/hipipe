@@ -196,6 +196,10 @@ if(BUILD_TENSORFLOW)
       cxtream_tensorflow
       PUBLIC TensorflowCC::Shared
     )
+    set_target_properties(
+      TensorflowCC::Shared
+      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++1z"
+    )
   # fallback to the static library
   # static library is linked privately to avoid multiple funtion definitions,
   # but the include directories are propagated as public
@@ -209,12 +213,15 @@ if(BUILD_TENSORFLOW)
       cxtream_tensorflow
       PRIVATE TensorflowCC::Static
     )
+    set_target_properties(
+      TensorflowCC::Static
+      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++1z"
+    )
   endif()
   set_target_properties(
     cxtream_tensorflow
     PROPERTIES VERSION ${PROJECT_VERSION}
   )
-
 endif()
 
 # -----
