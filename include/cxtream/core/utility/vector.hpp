@@ -447,41 +447,75 @@ auto reshaped_view(const Rng& rng, std::vector<long> shape)
     return detail::reshaped_view_impl<N, const Rng>(rng, std::move(shape));
 }
 
-// random fill //
+// generate //
 
 namespace detail {
 
     template<typename T, long Dim>
-    struct random_fill_impl {
+    struct generate_impl {
     };
 
     template<typename T, long Dim>
-    struct random_fill_impl<std::vector<T>, Dim> {
-        template<typename Prng, typename Dist>
-        static void impl(std::vector<T>& vec, long ndims, Dist& dist, Prng& gen)
+    struct generate_impl<std::vector<T>, Dim> {
+        template<typename Gen>
+        static void impl(std::vector<T>& vec, Gen& gen, long ndims)
         {
-            if (Dim >= ndims) ranges::fill(vec, dist(gen));
-            else for (auto& val : vec) val = dist(gen);
+            if (Dim >= ndims) ranges::fill(vec, gen());
+            else for (auto& val : vec) val = gen();
         }
     };
 
     template<typename T, long Dim>
-    struct random_fill_impl<std::vector<std::vector<T>>, Dim> {
-        template<typename Prng, typename Dist>
-        static void impl(std::vector<std::vector<T>>& vec, long ndims, Dist& dist, Prng& gen)
+    struct generate_impl<std::vector<std::vector<T>>, Dim> {
+        template<typename Gen>
+        static void impl(std::vector<std::vector<T>>& vec, Gen& gen, long ndims)
         {
             if (Dim >= ndims) {
-                auto val = dist(gen);
+                auto val = gen();
                 for (auto& elem : flat_view(vec)) elem = val;
             } else {
                 for (auto& subvec : vec) {
-                    random_fill_impl<std::vector<T>, Dim+1>::impl(subvec, ndims, dist, gen);
+                    detail::generate_impl<std::vector<T>, Dim+1>::impl(subvec, gen, ndims);
                 }
             }
         }
     };
 
 }  // namespace detail
+
+/// \ingroup Vector
+/// \brief Fill a multidimensional std::vector with values generate by a parameter-less function.
+///
+/// If the vector is multidimensional, the generator will be used only up to the
+/// given dimension and the rest of the dimensions will be constant.
+///
+/// Example:
+/// \code
+///     int i = 0;
+///     auto gen = [&i]() { return i++; }
+///     std::vector<std::vector<std::vector<int>>> data = {{{-1, -1, -1},{-1}}, {{-1}{-1, -1}}};
+///     generate(data, 0, gen);
+///     // data == e.g., {{{0, 0, 0},{0}}, {{0}{0, 0}}};
+///     generate(data, 1, gen);
+///     // data == e.g., {{{0, 0, 0},{0}}, {{1}{1, 1}}};
+///     generate(data, 2, gen);
+///     // data == e.g., {{{0, 0, 0},{1}}, {{2}{3, 3}}};
+///     generate(data, 3, gen);
+///     // data == e.g., {{{0, 1, 2},{3}}, {{4}{5, 6}}};
+/// \endcode
+///
+/// \param vec The vector to be filled.
+/// \param ndims The generator will be used only for this number of dimension. The
+///              rest of the dimensions will be filled by the last generated value.
+///              Use std::numeric_limits<long>::max() to randomly fill all dimensions.
+/// \param gen The generator to be used.
+template<typename T, typename Gen>
+constexpr void generate(std::vector<T>& vec,
+                        Gen&& gen,
+                        long ndims = std::numeric_limits<long>::max())
+{
+    detail::generate_impl<std::vector<T>, 0>::impl(vec, gen, ndims);
+}
 
 /// \ingroup Vector
 /// \brief Fill a multidimensional std::vector with random values.
@@ -515,9 +549,10 @@ template<typename T, typename Prng = std::mt19937&,
 constexpr void random_fill(std::vector<T>& vec,
                            long ndims = std::numeric_limits<long>::max(),
                            Dist&& dist = Dist{0, 1},
-                           Prng&& gen = utility::random_generator)
+                           Prng&& rnd = utility::random_generator)
 {
-    detail::random_fill_impl<std::vector<T>, 0>::impl(vec, ndims, dist, gen);
+    auto gen = [&dist, &rnd]() { return dist(rnd); };
+    utility::generate(vec, std::move(gen), ndims);
 }
 
 namespace detail {
