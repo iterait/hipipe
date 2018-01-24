@@ -274,6 +274,26 @@ BOOST_AUTO_TEST_CASE(test_reshape_move_only)
     test_ranges_equal(*ranges::begin(rvec) | ranges::view::indirect, ranges::view::iota(1, 5));
 }
 
+BOOST_AUTO_TEST_CASE(test_generate)
+{
+    // This test is rather simple, since most of the functionality is
+    // tested in random_fill test.
+    struct gen {
+        int i = 0;
+        int operator()() { return i++; };
+    };
+    using DataType = std::vector<std::vector<std::vector<int>>>;
+    DataType data = {{{-1, -1, -1}, {-1}}, {{-1}, {-1, -1}}};
+    generate(data, gen{}, 0);
+    BOOST_CHECK((data == DataType{{{0, 0, 0}, {0}}, {{0}, {0, 0}}}));
+    generate(data, gen{}, 1);
+    BOOST_CHECK((data == DataType{{{0, 0, 0}, {0}}, {{1}, {1, 1}}}));
+    generate(data, gen{}, 2);
+    BOOST_CHECK((data == DataType{{{0, 0, 0}, {1}}, {{2}, {3, 3}}}));
+    generate(data, gen{}, 3);
+    BOOST_CHECK((data == DataType{{{0, 1, 2}, {3}}, {{4}, {5, 6}}}));
+}
+
 BOOST_AUTO_TEST_CASE(test_random_fill_1d)
 {
     std::mt19937 gen{1000003};

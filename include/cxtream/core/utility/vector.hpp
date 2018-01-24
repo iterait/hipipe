@@ -491,17 +491,19 @@ namespace detail {
 ///
 /// Example:
 /// \code
-///     int i = 0;
-///     auto gen = [&i]() { return i++; }
-///     std::vector<std::vector<std::vector<int>>> data = {{{-1, -1, -1},{-1}}, {{-1}{-1, -1}}};
-///     generate(data, 0, gen);
-///     // data == e.g., {{{0, 0, 0},{0}}, {{0}{0, 0}}};
-///     generate(data, 1, gen);
-///     // data == e.g., {{{0, 0, 0},{0}}, {{1}{1, 1}}};
-///     generate(data, 2, gen);
-///     // data == e.g., {{{0, 0, 0},{1}}, {{2}{3, 3}}};
-///     generate(data, 3, gen);
-///     // data == e.g., {{{0, 1, 2},{3}}, {{4}{5, 6}}};
+///     struct gen {
+///         int i = 0;
+///         int operator()() { return i++; };
+///     };
+///     std::vector<std::vector<std::vector<int>>> data = {{{-1, -1, -1}, {-1}}, {{-1}, {-1, -1}}};
+///     generate(data, gen{}, 0);
+///     // data == {{{0, 0, 0}, {0}}, {{0}, {0, 0}}};
+///     generate(data, gen{}, 1);
+///     // data == {{{0, 0, 0}, {0}}, {{1}, {1, 1}}};
+///     generate(data, gen{}, 2);
+///     // data == {{{0, 0, 0}, {1}}, {{2}, {3, 3}}};
+///     generate(data, gen{}, 3);
+///     // data == {{{0, 1, 2}, {3}}, {{4}, {5, 6}}};
 /// \endcode
 ///
 /// \param vec The vector to be filled.
@@ -527,15 +529,15 @@ constexpr void generate(std::vector<T>& vec,
 /// \code
 ///     std::mt19937 gen = ...;
 ///     std::uniform_int_distribution dist = ...;
-///     std::vector<std::vector<std::vector<int>>> data = {{{0, 0, 0},{0}}, {{0}{0, 0}}};
+///     std::vector<std::vector<std::vector<int>>> data = {{{0, 0, 0}, {0}}, {{0}, {0, 0}}};
 ///     random_fill(data, 0, dist, gen);
-///     // data == e.g., {{{4, 4, 4},{4}}, {{4}{4, 4}}};
+///     // data == e.g., {{{4, 4, 4}, {4}}, {{4}, {4, 4}}};
 ///     random_fill(data, 1, dist, gen);
-///     // data == e.g., {{{8, 8, 8},{8}}, {{2}{2, 2}}};
+///     // data == e.g., {{{8, 8, 8}, {8}}, {{2}, {2, 2}}};
 ///     random_fill(data, 2, dist, gen);
-///     // data == e.g., {{{8, 8, 8},{6}}, {{7}{3, 3}}};
+///     // data == e.g., {{{8, 8, 8}, {6}}, {{7}, {3, 3}}};
 ///     random_fill(data, 3, dist, gen);
-///     // data == e.g., {{{8, 2, 3},{1}}, {{2}{4, 7}}};
+///     // data == e.g., {{{8, 2, 3}, {1}}, {{2}, {4, 7}}};
 /// \endcode
 ///
 /// \param vec The vector to be filled.
