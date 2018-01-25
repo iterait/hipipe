@@ -507,10 +507,10 @@ namespace detail {
 /// \endcode
 ///
 /// \param vec The vector to be filled.
+/// \param gen The generator to be used.
 /// \param ndims The generator will be used only for this number of dimension. The
 ///              rest of the dimensions will be filled by the last generated value.
 ///              Use std::numeric_limits<long>::max() to randomly fill all dimensions.
-/// \param gen The generator to be used.
 template<typename T, typename Gen>
 constexpr void generate(std::vector<T>& vec,
                         Gen&& gen,
@@ -524,6 +524,8 @@ constexpr void generate(std::vector<T>& vec,
 ///
 /// If the vector is multidimensional, the random generator may be used only up to the
 /// given dimension and the rest of the dimensions will be constant.
+///
+/// Note: This function internally uses \ref utility::generate().
 ///
 /// Example:
 /// \code
@@ -545,7 +547,7 @@ constexpr void generate(std::vector<T>& vec,
 ///              rest of the dimensions will be filled by the last generated value.
 ///              Use std::numeric_limits<long>::max() to randomly fill all dimensions.
 /// \param dist The distribution to be used.
-/// \param gen The random generator to be used.
+/// \param rnd The random generator to be used.
 template<typename T, typename Prng = std::mt19937&,
          typename Dist = std::uniform_real_distribution<double>>
 constexpr void random_fill(std::vector<T>& vec,
