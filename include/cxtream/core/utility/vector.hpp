@@ -460,8 +460,8 @@ namespace detail {
         template<typename Gen>
         static void impl(std::vector<T>& vec, Gen& gen, long ndims)
         {
-            if (Dim >= ndims) ranges::fill(vec, gen());
-            else for (auto& val : vec) val = gen();
+            if (Dim >= ndims) ranges::fill(vec, std::invoke(gen));
+            else for (auto& val : vec) val = std::invoke(gen);
         }
     };
 
@@ -471,7 +471,7 @@ namespace detail {
         static void impl(std::vector<std::vector<T>>& vec, Gen& gen, long ndims)
         {
             if (Dim >= ndims) {
-                auto val = gen();
+                auto val = std::invoke(gen);
                 for (auto& elem : flat_view(vec)) elem = val;
             } else {
                 for (auto& subvec : vec) {
@@ -555,7 +555,7 @@ constexpr void random_fill(std::vector<T>& vec,
                            Dist&& dist = Dist{0, 1},
                            Prng&& rnd = utility::random_generator)
 {
-    auto gen = [&dist, &rnd]() { return dist(rnd); };
+    auto gen = [&dist, &rnd]() { return std::invoke(dist, rnd); };
     utility::generate(vec, std::move(gen), ndims);
 }
 

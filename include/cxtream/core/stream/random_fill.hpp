@@ -12,6 +12,7 @@
 
 #include <cxtream/core/stream/generate.hpp>
 
+#include <functional>
 #include <random>
 
 namespace cxtream::stream {
@@ -43,7 +44,8 @@ namespace cxtream::stream {
 /// \param size_from The column whose size will be used to initialize the random column.
 /// \param fill_to The column to be filled with random data.
 /// \param rnddims The number of random dimensions. See \ref utility::random_fill().
-/// \param dist The random distribution to be used.
+/// \param dist The random distribution to be used. This object is copied on every
+///             use to avoid race conditions with \ref stream::buffer.
 /// \param gen The random generator to be used.
 template<typename FromColumn, typename ToColumn, typename Prng = std::mt19937,
          typename Dist = std::uniform_real_distribution<double>>
@@ -54,7 +56,7 @@ constexpr auto random_fill(from_t<FromColumn> size_from,
                            Prng& gen = cxtream::utility::random_generator)
 {
     // distribution is always copied to avoid race conditions
-    auto fun = [dist, &gen]() { return Dist{dist}(gen); };
+    auto fun = [dist, &gen]() { return std::invoke(Dist{dist}, gen); };
     return stream::generate(size_from, fill_to, std::move(fun), rnddims);
 }
 

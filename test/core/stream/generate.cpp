@@ -26,7 +26,6 @@ CXTREAM_DEFINE_COLUMN(Generated, std::vector<int>)
 
 BOOST_AUTO_TEST_CASE(test_simple)
 {
-    std::uniform_real_distribution<> dist{0, 1};
     std::vector<std::vector<std::vector<int>>> batch2 =
       {{{}, {}, {}}, {{}, {}}};
     std::vector<std::vector<std::vector<int>>> batch4 =
