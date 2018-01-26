@@ -30,7 +30,7 @@ namespace detail {
             constexpr long TargetDims = utility::ndims<TargetVector>::value;
             static_assert(TargetDims <= SourceDims, "stream::generate requires"
               " the target column to have at most the same number of dimensions"
-              " as the 'by' column.");
+              " as the source column (i.e., the column the shape is taken from).");
             // get the size of the source up to the dimension of the target
             std::vector<std::vector<long>> target_size = utility::ndim_size<TargetDims>(source);
             // create, resize, and fill the target using the generator
@@ -44,7 +44,7 @@ namespace detail {
 }  // namespace detail
 
 /// \ingroup Stream
-/// \brief Fill the selected column using a parameter-less generator.
+/// \brief Fill the selected column using a generator (i.e., a nullary function).
 ///
 /// This function uses \ref utility::generate(). Furthermore, the column to be filled
 /// is first resized so that it has the same size as the selected source column.

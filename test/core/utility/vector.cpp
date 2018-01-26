@@ -283,15 +283,15 @@ BOOST_AUTO_TEST_CASE(test_generate)
         int operator()() { return i++; };
     };
     using DataType = std::vector<std::vector<std::vector<int>>>;
-    DataType data = {{{-1, -1, -1}, {-1}}, {{-1}, {-1, -1}}};
+    DataType data = {{{-1, -1, -1}, {-1}}, {{}, {}}, {{-1}, {-1, -1}}};
     generate(data, gen{}, 0);
-    BOOST_CHECK((data == DataType{{{0, 0, 0}, {0}}, {{0}, {0, 0}}}));
+    BOOST_CHECK((data == DataType{{{0, 0, 0}, {0}}, {{}, {}}, {{0}, {0, 0}}}));
     generate(data, gen{}, 1);
-    BOOST_CHECK((data == DataType{{{0, 0, 0}, {0}}, {{1}, {1, 1}}}));
+    BOOST_CHECK((data == DataType{{{0, 0, 0}, {0}}, {{}, {}}, {{2}, {2, 2}}}));
     generate(data, gen{}, 2);
-    BOOST_CHECK((data == DataType{{{0, 0, 0}, {1}}, {{2}, {3, 3}}}));
+    BOOST_CHECK((data == DataType{{{0, 0, 0}, {1}}, {{}, {}}, {{4}, {5, 5}}}));
     generate(data, gen{}, 3);
-    BOOST_CHECK((data == DataType{{{0, 1, 2}, {3}}, {{4}, {5, 6}}}));
+    BOOST_CHECK((data == DataType{{{0, 1, 2}, {3}}, {{}, {}}, {{4}, {5, 6}}}));
 }
 
 BOOST_AUTO_TEST_CASE(test_random_fill_1d)
@@ -300,13 +300,13 @@ BOOST_AUTO_TEST_CASE(test_random_fill_1d)
     std::uniform_int_distribution<long> dist{0, 1000000000};
     std::vector<long> vec(10);
 
-    random_fill(vec, 0, dist, gen);
+    random_fill(vec, dist, gen, 0);
     BOOST_TEST(vec.size() == 10);
     vec |= ranges::action::sort;
     auto n_unique = ranges::distance(vec | ranges::view::unique);
     BOOST_TEST(n_unique == 1);
 
-    random_fill(vec, 5, dist, gen);  // any number larger than 0 should suffice
+    random_fill(vec, dist, gen, 5);  // any number larger than 0 should suffice
     BOOST_TEST(vec.size() == 10);
     vec |= ranges::action::sort;
     n_unique = ranges::distance(vec | ranges::view::unique);
@@ -333,11 +333,11 @@ BOOST_AUTO_TEST_CASE(test_random_fill_2d)
         BOOST_TEST(n_unique == unique_total);
     };
 
-    random_fill(vec, 0, dist, gen);
+    random_fill(vec, dist, gen, 0);
     check(vec, {1, 1}, 1);
-    random_fill(vec, 1, dist, gen);
+    random_fill(vec, dist, gen, 1);
     check(vec, {1, 1}, 2);
-    random_fill(vec, 2, dist, gen);
+    random_fill(vec, dist, gen, 2);
     check(vec, {10, 5}, 15);
 }
 
@@ -363,13 +363,13 @@ BOOST_AUTO_TEST_CASE(test_random_fill_3d)
         BOOST_TEST(n_unique == unique_total);
     };
 
-    random_fill(vec, 0, dist, gen);
+    random_fill(vec, dist, gen, 0);
     check(vec, {{1, 1, 1}, {1, 1}}, 1);
-    random_fill(vec, 1, dist, gen);
+    random_fill(vec, dist, gen, 1);
     check(vec, {{1, 1, 1}, {1, 1}}, 2);
-    random_fill(vec, 2, dist, gen);
+    random_fill(vec, dist, gen, 2);
     check(vec, {{1, 1, 1}, {1, 1}}, 5);
-    random_fill(vec, 3, dist, gen);
+    random_fill(vec, dist, gen, 3);
     check(vec, {{3, 2, 1}, {1, 2}}, 9);
 }
 

@@ -36,7 +36,6 @@ BOOST_AUTO_TEST_CASE(test_simple)
       | generate(from<IntVec2d>, to<Generated>, [i = 0]() mutable { return i++; }, 1);
 
     int batch_i = 0;
-    std::vector<std::vector<double>> all_random;
     for (auto batch : stream) {
         auto generated = std::get<Generated>(batch).value();
         // check the contents
