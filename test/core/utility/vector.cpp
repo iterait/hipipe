@@ -294,6 +294,19 @@ BOOST_AUTO_TEST_CASE(test_generate)
     BOOST_CHECK((data == DataType{{{0, 1, 2}, {3}}, {{}, {}}, {{4}, {5, 6}}}));
 }
 
+BOOST_AUTO_TEST_CASE(test_generate_cut_dim)
+{
+    using DataType = std::list<std::vector<int>>;
+    DataType data = {{-1, -1, -1}, {}, {-1, -1, -1}};
+    generate<1>(data, [i = 0]() mutable { return std::vector<int>(2, i++); }, 0);
+    BOOST_CHECK((data == DataType{{0, 0}, {0, 0}, {0, 0}}));
+    generate<1>(data, [i = 0]() mutable { return std::vector<int>(2, i++); }, 1);
+    BOOST_CHECK((data == DataType{{0, 0}, {1, 1}, {2, 2}}));
+    // also check whether dimension deduction works for generators generating ranges
+    generate(data, [i = 5]() mutable { return std::vector<int>(2, i++); }, 1);
+    BOOST_CHECK((data == DataType{{5, 5}, {6, 6}, {7, 7}}));
+}
+
 BOOST_AUTO_TEST_CASE(test_random_fill_1d)
 {
     std::mt19937 gen{1000003};
