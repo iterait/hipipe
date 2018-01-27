@@ -17,7 +17,7 @@ namespace cxtream::stream {
 namespace detail {
 
     // Create a transformation function that can be sent to stream::transform.
-    template<typename FromColumn, typename ToColumn, typename Gen>
+    template<typename FromColumn, typename ToColumn, typename Gen, int Dim>
     struct wrap_generate_fun_for_transform {
         Gen gen;
         long gendims;
@@ -27,16 +27,16 @@ namespace detail {
             using SourceVector = typename FromColumn::batch_type;
             using TargetVector = typename ToColumn::batch_type;
             constexpr long SourceDims = utility::ndims<SourceVector>::value;
-            constexpr long TargetDims = utility::ndims<TargetVector>::value;
-            static_assert(TargetDims <= SourceDims, "stream::generate requires"
-              " the target column to have at most the same number of dimensions"
-              " as the source column (i.e., the column the shape is taken from).");
+            static_assert(Dim <= SourceDims, "stream::generate requires"
+              " the dimension in which to apply the generator to be at most the number"
+              " of dimensions of the source column (i.e., the column the shape is taken"
+              " from).");
             // get the size of the source up to the dimension of the target
-            std::vector<std::vector<long>> target_size = utility::ndim_size<TargetDims>(source);
+            std::vector<std::vector<long>> target_size = utility::ndim_size<Dim>(source);
             // create, resize, and fill the target using the generator
             TargetVector target;
-            utility::ndim_resize(target, target_size);
-            utility::generate(target, gen, gendims);
+            utility::ndim_resize<Dim>(target, target_size);
+            utility::generate<Dim>(target, gen, gendims);
             return target;
         }
     };
@@ -48,9 +48,6 @@ namespace detail {
 ///
 /// This function uses \ref utility::generate(). Furthermore, the column to be filled
 /// is first resized so that it has the same size as the selected source column.
-///
-/// The selected `from` column has to be a multidimensional range with the number of
-/// dimensions at least as large as the `to` column (i.e., the column to be filled).
 ///
 /// Tip: If there is no column the size could be taken from, than just resize
 /// the target column manually and use it as both `from` column and `to` column.
@@ -70,13 +67,20 @@ namespace detail {
 /// \param fill_to The column to be filled using the generator.
 /// \param gen The generator to be used.
 /// \param gendims The number of generated dimensions. See \ref utility::generate().
-template<typename FromColumn, typename ToColumn, typename Gen>
+/// \param d This is the dimension in which will the generator be applied.
+///          E.g., if set to 1, the generator result is considered to be a single example.
+///          The default is ndims<ToColumn::batch_type> - ndims<gen()>. This value
+///          has to be positive.
+template<typename FromColumn, typename ToColumn, typename Gen,
+         int Dim = utility::ndims<typename ToColumn::batch_type>::value
+                 - utility::ndims<std::result_of_t<Gen()>>::value>
 constexpr auto generate(from_t<FromColumn> size_from,
                         to_t<ToColumn> fill_to,
                         Gen gen,
-                        long gendims = std::numeric_limits<long>::max())
+                        long gendims = std::numeric_limits<long>::max(),
+                        dim_t<Dim> d = dim_t<Dim>{})
 {
-    detail::wrap_generate_fun_for_transform<FromColumn, ToColumn, Gen>
+    detail::wrap_generate_fun_for_transform<FromColumn, ToColumn, Gen, Dim>
       trans_fun{std::move(gen), gendims};
     return stream::transform(from<FromColumn>, to<ToColumn>, std::move(trans_fun), dim<0>);
 }

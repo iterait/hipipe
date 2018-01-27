@@ -24,9 +24,6 @@ namespace cxtream::stream {
 /// That is, the column to be filled is first resized so that it has the same
 /// size as the selected source column.
 ///
-/// The selected `from` column has to be a multidimensional range with the number of
-/// dimensions at least as large as the `to` column (i.e., the column to be filled).
-///
 /// Tip: If there is no column the size could be taken from, than just resize
 /// the target column manually and use it as both `from` column and `to` column.
 ///
@@ -46,18 +43,25 @@ namespace cxtream::stream {
 /// \param rnddims The number of random dimensions. See \ref utility::random_fill().
 /// \param dist The random distribution to be used. This object is copied on every
 ///             use to avoid race conditions with \ref stream::buffer.
-/// \param gen The random generator to be used.
+/// \param prng The random generator to be used.
+/// \param d This is the dimension in which will the generator be applied.
+///          E.g., if set to 1, the generator result is considered to be a single example.
+///          The default is ndims<ToColumn::batch_type> - ndims<dist(prng)>.
+///          This value has to be positive.
 template<typename FromColumn, typename ToColumn, typename Prng = std::mt19937,
-         typename Dist = std::uniform_real_distribution<double>>
+         typename Dist = std::uniform_real_distribution<double>,
+         int Dim = utility::ndims<typename ToColumn::batch_type>::value
+                 - utility::ndims<std::result_of_t<Dist(Prng&)>>::value>
 constexpr auto random_fill(from_t<FromColumn> size_from,
                            to_t<ToColumn> fill_to,
                            long rnddims = std::numeric_limits<long>::max(),
                            Dist dist = Dist{0, 1},
-                           Prng& gen = cxtream::utility::random_generator)
+                           Prng& prng = cxtream::utility::random_generator,
+                           dim_t<Dim> d = dim_t<Dim>{})
 {
     // distribution is always copied to avoid race conditions
-    auto fun = [dist, &gen]() { return std::invoke(Dist{dist}, gen); };
-    return stream::generate(size_from, fill_to, std::move(fun), rnddims);
+    auto fun = [dist, &prng]() { return std::invoke(Dist{dist}, prng); };
+    return stream::generate(size_from, fill_to, std::move(fun), rnddims, d);
 }
 
 }  // namespace cxtream::stream

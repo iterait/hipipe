@@ -153,48 +153,44 @@ std::vector<std::vector<long>> ndim_size(const Rng& rng)
     return utility::ndim_size<ndims<Rng>{}>(rng);
 }
 
-// multidimensional std::vector resize //
+// multidimensional range resize //
 
 namespace detail {
 
-    template<typename T, long Dim>
+    template<long Dim, long NDims>
     struct ndim_resize_impl {
-    };
-
-    template<typename T, long Dim>
-    struct ndim_resize_impl<std::vector<T>, Dim> {
-        template<typename ValT>
-        static void impl(std::vector<T>& vec,
+        template<typename Rng, typename ValT>
+        static void impl(Rng& vec,
                          const std::vector<std::vector<long>>& vec_size,
                          std::vector<long>& vec_size_idx,
                          const ValT& val)
         {
-            vec.resize(vec_size[Dim][vec_size_idx[Dim]++], val);
+            vec.resize(vec_size[Dim-1][vec_size_idx[Dim-1]++]);
+            for (auto& subvec : vec) {
+                ndim_resize_impl<Dim+1, NDims>::impl(subvec, vec_size, vec_size_idx, val);
+            }
         }
     };
 
-    template<typename T, long Dim>
-    struct ndim_resize_impl<std::vector<std::vector<T>>, Dim> {
-        template<typename ValT>
-        static void impl(std::vector<std::vector<T>>& vec,
+    template<long Dim>
+    struct ndim_resize_impl<Dim, Dim> {
+        template<typename Rng, typename ValT>
+        static void impl(Rng& vec,
                          const std::vector<std::vector<long>>& vec_size,
                          std::vector<long>& vec_size_idx,
                          const ValT& val)
         {
-            vec.resize(vec_size[Dim][vec_size_idx[Dim]++]);
-            for (auto& subvec : vec) {
-                ndim_resize_impl<std::vector<T>, Dim+1>::impl(subvec, vec_size, vec_size_idx, val);
-            }
+            vec.resize(vec_size[Dim-1][vec_size_idx[Dim-1]++], val);
         }
     };
 
 }  // namespace detail
 
 /// \ingroup Vector
-/// \brief Resizes a multidimensional std::vector to the given size.
+/// \brief Resizes a multidimensional range to the given size.
 ///
-/// i-th element of the given size vector are the sizes of the vectors in the i-th dimension.
-/// See ndim_size.
+/// i-th element of the given size vector are the sizes of the ranges in the i-th dimension.
+/// See ndim_size. The range has to support `.resize()` method up to the given dimension.
 ///
 /// Example:
 /// \code
@@ -203,25 +199,37 @@ namespace detail {
 ///     // vec == {{2, 2, 2}, {2}};
 /// \endcode
 ///
-/// \param vec The vector to be resized.
+/// \param vec The range to be resized.
 /// \param vec_size The requested size created by ndim_size.
 /// \param val The value to pad with.
+/// \tparam NDims The number of dimensions to be considered.
+///               If omitted, it defaults to ndims<Rng> - ndims<ValT>.
 /// \returns The reference to the given vector after resizing.
-template<typename T, typename ValT = ndim_type_t<std::vector<T>>>
-std::vector<T>& ndim_resize(std::vector<T>& vec,
-                            const std::vector<std::vector<long>>& vec_size,
-                            ValT val = ValT{})
+template<long NDims, typename Rng, typename ValT = ndim_type_t<Rng, NDims>>
+Rng& ndim_resize(Rng& vec,
+                 const std::vector<std::vector<long>>& vec_size,
+                 ValT val = ValT{})
 {
     // check that the size is valid
-    assert(vec_size.size() == ndims<std::vector<T>>{});
+    assert(vec_size.size() == NDims);
+    static_assert(NDims <= ndims<Rng>{} - ndims<ValT>{});
     for (std::size_t i = 1; i < vec_size.size(); ++i) {
         assert(vec_size[i].size() == ranges::accumulate(vec_size[i-1], 0UL));
     }
     // build initial indices
     std::vector<long> vec_size_idx(vec_size.size());
     // recursively resize
-    detail::ndim_resize_impl<std::vector<T>, 0>::impl(vec, vec_size, vec_size_idx, val);
+    detail::ndim_resize_impl<1, NDims>::impl(vec, vec_size, vec_size_idx, val);
     return vec;
+}
+
+/// A specialization which automatically deduces the number of dimensions.
+template<typename Rng, typename ValT = ndim_type_t<Rng>>
+Rng& ndim_resize(Rng& vec,
+                 const std::vector<std::vector<long>>& vec_size,
+                 ValT val = ValT{})
+{
+    return ndim_resize<ndims<Rng>{}-ndims<ValT>{}>(vec, vec_size, std::move(val));
 }
 
 // multidimensional range shape //
