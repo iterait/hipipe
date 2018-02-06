@@ -33,7 +33,7 @@ namespace detail {
 
     template<typename T>
     struct vector_to_python_impl {
-        static PyObject* impl(T& val)
+        static PyObject* impl(T val)
         {
             boost::python::object obj{std::move(val)};
             Py_INCREF(obj.ptr());
@@ -43,16 +43,16 @@ namespace detail {
 
     template<typename T>
     struct vector_to_python_impl<std::vector<T>> {
-        static PyObject* impl(std::vector<T>& vec)
+        static PyObject* impl(std::vector<T> vec)
         {
             if (std::is_arithmetic<T>{}) {
-                return utility::to_ndarray(vec);
+                return utility::to_ndarray(std::move(vec));
             }
 
             PyObject* list{PyList_New(vec.size())};
             if (!list) throw std::runtime_error{"Unable to create Python list."};
             for (std::size_t i = 0; i < vec.size(); ++i) {
-                PyList_SET_ITEM(list, i, vector_to_python_impl<T>::impl(vec[i]));
+                PyList_SET_ITEM(list, i, vector_to_python_impl<T>::impl(std::move(vec[i])));
             }
             return list;
         }
@@ -69,7 +69,7 @@ template<typename T>
 boost::python::object to_python(std::vector<T> v)
 {
     namespace py = boost::python;
-    py::handle<> py_obj_handle{detail::vector_to_python_impl<std::vector<T>>::impl(v)};
+    py::handle<> py_obj_handle{detail::vector_to_python_impl<std::vector<T>>::impl(std::move(v))};
     return py::object{py_obj_handle};
 }
 
