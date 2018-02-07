@@ -56,6 +56,35 @@ struct ndims<T, true>
 };
 
 /// \ingroup Vector
+/// \brief Fast declaration of a multidimensional container.
+///
+/// Example:
+/// \code
+///     ndim_container_t<double, 3> vec_3d;
+///     static_assert(std::is_same<decltype(vec_3d),
+///                                std::vector<std::vector<std::vector<double>>>
+///                                >{});
+///
+///     ndim_container_t<int, 2, std::list> list_2d;
+///     static_assert(std::is_same<decltype(list_2d),
+///                                std::list<std::list<int>>
+///                                >{});
+/// \endcode
+template<typename T, long Dims, template<typename...> typename Container = std::vector>
+struct ndim_container {
+    using type = Container<typename ndim_container<T, Dims-1, Container>::type>;
+    static_assert(Dims >= 0, "The number of dimensions has to be non-negative.");
+};
+
+template<typename T, template<typename...> typename Container>
+struct ndim_container<T, 0, Container> {
+    using type = T;
+};
+
+template<typename T, long Dims, template<typename...> typename Container = std::vector>
+using ndim_container_t = typename ndim_container<T, Dims, Container>::type;
+
+/// \ingroup Vector
 /// \brief Gets the innermost value_type of a multidimensional range.
 ///
 /// The number of dimensions can be also provided manually.

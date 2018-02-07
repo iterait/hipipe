@@ -34,6 +34,26 @@ BOOST_AUTO_TEST_CASE(test_ndims)
     BOOST_TEST(ndims<std::list<std::vector<std::list<int>>>>{} == 3);
 }
 
+BOOST_AUTO_TEST_CASE(test_ndim_container)
+{
+    ndim_container_t<double, 3> vec_3d;
+    static_assert(std::is_same<decltype(vec_3d),
+                               std::vector<std::vector<std::vector<double>>>
+                               >{});
+    ndim_container_t<int, 2, std::list> list_2d;
+    static_assert(std::is_same<decltype(list_2d),
+                               std::list<std::list<int>>
+                               >{});
+    ndim_container_t<bool, 1, std::vector> vec_1d;
+    static_assert(std::is_same<decltype(vec_1d),
+                               std::vector<bool>
+                               >{});
+    ndim_container_t<char, 0, std::vector> vec_0d;
+    static_assert(std::is_same<decltype(vec_0d),
+                               char
+                               >{});
+}
+
 BOOST_AUTO_TEST_CASE(test_ndim_type)
 {
     static_assert(std::is_same<int,
