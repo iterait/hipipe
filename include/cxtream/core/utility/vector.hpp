@@ -18,6 +18,7 @@
 #include <range/v3/algorithm/all_of.hpp>
 #include <range/v3/algorithm/fill.hpp>
 #include <range/v3/algorithm/find.hpp>
+#include <range/v3/algorithm/max.hpp>
 #include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/chunk.hpp>
@@ -259,6 +260,46 @@ Rng& ndim_resize(Rng& vec,
                  ValT val = ValT{})
 {
     return ndim_resize<ndims<Rng>{}-ndims<ValT>{}>(vec, vec_size, std::move(val));
+}
+
+/// \ingroup Vector
+/// \brief Pads a mutlidimensional range to a rectangular size.
+///
+/// The range has to support `.resize()` method up to the given dimension.
+///
+/// Example:
+/// \code
+///     std::vector<std::vector<int>> v1 = {{1, 2}, {3, 4, 5}, {}};
+///     ndim_pad(v1, -1);
+///     // v1 == {{1, 2, -1}, {3, 4, 5}, {-1, -1, -1}};
+///     std::vector<std::list<std::vector<int>>> v2 = {{{1}, {2, 3}}, {{4, 5, 6}}};
+///     ndim_pad<2>(vec, {-1, -1});  // pad only the first two dimensions
+///     // v2 = {{{1}, {2, 3}}, {{4, 5, 6}, {-1, -1}}};
+/// \endcode
+///
+/// \param vec The range to be padded.
+/// \param val The value to pad with.
+/// \tparam NDims The number of dimensions to be considered.
+///               If omitted, it defaults to ndims<Rng> - ndims<ValT>.
+/// \returns The reference to the given vector after padding.
+template<long NDims, typename Rng, typename ValT = ndim_type_t<Rng, NDims>>
+Rng& ndim_pad(Rng& vec, ValT val = ValT{})
+{
+    static_assert(NDims <= ndims<Rng>{} - ndims<ValT>{});
+    std::vector<std::vector<long>> vec_size = ndim_size<NDims>(vec);
+    // replace the sizes in each dimension with the max size in the same dimension
+    for (std::size_t i = 1; i < vec_size.size(); ++i) {
+        long max_size = ranges::max(vec_size[i]);
+        ranges::fill(vec_size[i], max_size);
+    }
+    return utility::ndim_resize<NDims>(vec, vec_size, std::move(val));
+}
+
+/// A specialization which automatically deduces the number of dimensions.
+template<typename Rng, typename ValT = ndim_type_t<Rng>>
+Rng& ndim_pad(Rng& vec, ValT val = ValT{})
+{
+    return utility::ndim_pad<ndims<Rng>{}-ndims<ValT>{}>(vec, std::move(val));
 }
 
 // multidimensional range shape //

@@ -167,6 +167,31 @@ BOOST_AUTO_TEST_CASE(test_ndim_resize)
                   == vec3302_desired));
 }
 
+BOOST_AUTO_TEST_CASE(test_ndim_pad)
+{
+    std::vector<int> v_1d = {1, 2, 3};
+    std::vector<int> v_1d_gold = v_1d;
+    ndim_pad(v_1d, -1);
+    BOOST_CHECK(v_1d == v_1d_gold);
+
+    std::vector<std::vector<int>> v_2d =
+      {{1, 2    }, {3, 4, 5}, {          }, {6        }};
+    std::vector<std::vector<int>> v_2d_gold =
+      {{1, 2, -1}, {3, 4, 5}, {-1, -1, -1}, {6, -1, -1}};
+    ndim_pad(v_2d, -1);
+    BOOST_CHECK(v_2d == v_2d_gold);
+
+    std::vector<std::list<std::vector<int>>> v_3d =
+      {{{1}, {2, 3}}, {{4, 5, 6}          }};
+    std::vector<std::list<std::vector<int>>> v_3d_gold =
+      {{{1}, {2, 3}}, {{4, 5, 6}, {-1, -1}}};
+    ndim_pad<2>(v_3d, {-1, -1});
+    BOOST_CHECK(v_3d == v_3d_gold);
+    // also check automatic dimension inference
+    ndim_pad(v_3d, std::vector<int>{-1, -1});
+    BOOST_CHECK(v_3d == v_3d_gold);
+}
+
 BOOST_AUTO_TEST_CASE(test_flatten)
 {
     const std::vector<std::list<std::vector<int>>> vec = {
