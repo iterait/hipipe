@@ -50,6 +50,15 @@ template <int Dim>
 struct dim_t {
 };
 
+template <typename... Columns>
+struct mask_t {
+};
+
+/// Helper type representing a boolean column denoting whether a value was originally present
+/// or inserted by padding.
+template <typename... Columns>
+auto mask = mask_t<Columns...>{};
+
 /// Helper type representing dimension.
 template <int Dim>
 auto dim = dim_t<Dim>{};
