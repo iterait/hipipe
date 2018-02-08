@@ -19,6 +19,8 @@
 #include <cxtream/core/stream/drop.hpp>
 #include <cxtream/core/stream/filter.hpp>
 #include <cxtream/core/stream/for_each.hpp>
+#include <cxtream/core/stream/generate.hpp>
+#include <cxtream/core/stream/pad.hpp>
 #include <cxtream/core/stream/random_fill.hpp>
 #include <cxtream/core/stream/transform.hpp>
 #include <cxtream/core/stream/unpack.hpp>
