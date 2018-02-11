@@ -273,8 +273,8 @@ Rng& ndim_resize(Rng& vec,
 ///     ndim_pad(v1, -1);
 ///     // v1 == {{1, 2, -1}, {3, 4, 5}, {-1, -1, -1}};
 ///     std::vector<std::list<std::vector<int>>> v2 = {{{1}, {2, 3}}, {{4, 5, 6}}};
-///     ndim_pad<2>(vec, {-1, -1});  // pad only the first two dimensions
-///     // v2 = {{{1}, {2, 3}}, {{4, 5, 6}, {-1, -1}}};
+///     ndim_pad<2>(vec, {-1, -2, -3, -4});  // pad only the first two dimensions
+///     // v2 = {{{1}, {2, 3}}, {{4, 5, 6}, {-1, -2, -3, -4}}};
 /// \endcode
 ///
 /// \param vec The range to be padded.
