@@ -39,17 +39,31 @@ T string_to(const std::string& str)
     }
 }
 
+/// Specialization of string_to() for std::string.
 template<>
 std::string string_to<std::string>(const std::string& str)
 {
     return str;
 }
 
+/// Specialization of string_to() for std::experimental::filesystem::path.
 template<>
 std::experimental::filesystem::path
 string_to<std::experimental::filesystem::path>(const std::string& str)
 {
     return str;
+}
+
+/// Specialization of string_to() for bool.
+///
+/// "true" and "1" are interpreted as true, "false" and "0" as false.
+/// \throws std::ios_base::failure If an unrecognizable string is provided.
+template<>
+bool string_to<bool>(const std::string& str)
+{
+    if (str == "false" || str == "0") return false;
+    if (str == "true" || str == "1") return true;
+    throw std::ios_base::failure{"Failed to convert string \"" + str + "\" to bool."};
 }
 
 /// \ingroup String
@@ -69,21 +83,27 @@ std::string to_string(const T& value)
     }
 }
 
+/// Specialization of to_string() for std::experimental::filesystem::path.
 std::string to_string(const std::experimental::filesystem::path& path)
 {
     return path.string();
 }
 
+/// Specialization of to_string() for std::string.
 std::string to_string(const std::string& str)
 {
     return str;
 }
 
+/// Specialization of to_string() for const char *.
 std::string to_string(const char* const& str)
 {
     return str;
 }
 
+/// Specialization of to_string() for bool.
+///
+/// The generated string is either "true" or "false".
 std::string to_string(const bool& b)
 {
     return b ? "true" : "false";

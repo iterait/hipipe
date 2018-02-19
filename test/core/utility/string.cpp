@@ -47,12 +47,19 @@ BOOST_AUTO_TEST_CASE(test_string_to__float)
     auto flt = string_to<float>(str);
     static_assert(std::is_same<float, decltype(flt)>{});
     BOOST_TEST(flt == 0.25);
+    BOOST_CHECK_THROW(string_to<float>("0,25"), std::ios_base::failure);
 }
 
-BOOST_AUTO_TEST_CASE(test_string_to__float_exc)
+BOOST_AUTO_TEST_CASE(test_string_to__bool)
 {
-    std::string str = "0,25";
-    BOOST_CHECK_THROW(string_to<float>(str), std::ios_base::failure);
+    auto b = string_to<bool>("false");
+    static_assert(std::is_same<bool, decltype(b)>{});
+    BOOST_TEST(string_to<bool>("true") == true);
+    BOOST_TEST(string_to<bool>("1") == true);
+    BOOST_TEST(string_to<bool>("false") == false);
+    BOOST_TEST(string_to<bool>("0") == false);
+    BOOST_CHECK_THROW(string_to<bool>("abc"), std::ios_base::failure);
+    BOOST_CHECK_THROW(string_to<bool>("2"), std::ios_base::failure);
 }
 
 BOOST_AUTO_TEST_CASE(test_string__to_string)
@@ -80,4 +87,12 @@ BOOST_AUTO_TEST_CASE(test_float__to_string)
     auto str = to_string(flt);
     static_assert(std::is_same<std::string, decltype(str)>{});
     BOOST_TEST(std::stof(str) == 0.25);
+}
+
+BOOST_AUTO_TEST_CASE(test_bool__to_string)
+{
+    auto str = to_string(true);
+    static_assert(std::is_same<std::string, decltype(str)>{});
+    BOOST_TEST(to_string(true) == "true");
+    BOOST_TEST(to_string(false) == "false");
 }
