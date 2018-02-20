@@ -92,6 +92,14 @@ BOOST_AUTO_TEST_CASE(test_float__to_string)
     BOOST_TEST(std::stof(str) == 0.25);
 }
 
+BOOST_AUTO_TEST_CASE(test_const_char_ptr__to_string)
+{
+    const char* c_str = "C madness";
+    auto str = to_string(c_str);
+    static_assert(std::is_same<std::string, decltype(str)>{});
+    BOOST_TEST(str == c_str);
+}
+
 BOOST_AUTO_TEST_CASE(test_bool__to_string)
 {
     auto str = to_string(true);
