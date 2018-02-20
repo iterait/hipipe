@@ -52,12 +52,15 @@ BOOST_AUTO_TEST_CASE(test_string_to__float)
 
 BOOST_AUTO_TEST_CASE(test_string_to__bool)
 {
+    // check correct type
     auto b = string_to<bool>("false");
     static_assert(std::is_same<bool, decltype(b)>{});
-    BOOST_TEST(string_to<bool>("true") == true);
-    BOOST_TEST(string_to<bool>("1") == true);
-    BOOST_TEST(string_to<bool>("false") == false);
-    BOOST_TEST(string_to<bool>("0") == false);
+    // check all recognized values
+    for (const std::string& y : detail::true_set) BOOST_TEST(string_to<bool>(y) == true);
+    for (const std::string& n : detail::false_set) BOOST_TEST(string_to<bool>(n) == false);
+    // check some unrecognized values
+    BOOST_CHECK_THROW(string_to<bool>("trUe"), std::ios_base::failure);
+    BOOST_CHECK_THROW(string_to<bool>("fAlse"), std::ios_base::failure);
     BOOST_CHECK_THROW(string_to<bool>("abc"), std::ios_base::failure);
     BOOST_CHECK_THROW(string_to<bool>("2"), std::ios_base::failure);
 }

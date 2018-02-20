@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <locale>
 #include <experimental/filesystem>
+#include <set>
 #include <sstream>
 #include <string>
 
@@ -54,15 +55,29 @@ string_to<std::experimental::filesystem::path>(const std::string& str)
     return str;
 }
 
+namespace detail
+{
+    /// List of recognized boolean strings for value `true`.
+    const std::set<std::string> true_set =
+      {"true ", "True ", "TRUE ", "1", "y", "Y", "yes", "Yes", "YES", "on ", "On ", "ON"};
+    /// List of recognized boolean strings for value `false`.
+    const std::set<std::string> false_set =
+      {"false", "False", "FALSE", "0", "n", "N", "no ", "No ", "NO ", "off", "Off", "OFF"};
+}
+
 /// Specialization of string_to() for bool.
 ///
-/// "true" and "1" are interpreted as true, "false" and "0" as false.
+/// The list of recognized terms:
+/// \code
+///     true |True |TRUE |1|y|Y|yes|Yes|YES|on |On |ON
+///     false|False|FALSE|0|n|N|no |No |NO |off|Off|OFF
+/// \endcode
 /// \throws std::ios_base::failure If an unrecognizable string is provided.
 template<>
 bool string_to<bool>(const std::string& str)
 {
-    if (str == "false" || str == "0") return false;
-    if (str == "true" || str == "1") return true;
+    if (detail::true_set.count(str)) return true;
+    if (detail::false_set.count(str)) return false;
     throw std::ios_base::failure{"Failed to convert string \"" + str + "\" to bool."};
 }
 
