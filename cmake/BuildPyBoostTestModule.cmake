@@ -8,6 +8,7 @@ function(build_pyboost_test_module MODULE_NAME SOURCE_FILE)
   set_target_properties(
     "${MODULE_NAME}" PROPERTIES
     PREFIX ""
+    DEBUG_POSTFIX ""
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   )
   

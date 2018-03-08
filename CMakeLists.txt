@@ -23,6 +23,10 @@ option(BUILTIN_RANGEV3 "Use built-in Range-v3 library" ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
+# add 'd' suffix to libraries in debug mode
+if(NOT CMAKE_DEBUG_POSTFIX)
+  set(CMAKE_DEBUG_POSTFIX d)
+endif()
 
 # -------------------------------------
 # Dump CMake Options Into a Header File
