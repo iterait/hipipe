@@ -29,6 +29,17 @@
 
 namespace cxtream {
 
+namespace detail {
+
+    // Read and discard blank characters (similar to std::ws, but uses std::isblank).
+    std::istream& blanks(std::istream& in)
+    {
+        while (std::isblank(in.peek())) in.get();
+        return in;
+    }
+
+}  // namespace detail
+
 /// \ingroup CSV
 /// \brief Parse and iterate over CSV formatted rows from an istream.
 ///
@@ -120,7 +131,7 @@ private:
 
         row_.clear();
         bool has_next = true;
-        while (has_next && *in_ >> std::ws) {
+        while (has_next && *in_ >> detail::blanks) {
             std::string field;
             // process quoted fields
             if (in_->peek() == quote_) {

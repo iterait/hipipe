@@ -58,6 +58,21 @@ const std::vector<std::vector<std::string>> simple_csv_rows{
 };
 const auto simple_csv_cols = transpose(simple_csv_rows);
 
+// csv example with empty fields //
+
+const std::string empty_fields_csv{
+  "Id,A,B\n"
+  ",,\n"
+  " , , \n"
+  "\"\",\"\",\"\""
+};
+const std::vector<std::vector<std::string>> empty_fields_csv_rows{
+  std::vector<std::string>{"Id", "A", "B"},
+  std::vector<std::string>(3),
+  std::vector<std::string>(3),
+  std::vector<std::string>(3)
+};
+
 // complex quoted csv example //
 
 const std::string quoted_csv{
@@ -97,6 +112,13 @@ BOOST_AUTO_TEST_CASE(test_csv_istream_range_simple_csv)
     std::istringstream simple_csv_ss{simple_csv};
     auto csv_rows = csv_istream_range{simple_csv_ss};
     test_ranges_equal(csv_rows, simple_csv_rows);
+}
+
+BOOST_AUTO_TEST_CASE(test_csv_istream_range_empty_fields_csv)
+{
+    std::istringstream empty_fields_csv_ss{empty_fields_csv};
+    auto csv_rows = csv_istream_range{empty_fields_csv_ss};
+    test_ranges_equal(csv_rows, empty_fields_csv_rows);
 }
 
 BOOST_AUTO_TEST_CASE(test_csv_istream_range_quoted_csv)
