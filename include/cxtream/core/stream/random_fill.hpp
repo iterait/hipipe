@@ -42,7 +42,7 @@ namespace cxtream::stream {
 /// \param fill_to The column to be filled with random data.
 /// \param rnddims The number of random dimensions. See \ref utility::random_fill().
 /// \param dist The random distribution to be used. This object is copied on every
-///             use to avoid race conditions with \ref stream::buffer.
+///             use to avoid race conditions with \ref stream::buffer().
 /// \param prng The random generator to be used.
 /// \param d This is the dimension in which will the generator be applied.
 ///          E.g., if set to 1, the generator result is considered to be a single example.

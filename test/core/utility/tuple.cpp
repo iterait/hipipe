@@ -332,7 +332,7 @@ BOOST_AUTO_TEST_CASE(test_tuple_remove_choose_one_remove_multi)
     auto t1 = std::make_tuple(2L, 5L, true);
     auto t2 = tuple_remove<long>(std::move(t1));
     static_assert(std::is_same<std::tuple<bool>, decltype(t2)>{});
-    BOOST_TEST(t2 == std::make_tuple(true));
+    BOOST_CHECK(t2 == std::make_tuple(true));
 }
 
 BOOST_AUTO_TEST_CASE(test_tuple_remove_choose_multi_remove_multi)
@@ -341,7 +341,7 @@ BOOST_AUTO_TEST_CASE(test_tuple_remove_choose_multi_remove_multi)
     auto t1 = std::make_tuple(2L, 5L, true, 'a', 3);
     auto t2 = tuple_remove<long, char, bool>(t1);
     static_assert(std::is_same<std::tuple<int>, decltype(t2)>{});
-    BOOST_TEST(t2 == std::make_tuple(3));
+    BOOST_CHECK(t2 == std::make_tuple(3));
 }
 
 BOOST_AUTO_TEST_CASE(test_tuple_remove_references)
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_tuple_remove_references)
     auto t2 = tuple_remove<long>(std::move(t1));
     // references are converted to values
     static_assert(std::is_same<std::tuple<bool>, decltype(t2)>{});
-    BOOST_TEST(t2 == std::make_tuple(true));
+    BOOST_CHECK(t2 == std::make_tuple(true));
 }
 
 BOOST_AUTO_TEST_CASE(test_tuple_remove_move_only)

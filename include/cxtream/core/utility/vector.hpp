@@ -643,7 +643,7 @@ constexpr void generate(Rng&& rng,
 ///     // data == e.g., {{{8, 2, 3}, {1}}, {{2}, {4, 7}}};
 /// \endcode
 ///
-/// \param vec The vector to be filled.
+/// \param rng The range to be filled.
 /// \param dist The distribution to be used.
 /// \param prng The random generator to be used.
 /// \param gendims The random generator will be used only for this number of dimension. The

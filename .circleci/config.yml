@@ -13,8 +13,8 @@ references:
       name: Install dependencies on Ubuntu.
       command: |
         apt-get update -qy
-        apt -y install build-essential cmake clang git \
-          libopencv-dev libboost-all-dev python3-dev python3-numpy
+        DEBIAN_FRONTEND=noninteractive apt -y install \
+          build-essential cmake clang git libopencv-dev libboost-all-dev python3-dev python3-numpy
 
   ubuntu_install_tensorflow_cc: &ubuntu_install_tensorflow_cc
     run:
@@ -36,7 +36,7 @@ references:
     run:
       name: Install dependencies on Arch Linux.
       command: |
-        pacman -S --noconfirm base-devel cmake clang \
+        pacman -Syu --noconfirm base-devel cmake clang \
           opencv boost python python-numpy git openssh
 
   build_by_gcc: &build_by_gcc
@@ -81,7 +81,7 @@ jobs:
 
   test_archlinux_gcc:
     docker:
-      - image: pritunl/archlinux:2018-01-20
+      - image: archimg/base-devel
     working_directory: ~/cxtream
     steps:
       - *arch_deps
@@ -92,7 +92,7 @@ jobs:
 
   test_archlinux_clang:
     docker:
-      - image: pritunl/archlinux:2018-01-20
+      - image: archimg/base-devel
     working_directory: ~/cxtream
     steps:
       - *arch_deps
@@ -101,9 +101,9 @@ jobs:
       - *build_by_clang
       - *test
 
-  test_ubuntu_rolling_gcc:
+  test_ubuntu_latest_gcc:
     docker:
-      - image: ubuntu:rolling
+      - image: ubuntu:latest
     working_directory: ~/cxtream
     steps:
       - *ubuntu_deps
@@ -112,9 +112,9 @@ jobs:
       - *build_by_gcc
       - *test
 
-  test_ubuntu_rolling_gcc_tf_static:
+  test_ubuntu_latest_gcc_tf_static:
     docker:
-      - image: ubuntu:rolling
+      - image: ubuntu:latest
     working_directory: ~/cxtream
     steps:
       - *ubuntu_deps
@@ -126,9 +126,9 @@ jobs:
       - *build_with_tf_static
       - *test
 
-  test_ubuntu_rolling_clang:
+  test_ubuntu_latest_clang:
     docker:
-      - image: ubuntu:rolling
+      - image: ubuntu:latest
     working_directory: ~/cxtream
     steps:
       - *ubuntu_deps
@@ -138,18 +138,26 @@ jobs:
       - *test
 
 workflows:
-
   version: 2
-  test-matrix:
+
+  test_matrix: &test_matrix
     jobs:
       - test_archlinux_gcc
       - test_archlinux_clang
-      - test_ubuntu_rolling_gcc
-      # TODO: Ubuntu 17.10 has a version of clang unable to
-      # parse libstdc++ deduction guides. Do not test clang on 17.10.
-      # TODO: Ubuntu devel is not ready yet and things like installation of
-      # packages sometimes fails. Add it when it is ready.
+      - test_ubuntu_latest_gcc
+      - test_ubuntu_latest_clang
       # TODO: It would be convenient to test cxtream::tensorflow as well, but
       # TensorFlow cannot be compiled in the current CircleCI limits. If those
       # increase, uncomment the following:
-      # - test_ubuntu_rolling_gcc_tf_static
+      # - test_ubuntu_latest_gcc_tf_static
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "46 4 * * *"
+          filters:
+            branches:
+              only:
+                - dev
+    <<: *test_matrix
+
