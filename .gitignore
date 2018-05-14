@@ -54,6 +54,8 @@ __pycache__/
 .Python
 env/
 build/
+debug/
+release/
 develop-eggs/
 dist/
 downloads/
