@@ -64,10 +64,10 @@ endif()
 if(BUILD_PYTHON)
   find_package(PythonInterp 3 REQUIRED)
   find_package(PythonLibs 3 REQUIRED)
+  find_package(PythonNumPy REQUIRED)
   find_package(BoostPython3 REQUIRED)
 
   if(BUILD_PYTHON_OPENCV)
-    find_package(PythonNumPy REQUIRED)
     find_package(OpenCV COMPONENTS core REQUIRED)
   endif()
 endif()
@@ -138,6 +138,7 @@ if(BUILD_PYTHON)
     cxtream_python
     PUBLIC ${Boost_INCLUDE_DIRS}
     PUBLIC ${PYTHON_INCLUDE_DIRS}
+    PUBLIC ${PYTHON_NUMPY_INCLUDE_DIR}
     PUBLIC ${BoostPython3_INCLUDE_DIRS}
   )
   target_link_libraries(
@@ -165,7 +166,6 @@ if(BUILD_PYTHON)
     )
     target_include_directories(
       cxtream_python
-      PUBLIC ${PYTHON_NUMPY_INCLUDE_DIRS}
       PUBLIC ${OpenCV_INCLUDE_DIRS}
     )
     target_link_libraries(
