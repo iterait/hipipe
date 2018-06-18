@@ -15,12 +15,14 @@
 // but we actually really import_array here (this is the only place), so unset it.
 #undef NO_IMPORT_ARRAY
 
+#include <Python.h>
+#include <boost/python.hpp>
+#include <numpy/ndarrayobject.h>
+
 #ifdef CXTREAM_BUILD_PYTHON_OPENCV
 #include <cxtream/python/utility/pyboost_cv_converter.hpp>
 #endif
 #include <cxtream/python/utility/pyboost_fs_path_converter.hpp>
-
-#include <boost/python.hpp>
 
 namespace cxtream::python {
 

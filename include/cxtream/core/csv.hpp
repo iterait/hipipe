@@ -190,12 +190,12 @@ public:
 /// \param separator Field separator.
 /// \param quote Quote character.
 /// \param escape Character used to escape a quote inside quotes.
-dataframe<> read_csv(std::istream& in,
-                     int drop = 0,
-                     bool has_header = true,
-                     char separator = ',',
-                     char quote = '"',
-                     char escape = '\\')
+inline dataframe<> read_csv(std::istream& in,
+                            int drop = 0,
+                            bool has_header = true,
+                            char separator = ',',
+                            char quote = '"',
+                            char escape = '\\')
 {
     // header
     std::vector<std::string> header;
@@ -253,12 +253,12 @@ dataframe<> read_csv(std::istream& in,
 /// \ingroup CSV
 /// \brief Same as read_csv() but read directly from a file.
 /// \throws std::ios_base::failure If the specified file cannot be opened.
-dataframe<> read_csv(const std::experimental::filesystem::path& file,
-                     int drop = 0,
-                     bool header = true,
-                     char separator = ',',
-                     char quote = '"',
-                     char escape = '\\')
+inline dataframe<> read_csv(const std::experimental::filesystem::path& file,
+                            int drop = 0,
+                            bool header = true,
+                            char separator = ',',
+                            char quote = '"',
+                            char escape = '\\')
 {
     std::ifstream fin{file};
     if (!fin) {

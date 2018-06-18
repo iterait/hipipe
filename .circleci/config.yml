@@ -75,7 +75,7 @@ references:
       name: Run tests.
       command: |
         cd build
-        make test
+        ctest --output-on-failure
 
 jobs:
 
