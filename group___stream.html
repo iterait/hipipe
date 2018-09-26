@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>hipipe: Stream modifiers and data types.</title>
+<title>HiPipe: Stream modifiers and data types.</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">hipipe
+   <div id="projectname">HiPipe
    &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
@@ -85,9 +85,6 @@ Macros</h2></td></tr>
 <tr class="memitem:gacf90e1f464c32aa14857b51f72e685ee"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(col_name,  col_type)</td></tr>
 <tr class="memdesc:gacf90e1f464c32aa14857b51f72e685ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for fast column definition.  <a href="#gacf90e1f464c32aa14857b51f72e685ee">More...</a><br /></td></tr>
 <tr class="separator:gacf90e1f464c32aa14857b51f72e685ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacf90e1f464c32aa14857b51f72e685ee"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(col_name,  col_type)</td></tr>
-<tr class="memdesc:gacf90e1f464c32aa14857b51f72e685ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for fast column definition.  <a href="#gacf90e1f464c32aa14857b51f72e685ee">More...</a><br /></td></tr>
-<tr class="separator:gacf90e1f464c32aa14857b51f72e685ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -130,25 +127,25 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:ga8c9625d3d350de34cbb3d3603a2824b2"><td class="memItemLeft" align="right" valign="top">constexpr ranges::view::view&lt; batch_fn &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___stream.html#ga8c9625d3d350de34cbb3d3603a2824b2">hipipe::stream::batch</a> {}</td></tr>
-<tr class="memdesc:ga8c9625d3d350de34cbb3d3603a2824b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulate the stream and yield batches of a different size.  <a href="group___stream.html#ga8c9625d3d350de34cbb3d3603a2824b2">More...</a><br /></td></tr>
-<tr class="separator:ga8c9625d3d350de34cbb3d3603a2824b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga68f442565e5fd800815eb0ca931bbeae"><td class="memItemLeft" align="right" valign="top">constexpr ranges::view::view&lt; buffer_fn &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___stream.html#ga68f442565e5fd800815eb0ca931bbeae">hipipe::stream::buffer</a> {}</td></tr>
-<tr class="memdesc:ga68f442565e5fd800815eb0ca931bbeae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronously buffers the given range.  <a href="group___stream.html#ga68f442565e5fd800815eb0ca931bbeae">More...</a><br /></td></tr>
-<tr class="separator:ga68f442565e5fd800815eb0ca931bbeae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga25fea175303b2a83a9b5d1503cfa541a"><td class="memTemplParams" colspan="2">template&lt;typename... Columns&gt; </td></tr>
-<tr class="memitem:ga25fea175303b2a83a9b5d1503cfa541a"><td class="memTemplItemLeft" align="right" valign="top">constexpr ranges::view::view&lt; detail::create_fn&lt; Columns... &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___stream.html#ga25fea175303b2a83a9b5d1503cfa541a">hipipe::stream::create</a> {}</td></tr>
-<tr class="memdesc:ga25fea175303b2a83a9b5d1503cfa541a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a range to a stream (i.e., to a range of tuples of columns).  <a href="group___stream.html#ga25fea175303b2a83a9b5d1503cfa541a">More...</a><br /></td></tr>
-<tr class="separator:ga25fea175303b2a83a9b5d1503cfa541a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadebf2ca0d9c99e82a23419cec063501e"><td class="memTemplParams" colspan="2">template&lt;typename... Columns&gt; </td></tr>
-<tr class="memitem:gadebf2ca0d9c99e82a23419cec063501e"><td class="memTemplItemLeft" align="right" valign="top">constexpr ranges::view::view&lt; detail::drop_fn&lt; Columns... &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___stream.html#gadebf2ca0d9c99e82a23419cec063501e">hipipe::stream::drop</a> {}</td></tr>
-<tr class="memdesc:gadebf2ca0d9c99e82a23419cec063501e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drops columns from a stream.  <a href="group___stream.html#gadebf2ca0d9c99e82a23419cec063501e">More...</a><br /></td></tr>
-<tr class="separator:gadebf2ca0d9c99e82a23419cec063501e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga31e083506fa747e23bee7f76b9a88814"><td class="memItemLeft" align="right" valign="top">constexpr ranges::view::view&lt; batch_fn &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___stream.html#ga31e083506fa747e23bee7f76b9a88814">hipipe::stream::batch</a> {}</td></tr>
+<tr class="memdesc:ga31e083506fa747e23bee7f76b9a88814"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulate the stream and yield batches of a different size.  <a href="group___stream.html#ga31e083506fa747e23bee7f76b9a88814">More...</a><br /></td></tr>
+<tr class="separator:ga31e083506fa747e23bee7f76b9a88814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3cf6c7ccdd801356e7f6ea5fabb76db8"><td class="memItemLeft" align="right" valign="top">constexpr ranges::view::view&lt; buffer_fn &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___stream.html#ga3cf6c7ccdd801356e7f6ea5fabb76db8">hipipe::stream::buffer</a> {}</td></tr>
+<tr class="memdesc:ga3cf6c7ccdd801356e7f6ea5fabb76db8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asynchronously buffers the given range.  <a href="group___stream.html#ga3cf6c7ccdd801356e7f6ea5fabb76db8">More...</a><br /></td></tr>
+<tr class="separator:ga3cf6c7ccdd801356e7f6ea5fabb76db8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae56891f9101f14ac09d0d247f6b79c24"><td class="memTemplParams" colspan="2">template&lt;typename... Columns&gt; </td></tr>
+<tr class="memitem:gae56891f9101f14ac09d0d247f6b79c24"><td class="memTemplItemLeft" align="right" valign="top">constexpr ranges::view::view&lt; detail::create_fn&lt; Columns... &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___stream.html#gae56891f9101f14ac09d0d247f6b79c24">hipipe::stream::create</a> {}</td></tr>
+<tr class="memdesc:gae56891f9101f14ac09d0d247f6b79c24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a range to a stream (i.e., to a range of tuples of columns).  <a href="group___stream.html#gae56891f9101f14ac09d0d247f6b79c24">More...</a><br /></td></tr>
+<tr class="separator:gae56891f9101f14ac09d0d247f6b79c24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5649697e86eea6020c2035777f98c1be"><td class="memTemplParams" colspan="2">template&lt;typename... Columns&gt; </td></tr>
+<tr class="memitem:ga5649697e86eea6020c2035777f98c1be"><td class="memTemplItemLeft" align="right" valign="top">constexpr ranges::view::view&lt; detail::drop_fn&lt; Columns... &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___stream.html#ga5649697e86eea6020c2035777f98c1be">hipipe::stream::drop</a> {}</td></tr>
+<tr class="memdesc:ga5649697e86eea6020c2035777f98c1be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drops columns from a stream.  <a href="group___stream.html#ga5649697e86eea6020c2035777f98c1be">More...</a><br /></td></tr>
+<tr class="separator:ga5649697e86eea6020c2035777f98c1be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="gacf90e1f464c32aa14857b51f72e685ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gacf90e1f464c32aa14857b51f72e685ee">&#9670;&nbsp;</a></span>HIPIPE_DEFINE_COLUMN <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#gacf90e1f464c32aa14857b51f72e685ee">&#9670;&nbsp;</a></span>HIPIPE_DEFINE_COLUMN</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -172,46 +169,12 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">struct </span>col_name : <a class="code" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a>&lt;col_type&gt; {       \</div><div class="line">    using <a class="code" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base&lt;col_type&gt;::column_base</a>;   \</div><div class="line">    static constexpr <span class="keyword">const</span> <span class="keywordtype">char</span>* name() { <span class="keywordflow">return</span> #col_name; }   \</div><div class="line">};</div><div class="ttc" id="classhipipe_1_1stream_1_1column__base_html"><div class="ttname"><a href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a></div><div class="ttdoc">Base class for hipipe columns. </div><div class="ttdef"><b>Definition:</b> <a href="doc_2gh-pages_2include_2hipipe_2core_2stream_2column_8hpp_source.html#l00025">column.hpp:25</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">struct </span>col_name : <a class="code" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a>&lt;col_type&gt; {       \</div><div class="line">    using <a class="code" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base&lt;col_type&gt;::column_base</a>;   \</div><div class="line">    static constexpr <span class="keyword">const</span> <span class="keywordtype">char</span>* name() { <span class="keywordflow">return</span> #col_name; }   \</div><div class="line">};</div><div class="ttc" id="classhipipe_1_1stream_1_1column__base_html"><div class="ttname"><a href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a></div><div class="ttdoc">Base class for hipipe columns. </div><div class="ttdef"><b>Definition:</b> <a href="column_8hpp_source.html#l00025">column.hpp:25</a></div></div>
 </div><!-- fragment -->
 <p>Macro for fast column definition. </p>
 <p>Under the hood, it creates a new type derived from column_base. </p>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2column_8hpp_source.html#l00091">91</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2column_8hpp_source.html">column.hpp</a>.</p>
-
-</div>
-</div>
-<a id="gacf90e1f464c32aa14857b51f72e685ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gacf90e1f464c32aa14857b51f72e685ee">&#9670;&nbsp;</a></span>HIPIPE_DEFINE_COLUMN <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define HIPIPE_DEFINE_COLUMN</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">col_name, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">col_type&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">struct </span>col_name : <a class="code" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a>&lt;col_type&gt; {       \</div><div class="line">    using <a class="code" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base&lt;col_type&gt;::column_base</a>;   \</div><div class="line">    static constexpr <span class="keyword">const</span> <span class="keywordtype">char</span>* name() { <span class="keywordflow">return</span> #col_name; }   \</div><div class="line">};</div><div class="ttc" id="classhipipe_1_1stream_1_1column__base_html"><div class="ttname"><a href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a></div><div class="ttdoc">Base class for hipipe columns. </div><div class="ttdef"><b>Definition:</b> <a href="doc_2gh-pages_2include_2hipipe_2core_2stream_2column_8hpp_source.html#l00025">column.hpp:25</a></div></div>
-</div><!-- fragment -->
-<p>Macro for fast column definition. </p>
-<p>Under the hood, it creates a new type derived from column_base. </p>
-
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2column_8hpp_source.html#l00091">91</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2column_8hpp_source.html">column.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="column_8hpp_source.html#l00091">91</a> of file <a class="el" href="column_8hpp_source.html">column.hpp</a>.</p>
 
 </div>
 </div>
@@ -267,7 +230,7 @@ template&lt;typename... FromColumns, typename... ByColumns, typename Fun , int D
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2filter_8hpp_source.html#l00128">128</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2filter_8hpp_source.html">filter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="filter_8hpp_source.html#l00128">128</a> of file <a class="el" href="filter_8hpp_source.html">filter.hpp</a>.</p>
 
 </div>
 </div>
@@ -316,7 +279,7 @@ template&lt;typename... FromColumns, typename Fun , int Dim = 1&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2for__each_8hpp_source.html#l00060">60</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2for__each_8hpp_source.html">for_each.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="for__each_8hpp_source.html#l00060">60</a> of file <a class="el" href="for__each_8hpp_source.html">for_each.hpp</a>.</p>
 
 </div>
 </div>
@@ -380,7 +343,7 @@ template&lt;typename FromColumn , typename ToColumn , typename Gen , int Dim = u
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2generate_8hpp_source.html#l00078">78</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2generate_8hpp_source.html">generate.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="generate_8hpp_source.html#l00078">78</a> of file <a class="el" href="generate_8hpp_source.html">generate.hpp</a>.</p>
 
 </div>
 </div>
@@ -421,7 +384,7 @@ template&lt;typename FromColumn , typename MaskColumn , typename ValT  = typenam
 <p>Pad the selected column to a rectangular size. </p>
 <p>Each batch is padded separately.</p>
 <p>The mask of the padded values is created along with the padding. The mask evaluates to <code>true</code> on the positions with the original elements and to <code>false</code> on the positions of the padded elements. The mask column should be a multidimensional vector of type bool/char/int/... The dimensionality of the mask column is used to deduce how many dimensions should be padded in the source column.</p>
-<p>This transformer internally uses <a class="el" href="group___vector.html#ga208b00a9169d6103db53cba74a966405">utility::ndim_pad()</a>.</p>
+<p>This transformer internally uses <a class="el" href="group___vector.html#gacf969a6b1e95eec834e4a1028d2ea9cd">utility::ndim_pad()</a>.</p>
 <p>Example: </p><div class="fragment"><div class="line"><a class="code" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(sequences, std::vector&lt;int&gt;)</div><div class="line"><a class="code" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(sequence_masks, std::vector&lt;bool&gt;)</div><div class="line">std::vector&lt;std::vector&lt;int&gt;&gt; data = {{1, 2}, {3, 4, 5}, {}, {6, 7}};</div><div class="line"><span class="keyword">auto</span> rng = data</div><div class="line">  | create&lt;sequences&gt;(2)</div><div class="line">  | <a class="code" href="group___stream.html#ga81c4a9c96aa1f276e23025b662443b02">pad</a>(from&lt;sequences&gt;, mask&lt;sequence_masks&gt;, -1);</div><div class="line"><span class="comment">// sequences_batch_1 == {{1, 2, -1}, {3, 4, 5}} </span></div><div class="line"><span class="comment">// sequences_batch_2 == {{-1, -1}, {6, 7}} </span></div><div class="line"><span class="comment">// sequence_masks_batch_1 == {{true, true, false}, {true, true, true}} </span></div><div class="line"><span class="comment">// sequence_masks_batch_2 == {{false, false}, {true, true}} </span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">f</td><td>The column to be padded. </td></tr>
@@ -431,7 +394,7 @@ template&lt;typename FromColumn , typename MaskColumn , typename ValT  = typenam
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2pad_8hpp_source.html#l00090">90</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2pad_8hpp_source.html">pad.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pad_8hpp_source.html#l00090">90</a> of file <a class="el" href="pad_8hpp_source.html">pad.hpp</a>.</p>
 
 </div>
 </div>
@@ -495,14 +458,14 @@ template&lt;typename FromColumn , typename ToColumn , typename Prng  = std::mt19
     <tr><td class="paramname">size_from</td><td>The column whose size will be used to initialize the random column. </td></tr>
     <tr><td class="paramname">fill_to</td><td>The column to be filled with random data. </td></tr>
     <tr><td class="paramname">rnddims</td><td>The number of random dimensions. See <a class="el" href="group___vector.html#ga7002827c8f2bf0551767c6b5aa6a4e13">utility::random_fill()</a>. </td></tr>
-    <tr><td class="paramname">dist</td><td>The random distribution to be used. This object is copied on every use to avoid race conditions with <a class="el" href="group___stream.html#ga68f442565e5fd800815eb0ca931bbeae">stream::buffer()</a>. </td></tr>
+    <tr><td class="paramname">dist</td><td>The random distribution to be used. This object is copied on every use to avoid race conditions with <a class="el" href="group___stream.html#ga3cf6c7ccdd801356e7f6ea5fabb76db8">stream::buffer()</a>. </td></tr>
     <tr><td class="paramname">prng</td><td>The random generator to be used. </td></tr>
     <tr><td class="paramname">d</td><td>This is the dimension in which will the generator be applied. E.g., if set to 1, the generator result is considered to be a single example. The default is ndims&lt;ToColumn::batch_type&gt; - ndims&lt;dist(prng)&gt;. This value has to be positive. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2random__fill_8hpp_source.html#l00056">56</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2random__fill_8hpp_source.html">random_fill.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="random__fill_8hpp_source.html#l00056">56</a> of file <a class="el" href="random__fill_8hpp_source.html">random_fill.hpp</a>.</p>
 
 </div>
 </div>
@@ -557,7 +520,7 @@ template&lt;typename... FromColumns, typename... ToColumns, typename Fun , int D
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2transform_8hpp_source.html#l00178">178</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2transform_8hpp_source.html">transform.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="transform_8hpp_source.html#l00178">178</a> of file <a class="el" href="transform_8hpp_source.html">transform.hpp</a>.</p>
 
 </div>
 </div>
@@ -621,7 +584,7 @@ template&lt;typename... FromColumns, typename... ToColumns, typename CondColumn 
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2transform_8hpp_source.html#l00285">285</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2transform_8hpp_source.html">transform.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="transform_8hpp_source.html#l00285">285</a> of file <a class="el" href="transform_8hpp_source.html">transform.hpp</a>.</p>
 
 </div>
 </div>
@@ -691,7 +654,7 @@ template&lt;typename... FromColumns, typename... ToColumns, typename Fun , typen
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2transform_8hpp_source.html#l00394">394</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2transform_8hpp_source.html">transform.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="transform_8hpp_source.html#l00394">394</a> of file <a class="el" href="transform_8hpp_source.html">transform.hpp</a>.</p>
 
 </div>
 </div>
@@ -733,51 +696,51 @@ template&lt;typename Rng , typename... FromColumns, int Dim = 1&gt; </div>
 <p>This operation transforms the stream (i.e., a range of tuples of columns) into a tuple of the types represented by the columns. The data can be unpacked in a specific dimension and then the higher dimensions are joined together.</p>
 <p>If there is only a single column to be unpacked, the result is an std::vector of the corresponding type. If there are multiple columns to be unpacked, the result is a tuple of std::vectors.</p>
 <p>Example: </p><div class="fragment"><div class="line"><a class="code" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(<span class="keywordtype">id</span>, <span class="keywordtype">int</span>)</div><div class="line"><a class="code" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(values, std::vector&lt;double&gt;)</div><div class="line"></div><div class="line">std::vector&lt;std::tuple&lt;int, std::vector&lt;double&gt;&gt;&gt; data = {{3, {5., 7.}}, {1, {2., 4.}}};</div><div class="line"><span class="keyword">auto</span> rng = data | create&lt;id, values&gt;(4);</div><div class="line"></div><div class="line"><span class="comment">// unpack in the first dimesion</span></div><div class="line">std::vector&lt;int&gt; unp_ids;</div><div class="line">std::vector&lt;std::vector&lt;double&gt;&gt; unp_values;</div><div class="line">std::tie(unp_ids, unp_values) = <a class="code" href="group___stream.html#ga953e08640cd203ba8f39bb727e3a1acf">unpack</a>(rng, from&lt;id, values&gt;);</div><div class="line"><span class="comment">// unp_ids == {3, 1}</span></div><div class="line"><span class="comment">// unp_values == {{5., 7.}, {2., 4.}}</span></div><div class="line"></div><div class="line"><span class="comment">// unpack a single column in the second dimesion</span></div><div class="line">std::vector&lt;double&gt; unp_values_dim2;</div><div class="line">unp_values_dim2 = <a class="code" href="group___stream.html#ga953e08640cd203ba8f39bb727e3a1acf">unpack</a>(rng, from&lt;values&gt;, dim&lt;2&gt;);</div><div class="line"><span class="comment">// unp_values_dim2 == {5., 7., 2., 4.}</span></div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2unpack_8hpp_source.html#l00101">101</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2unpack_8hpp_source.html">unpack.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="unpack_8hpp_source.html#l00101">101</a> of file <a class="el" href="unpack_8hpp_source.html">unpack.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="ga8c9625d3d350de34cbb3d3603a2824b2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8c9625d3d350de34cbb3d3603a2824b2">&#9670;&nbsp;</a></span>batch</h2>
+<a id="ga31e083506fa747e23bee7f76b9a88814"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga31e083506fa747e23bee7f76b9a88814">&#9670;&nbsp;</a></span>batch</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr ranges::view::view&lt; batch_fn &gt; hipipe::stream::batch {}</td>
+          <td class="memname">constexpr ranges::view::view&lt;batch_fn&gt; hipipe::stream::batch {}</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Accumulate the stream and yield batches of a different size. </p>
 <p>The batch size of the accumulated columns is allowed to differ between batches. To make one large batch of all the data, use std::numeric_limits&lt;std::size_t&gt;::max().</p>
-<div class="fragment"><div class="line"><a class="code" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(value, <span class="keywordtype">int</span>)</div><div class="line"><span class="keyword">auto</span> rng = view::iota(0, 10)</div><div class="line">  | create&lt;value&gt;(2)  <span class="comment">// batches the data by two examples</span></div><div class="line">  | <a class="code" href="group___stream.html#ga8c9625d3d350de34cbb3d3603a2824b2">batch</a>(3);         <span class="comment">// changes the batch size to three examples</span></div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2batch_8hpp_source.html#l00201">201</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2batch_8hpp_source.html">batch.hpp</a>.</p>
+<div class="fragment"><div class="line"><a class="code" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(value, <span class="keywordtype">int</span>)</div><div class="line"><span class="keyword">auto</span> rng = view::iota(0, 10)</div><div class="line">  | create&lt;value&gt;(2)  <span class="comment">// batches the data by two examples</span></div><div class="line">  | <a class="code" href="group___stream.html#ga31e083506fa747e23bee7f76b9a88814">batch</a>(3);         <span class="comment">// changes the batch size to three examples</span></div></div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="batch_8hpp_source.html#l00201">201</a> of file <a class="el" href="batch_8hpp_source.html">batch.hpp</a>.</p>
 
 </div>
 </div>
-<a id="ga68f442565e5fd800815eb0ca931bbeae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga68f442565e5fd800815eb0ca931bbeae">&#9670;&nbsp;</a></span>buffer</h2>
+<a id="ga3cf6c7ccdd801356e7f6ea5fabb76db8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3cf6c7ccdd801356e7f6ea5fabb76db8">&#9670;&nbsp;</a></span>buffer</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr ranges::view::view&lt; buffer_fn &gt; hipipe::stream::buffer {}</td>
+          <td class="memname">constexpr ranges::view::view&lt;buffer_fn&gt; hipipe::stream::buffer {}</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Asynchronously buffers the given range. </p>
 <p>Asynchronously evaluates the given number of elements in advance. When queried for the next element, it is already prepared. This view works for any range, not only for hipipe streams.</p>
-<div class="fragment"><div class="line">std::vector&lt;int&gt; data = {1, 2, 3, 4, 5};</div><div class="line"><span class="keyword">auto</span> buffered_rng = data</div><div class="line">  | <a class="code" href="group___stream.html#ga86eb72187b1b478933826aed7c5b8f52">ranges::view::transform</a>([](<span class="keywordtype">int</span> v) { <span class="keywordflow">return</span> v + 1; })</div><div class="line">  | <a class="code" href="group___stream.html#ga68f442565e5fd800815eb0ca931bbeae">buffer</a>(2);</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2buffer_8hpp_source.html#l00162">162</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2buffer_8hpp_source.html">buffer.hpp</a>.</p>
+<div class="fragment"><div class="line">std::vector&lt;int&gt; data = {1, 2, 3, 4, 5};</div><div class="line"><span class="keyword">auto</span> buffered_rng = data</div><div class="line">  | <a class="code" href="group___stream.html#ga86eb72187b1b478933826aed7c5b8f52">ranges::view::transform</a>([](<span class="keywordtype">int</span> v) { <span class="keywordflow">return</span> v + 1; })</div><div class="line">  | <a class="code" href="group___stream.html#ga3cf6c7ccdd801356e7f6ea5fabb76db8">buffer</a>(2);</div></div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="buffer_8hpp_source.html#l00162">162</a> of file <a class="el" href="buffer_8hpp_source.html">buffer.hpp</a>.</p>
 
 </div>
 </div>
-<a id="ga25fea175303b2a83a9b5d1503cfa541a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga25fea175303b2a83a9b5d1503cfa541a">&#9670;&nbsp;</a></span>create</h2>
+<a id="gae56891f9101f14ac09d0d247f6b79c24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae56891f9101f14ac09d0d247f6b79c24">&#9670;&nbsp;</a></span>create</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -785,7 +748,7 @@ template&lt;typename Rng , typename... FromColumns, int Dim = 1&gt; </div>
 template&lt;typename... Columns&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">constexpr ranges::view::view&lt; detail::create_fn&lt; Columns... &gt; &gt; hipipe::stream::create {}</td>
+          <td class="memname">constexpr ranges::view::view&lt;detail::create_fn&lt;Columns...&gt; &gt; hipipe::stream::create {}</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -799,12 +762,12 @@ template&lt;typename... Columns&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2create_8hpp_source.html#l00090">90</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2create_8hpp_source.html">create.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="create_8hpp_source.html#l00090">90</a> of file <a class="el" href="create_8hpp_source.html">create.hpp</a>.</p>
 
 </div>
 </div>
-<a id="gadebf2ca0d9c99e82a23419cec063501e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gadebf2ca0d9c99e82a23419cec063501e">&#9670;&nbsp;</a></span>drop</h2>
+<a id="ga5649697e86eea6020c2035777f98c1be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5649697e86eea6020c2035777f98c1be">&#9670;&nbsp;</a></span>drop</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -812,14 +775,14 @@ template&lt;typename... Columns&gt; </div>
 template&lt;typename... Columns&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">constexpr ranges::view::view&lt; detail::drop_fn&lt; Columns... &gt; &gt; hipipe::stream::drop {}</td>
+          <td class="memname">constexpr ranges::view::view&lt;detail::drop_fn&lt;Columns...&gt; &gt; hipipe::stream::drop {}</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Drops columns from a stream. </p>
 <p>Example: </p><div class="fragment"><div class="line"><a class="code" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(<span class="keywordtype">id</span>, <span class="keywordtype">int</span>)</div><div class="line"><a class="code" href="group___stream.html#gacf90e1f464c32aa14857b51f72e685ee">HIPIPE_DEFINE_COLUMN</a>(value, <span class="keywordtype">double</span>)</div><div class="line">std::vector&lt;std::tuple&lt;int, double&gt;&gt; data = {{3, 5.}, {1, 2.}};</div><div class="line"><span class="keyword">auto</span> rng = data | create&lt;id, value&gt;() | drop&lt;id&gt;;</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2drop_8hpp_source.html#l00078">78</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2stream_2drop_8hpp_source.html">drop.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="drop_8hpp_source.html#l00078">78</a> of file <a class="el" href="drop_8hpp_source.html">drop.hpp</a>.</p>
 
 </div>
 </div>

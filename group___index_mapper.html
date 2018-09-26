@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>hipipe: Bidirectional map between indices and values.</title>
+<title>HiPipe: Bidirectional map between indices and values.</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">hipipe
+   <div id="projectname">HiPipe
    &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
@@ -80,15 +80,15 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga2b162c09ee35779655433b6aab494797"><td class="memTemplParams" colspan="2">template&lt;typename Rng , typename T  = ranges::range_value_type_t&lt;Rng&gt;&gt; </td></tr>
-<tr class="memitem:ga2b162c09ee35779655433b6aab494797"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classhipipe_1_1index__mapper.html">index_mapper</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___index_mapper.html#ga2b162c09ee35779655433b6aab494797">hipipe::make_unique_index_mapper</a> (Rng &amp;&amp;rng)</td></tr>
-<tr class="memdesc:ga2b162c09ee35779655433b6aab494797"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make index mapper from unique elements of a range.  <a href="group___index_mapper.html#ga2b162c09ee35779655433b6aab494797">More...</a><br /></td></tr>
-<tr class="separator:ga2b162c09ee35779655433b6aab494797"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae4bfb85ac95596927aa12f4036b30c7f"><td class="memTemplParams" colspan="2">template&lt;typename Rng , typename T  = ranges::range_value_type_t&lt;Rng&gt;&gt; </td></tr>
+<tr class="memitem:gae4bfb85ac95596927aa12f4036b30c7f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classhipipe_1_1index__mapper.html">index_mapper</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___index_mapper.html#gae4bfb85ac95596927aa12f4036b30c7f">hipipe::make_unique_index_mapper</a> (Rng &amp;&amp;rng)</td></tr>
+<tr class="memdesc:gae4bfb85ac95596927aa12f4036b30c7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make index mapper from unique elements of a range.  <a href="group___index_mapper.html#gae4bfb85ac95596927aa12f4036b30c7f">More...</a><br /></td></tr>
+<tr class="separator:gae4bfb85ac95596927aa12f4036b30c7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga2b162c09ee35779655433b6aab494797"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2b162c09ee35779655433b6aab494797">&#9670;&nbsp;</a></span>make_unique_index_mapper()</h2>
+<a id="gae4bfb85ac95596927aa12f4036b30c7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae4bfb85ac95596927aa12f4036b30c7f">&#9670;&nbsp;</a></span>make_unique_index_mapper()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -96,7 +96,7 @@ Functions</h2></td></tr>
 template&lt;typename Rng , typename T  = ranges::range_value_type_t&lt;Rng&gt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classhipipe_1_1index__mapper.html">index_mapper</a>&lt; T &gt; hipipe::make_unique_index_mapper </td>
+          <td class="memname"><a class="el" href="classhipipe_1_1index__mapper.html">index_mapper</a>&lt;T&gt; hipipe::make_unique_index_mapper </td>
           <td>(</td>
           <td class="paramtype">Rng &amp;&amp;&#160;</td>
           <td class="paramname"><em>rng</em></td><td>)</td>
@@ -106,7 +106,7 @@ template&lt;typename Rng , typename T  = ranges::range_value_type_t&lt;Rng&gt;&g
 </div><div class="memdoc">
 
 <p>Make index mapper from unique elements of a range. </p>
-<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::string&gt; data = {<span class="stringliteral">&quot;bum&quot;</span>, <span class="stringliteral">&quot;bada&quot;</span>, <span class="stringliteral">&quot;bum&quot;</span>, <span class="stringliteral">&quot;bum&quot;</span>, <span class="stringliteral">&quot;bada&quot;</span>, <span class="stringliteral">&quot;yeah!&quot;</span>};</div><div class="line">index_mapper&lt;std::string&gt; mapper = <a class="code" href="group___index_mapper.html#ga2b162c09ee35779655433b6aab494797">make_unique_index_mapper</a>(data);</div><div class="line"><span class="comment">// mapper.values() == {&quot;bum&quot;, &quot;bada&quot;, &quot;yeah!&quot;}</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::string&gt; data = {<span class="stringliteral">&quot;bum&quot;</span>, <span class="stringliteral">&quot;bada&quot;</span>, <span class="stringliteral">&quot;bum&quot;</span>, <span class="stringliteral">&quot;bum&quot;</span>, <span class="stringliteral">&quot;bada&quot;</span>, <span class="stringliteral">&quot;yeah!&quot;</span>};</div><div class="line">index_mapper&lt;std::string&gt; mapper = <a class="code" href="group___index_mapper.html#gae4bfb85ac95596927aa12f4036b30c7f">make_unique_index_mapper</a>(data);</div><div class="line"><span class="comment">// mapper.values() == {&quot;bum&quot;, &quot;bada&quot;, &quot;yeah!&quot;}</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rng</td><td>The range of values to be inserted. </td></tr>
   </table>
@@ -114,7 +114,7 @@ template&lt;typename Rng , typename T  = ranges::range_value_type_t&lt;Rng&gt;&g
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The index mapper made of unique values of the range. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2index__mapper_8hpp_source.html#l00212">212</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2core_2index__mapper_8hpp_source.html">index_mapper.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="index__mapper_8hpp_source.html#l00212">212</a> of file <a class="el" href="index__mapper_8hpp_source.html">index_mapper.hpp</a>.</p>
 
 </div>
 </div>

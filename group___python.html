@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>hipipe: Python tools and bindings.</title>
+<title>HiPipe: Python tools and bindings.</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">hipipe
+   <div id="projectname">HiPipe
    &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
@@ -103,11 +103,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <tr class="memitem:gac60806a8735d4b0061f9442c36b6a51b"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___python.html#gac60806a8735d4b0061f9442c36b6a51b">hipipe::python::utility::is_registered</a> ()</td></tr>
 <tr class="memdesc:gac60806a8735d4b0061f9442c36b6a51b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether a converter for the given C++ class is registered in boost::python.  <a href="group___python.html#gac60806a8735d4b0061f9442c36b6a51b">More...</a><br /></td></tr>
 <tr class="separator:gac60806a8735d4b0061f9442c36b6a51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga895b542b31e57b3a65eb399da83f5658"><td class="memTemplParams" colspan="2"><a id="ga895b542b31e57b3a65eb399da83f5658"></a>
+<tr class="memitem:ga70141fe18cdffc51762ab2b790de38c4"><td class="memTemplParams" colspan="2"><a id="ga70141fe18cdffc51762ab2b790de38c4"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ga895b542b31e57b3a65eb399da83f5658"><td class="memTemplItemLeft" align="right" valign="top">PyObject *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___python.html#ga895b542b31e57b3a65eb399da83f5658">hipipe::python::utility::to_ndarray</a> (const std::vector&lt; T &gt; &amp;vec)</td></tr>
-<tr class="memdesc:ga895b542b31e57b3a65eb399da83f5658"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build ndarray from a one dimensional std::vector. <br /></td></tr>
-<tr class="separator:ga895b542b31e57b3a65eb399da83f5658"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga70141fe18cdffc51762ab2b790de38c4"><td class="memTemplItemLeft" align="right" valign="top">PyObject *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___python.html#ga70141fe18cdffc51762ab2b790de38c4">hipipe::python::utility::to_ndarray</a> (const std::vector&lt; T &gt; &amp;vec)</td></tr>
+<tr class="memdesc:ga70141fe18cdffc51762ab2b790de38c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build ndarray from a one dimensional std::vector. <br /></td></tr>
+<tr class="separator:ga70141fe18cdffc51762ab2b790de38c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
@@ -132,7 +132,7 @@ template&lt;typename Tuple &gt; </div>
 <p>Convert a tuple of hipipe columns into a Python <code>dict</code>. </p>
 <p>The dict is indexed by <code>column.name</code> and the value is <code>column.value</code>. The values (i.e, the batches) are converted to Python lists using <a class="el" href="group___python.html#ga88dcae35a2c8fc73e1e408788e38c886" title="Create a Python list-like object out of a multidimensional std::vector. ">to_python()</a>. If the batch is a multidimensional std::vector&lt;std::vector&lt;...&gt;&gt;, it is converted to multidimensional Python list. </p>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2utility_2pyboost__column__converter_8hpp_source.html#l00085">85</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2utility_2pyboost__column__converter_8hpp_source.html">pyboost_column_converter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pyboost__column__converter_8hpp_source.html#l00085">85</a> of file <a class="el" href="pyboost__column__converter_8hpp_source.html">pyboost_column_converter.hpp</a>.</p>
 
 </div>
 </div>
@@ -156,7 +156,7 @@ template&lt;typename T &gt; </div>
 <p>Check whether a converter for the given C++ class is registered in boost::python. </p>
 <p>Beware that this function will report false for primitive types such as <code>int</code> or <code>double</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2utility_2pyboost__is__registered_8hpp_source.html#l00023">23</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2utility_2pyboost__is__registered_8hpp_source.html">pyboost_is_registered.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pyboost__is__registered_8hpp_source.html#l00023">23</a> of file <a class="el" href="pyboost__is__registered_8hpp_source.html">pyboost_is_registered.hpp</a>.</p>
 
 </div>
 </div>
@@ -182,7 +182,7 @@ template&lt;typename Rng &gt; </div>
 <p>Only a view of the given range is created, therefore, the given range cannot be an rvalue of a container.</p>
 <p>Tuples of columns are converted using <a class="el" href="group___python.html#gacfc1a8b57ceab75173df23054fafdc21" title="Convert a tuple of hipipe columns into a Python dict. ">columns_to_python()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2stream_2converter_8hpp_source.html#l00029">29</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2stream_2converter_8hpp_source.html">converter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="converter_8hpp_source.html#l00029">29</a> of file <a class="el" href="converter_8hpp_source.html">converter.hpp</a>.</p>
 
 </div>
 </div>
@@ -207,7 +207,7 @@ template&lt;typename T &gt; </div>
 <p>Create a Python list-like object out of a multidimensional std::vector. </p>
 <p>If the vector is multidimensional, i.e., std::vector&lt;std::vector&lt;...&gt;&gt;, the resulting Python structure will be multidimensional as well. </p>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2utility_2pyboost__column__converter_8hpp_source.html#l00070">70</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2utility_2pyboost__column__converter_8hpp_source.html">pyboost_column_converter.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pyboost__column__converter_8hpp_source.html#l00070">70</a> of file <a class="el" href="pyboost__column__converter_8hpp_source.html">pyboost_column_converter.hpp</a>.</p>
 
 </div>
 </div>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>hipipe: hipipe::python::range&lt; Rng &gt; Class Template Reference</title>
+<title>HiPipe: hipipe::python::range&lt; Rng &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">hipipe
+   <div id="projectname">HiPipe
    &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
@@ -79,22 +79,10 @@ $(function() {
 <p>Python adapter for C++ ranges.  
  <a href="classhipipe_1_1python_1_1range.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2range_8hpp_source.html">/home/floop/Workspace/20180906_Iterait/hipipe/doc/gh-pages/include/hipipe/python/range.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="range_8hpp_source.html">hipipe/python/range.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a102829196b9b47232915cb631e8e7263"><td class="memItemLeft" align="right" valign="top"><a id="a102829196b9b47232915cb631e8e7263"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1python_1_1range.html#a102829196b9b47232915cb631e8e7263">range</a> ()=default</td></tr>
-<tr class="memdesc:a102829196b9b47232915cb631e8e7263"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default empty constructor. <br /></td></tr>
-<tr class="separator:a102829196b9b47232915cb631e8e7263"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b8c46f26bf378182fa20a304ad02173"><td class="memItemLeft" align="right" valign="top"><a id="a7b8c46f26bf378182fa20a304ad02173"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1python_1_1range.html#a7b8c46f26bf378182fa20a304ad02173">range</a> (Rng rng)</td></tr>
-<tr class="memdesc:a7b8c46f26bf378182fa20a304ad02173"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct python range from a C++ range. This function creates a copy of the range. <br /></td></tr>
-<tr class="separator:a7b8c46f26bf378182fa20a304ad02173"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af87194379c933ad83c58ca2cea09d637"><td class="memItemLeft" align="right" valign="top"><a id="af87194379c933ad83c58ca2cea09d637"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1python_1_1range.html#af87194379c933ad83c58ca2cea09d637">range</a> (std::shared_ptr&lt; Rng &gt; rng_ptr)</td></tr>
-<tr class="memdesc:af87194379c933ad83c58ca2cea09d637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct python range from a std::shared_ptr to a C++ range. <br /></td></tr>
-<tr class="separator:af87194379c933ad83c58ca2cea09d637"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a102829196b9b47232915cb631e8e7263"><td class="memItemLeft" align="right" valign="top"><a id="a102829196b9b47232915cb631e8e7263"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1python_1_1range.html#a102829196b9b47232915cb631e8e7263">range</a> ()=default</td></tr>
 <tr class="memdesc:a102829196b9b47232915cb631e8e7263"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default empty constructor. <br /></td></tr>
@@ -116,9 +104,9 @@ class hipipe::python::range&lt; Rng &gt;</h3>
 <p>This class provides <code>__next__</code>, <code>__iter__</code>, <code>__len__</code>, and <code>__getitem__</code> methods emulating python containers. <code>__getitem__</code> and <code>__len__</code> are provided only for random access ranges.</p>
 <p>Note that this class is useful for infinite ranges and views. However, for normal finite ranges, it seems to be many times slower than using boost::python::list.</p>
 <p>Example: </p><div class="fragment"><div class="line">std::vector&lt;int&gt; data = {1, 2, 3};</div><div class="line">range&lt;std::vector&lt;int&gt;&gt; py_range{std::move(data)};</div><div class="line"><span class="comment">// py_range is now a registered boost::python object</span></div><div class="line"><span class="comment">// supporting iteration and random access.</span></div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2range_8hpp_source.html#l00060">60</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2range_8hpp_source.html">range.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="range_8hpp_source.html#l00060">60</a> of file <a class="el" href="range_8hpp_source.html">range.hpp</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/floop/Workspace/20180906_Iterait/hipipe/doc/gh-pages/include/hipipe/python/<a class="el" href="doc_2gh-pages_2include_2hipipe_2python_2range_8hpp_source.html">range.hpp</a></li>
+<li>hipipe/python/<a class="el" href="range_8hpp_source.html">range.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

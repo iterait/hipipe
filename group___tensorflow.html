@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>hipipe: TensorFlow graph evaluation.</title>
+<title>HiPipe: TensorFlow graph evaluation.</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">hipipe
+   <div id="projectname">HiPipe
    &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
@@ -73,24 +73,24 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga71cbb6fc7fb4dc3f02946d922ce4910f"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt;::tensorflow::Session &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___tensorflow.html#ga71cbb6fc7fb4dc3f02946d922ce4910f">hipipe::tensorflow::load_graph</a> (std::experimental::filesystem::path graph_file_name)</td></tr>
-<tr class="memdesc:ga71cbb6fc7fb4dc3f02946d922ce4910f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a session out of tensorflow frozen graph.  <a href="group___tensorflow.html#ga71cbb6fc7fb4dc3f02946d922ce4910f">More...</a><br /></td></tr>
-<tr class="separator:ga71cbb6fc7fb4dc3f02946d922ce4910f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad27977ef9e88a4c9efe5a64f7e18a156"><td class="memTemplParams" colspan="2">template&lt;typename... OutTs, typename... InTs&gt; </td></tr>
-<tr class="memitem:gad27977ef9e88a4c9efe5a64f7e18a156"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; std::tuple&lt; std::vector&lt; OutTs &gt;... &gt;, std::vector&lt; std::vector&lt; long &gt; &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tensorflow.html#gad27977ef9e88a4c9efe5a64f7e18a156">hipipe::tensorflow::run_graph</a> (::tensorflow::Session &amp;session, const std::vector&lt; std::string &gt; &amp;input_names, const std::tuple&lt; std::vector&lt; InTs &gt;... &gt; &amp;input_data, const std::vector&lt; std::vector&lt; long &gt;&gt; &amp;input_shapes, const std::vector&lt; std::string &gt; &amp;output_names)</td></tr>
-<tr class="memdesc:gad27977ef9e88a4c9efe5a64f7e18a156"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run a session and feed its graph with the provided inputs.  <a href="group___tensorflow.html#gad27977ef9e88a4c9efe5a64f7e18a156">More...</a><br /></td></tr>
-<tr class="separator:gad27977ef9e88a4c9efe5a64f7e18a156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae705a3c18beb4202bb0e2f85086f2d61"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt;::tensorflow::Session &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___tensorflow.html#gae705a3c18beb4202bb0e2f85086f2d61">hipipe::tensorflow::load_graph</a> (std::experimental::filesystem::path graph_file_name)</td></tr>
+<tr class="memdesc:gae705a3c18beb4202bb0e2f85086f2d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a session out of tensorflow frozen graph.  <a href="group___tensorflow.html#gae705a3c18beb4202bb0e2f85086f2d61">More...</a><br /></td></tr>
+<tr class="separator:gae705a3c18beb4202bb0e2f85086f2d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga016cb05ebe848907126514d700c10941"><td class="memTemplParams" colspan="2">template&lt;typename... OutTs, typename... InTs&gt; </td></tr>
+<tr class="memitem:ga016cb05ebe848907126514d700c10941"><td class="memTemplItemLeft" align="right" valign="top">std::tuple&lt; std::tuple&lt; std::vector&lt; OutTs &gt;... &gt;, std::vector&lt; std::vector&lt; long &gt; &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tensorflow.html#ga016cb05ebe848907126514d700c10941">hipipe::tensorflow::run_graph</a> (::tensorflow::Session &amp;session, const std::vector&lt; std::string &gt; &amp;input_names, const std::tuple&lt; std::vector&lt; InTs &gt;... &gt; &amp;input_data, const std::vector&lt; std::vector&lt; long &gt;&gt; &amp;input_shapes, const std::vector&lt; std::string &gt; &amp;output_names)</td></tr>
+<tr class="memdesc:ga016cb05ebe848907126514d700c10941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run a session and feed its graph with the provided inputs.  <a href="group___tensorflow.html#ga016cb05ebe848907126514d700c10941">More...</a><br /></td></tr>
+<tr class="separator:ga016cb05ebe848907126514d700c10941"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga71cbb6fc7fb4dc3f02946d922ce4910f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga71cbb6fc7fb4dc3f02946d922ce4910f">&#9670;&nbsp;</a></span>load_graph()</h2>
+<a id="gae705a3c18beb4202bb0e2f85086f2d61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae705a3c18beb4202bb0e2f85086f2d61">&#9670;&nbsp;</a></span>load_graph()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;::tensorflow::Session &gt; hipipe::tensorflow::load_graph </td>
+          <td class="memname">std::unique_ptr&lt;::tensorflow::Session&gt; hipipe::tensorflow::load_graph </td>
           <td>(</td>
           <td class="paramtype">std::experimental::filesystem::path&#160;</td>
           <td class="paramname"><em>graph_file_name</em></td><td>)</td>
@@ -110,8 +110,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gad27977ef9e88a4c9efe5a64f7e18a156"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad27977ef9e88a4c9efe5a64f7e18a156">&#9670;&nbsp;</a></span>run_graph()</h2>
+<a id="ga016cb05ebe848907126514d700c10941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga016cb05ebe848907126514d700c10941">&#9670;&nbsp;</a></span>run_graph()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -119,7 +119,7 @@ Functions</h2></td></tr>
 template&lt;typename... OutTs, typename... InTs&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::tuple&lt; std::tuple&lt; std::vector&lt; OutTs &gt;... &gt;, std::vector&lt; std::vector&lt; long &gt; &gt; &gt; hipipe::tensorflow::run_graph </td>
+          <td class="memname">std::tuple&lt;std::tuple&lt;std::vector&lt;OutTs&gt;...&gt;, std::vector&lt;std::vector&lt;long&gt; &gt; &gt; hipipe::tensorflow::run_graph </td>
           <td>(</td>
           <td class="paramtype">::tensorflow::Session &amp;&#160;</td>
           <td class="paramname"><em>session</em>, </td>
@@ -157,7 +157,7 @@ template&lt;typename... OutTs, typename... InTs&gt; </div>
 </div><div class="memdoc">
 
 <p>Run a session and feed its graph with the provided inputs. </p>
-<p>The session can be obtained using <a class="el" href="group___tensorflow.html#ga71cbb6fc7fb4dc3f02946d922ce4910f" title="Make a session out of tensorflow frozen graph. ">load_graph()</a>.</p>
+<p>The session can be obtained using <a class="el" href="group___tensorflow.html#gae705a3c18beb4202bb0e2f85086f2d61" title="Make a session out of tensorflow frozen graph. ">load_graph()</a>.</p>
 <p>The lengths of input_names, input_shapes and input_data arguments have to be equal. The lengths of output_names and the OutT template parameter list have to be equal.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -171,7 +171,7 @@ template&lt;typename... OutTs, typename... InTs&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Tuple of output data and their corresponding shapes. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="doc_2gh-pages_2include_2hipipe_2tensorflow_2run__graph_8hpp_source.html#l00043">43</a> of file <a class="el" href="doc_2gh-pages_2include_2hipipe_2tensorflow_2run__graph_8hpp_source.html">run_graph.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="run__graph_8hpp_source.html#l00043">43</a> of file <a class="el" href="run__graph_8hpp_source.html">run_graph.hpp</a>.</p>
 
 </div>
 </div>
