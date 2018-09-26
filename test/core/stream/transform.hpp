@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -12,10 +12,10 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/stream/create.hpp>
-#include <cxtream/core/stream/drop.hpp>
-#include <cxtream/core/stream/transform.hpp>
-#include <cxtream/core/stream/unpack.hpp>
+#include <hipipe/core/stream/create.hpp>
+#include <hipipe/core/stream/drop.hpp>
+#include <hipipe/core/stream/transform.hpp>
+#include <hipipe/core/stream/unpack.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/algorithm/count.hpp>
@@ -35,7 +35,7 @@ std::mt19937 prng{1000033};
 
 auto unique_vec_to_int_vec()
 {
-    using namespace cxtream::stream;
+    using namespace hipipe::stream;
     return
         transform(from<UniqueVec>, to<IntVec>, [](auto&& ptrs) {
             return ptrs | ranges::view::indirect;

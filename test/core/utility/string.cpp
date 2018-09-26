@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -10,7 +10,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE utility_string_test
 
-#include <cxtream/core/utility/string.hpp>
+#include <hipipe/core/utility/string.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <vector>
 
-using namespace cxtream::utility;
+using namespace hipipe::utility;
 
 BOOST_AUTO_TEST_CASE(test_string_to__string)
 {

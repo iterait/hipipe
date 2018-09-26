@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -12,18 +12,18 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/stream/generate.hpp>
+#include <hipipe/core/stream/generate.hpp>
 
 #include <boost/test/unit_test.hpp>
 
 #include <vector>
 
-using namespace cxtream::stream;
-using namespace cxtream::utility;
+using namespace hipipe::stream;
+using namespace hipipe::utility;
 
-CXTREAM_DEFINE_COLUMN(IntVec3d, std::vector<std::vector<int>>)
-CXTREAM_DEFINE_COLUMN(Generated, std::vector<int>)
-CXTREAM_DEFINE_COLUMN(Generated3d, std::vector<std::vector<std::vector<int>>>)
+HIPIPE_DEFINE_COLUMN(IntVec3d, std::vector<std::vector<int>>)
+HIPIPE_DEFINE_COLUMN(Generated, std::vector<int>)
+HIPIPE_DEFINE_COLUMN(Generated3d, std::vector<std::vector<std::vector<int>>>)
 
 BOOST_AUTO_TEST_CASE(test_simple)
 {

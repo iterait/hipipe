@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -14,14 +14,14 @@
 
 #include "transform.hpp"
 
-#include <cxtream/core/stream/random_fill.hpp>
+#include <hipipe/core/stream/random_fill.hpp>
 
-using namespace cxtream::stream;
+using namespace hipipe::stream;
 
 BOOST_AUTO_TEST_CASE(test_conditional_simple)
 {
-    CXTREAM_DEFINE_COLUMN(dogs, int)
-    CXTREAM_DEFINE_COLUMN(do_trans, int)
+    HIPIPE_DEFINE_COLUMN(dogs, int)
+    HIPIPE_DEFINE_COLUMN(do_trans, int)
     std::vector<int> data_int = {3, 1, 5, 7, 2, 13};
     std::vector<int> data_cond = {true, true, false, false, true, false};
     auto rng = ranges::view::zip(data_int, data_cond)
@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE(test_conditional_simple)
 
 BOOST_AUTO_TEST_CASE(test_conditional_with_random_fill)
 {
-    CXTREAM_DEFINE_COLUMN(dogs, int)
-    CXTREAM_DEFINE_COLUMN(do_trans, char)
+    HIPIPE_DEFINE_COLUMN(dogs, int)
+    HIPIPE_DEFINE_COLUMN(do_trans, char)
     const std::vector<int> data_int = {3, 1, 5, 7, 2, 13};
     std::bernoulli_distribution dist{0.5};
     auto rng = data_int
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(test_conditional_with_random_fill)
 
 BOOST_AUTO_TEST_CASE(test_probabilistic_simple)
 {
-    CXTREAM_DEFINE_COLUMN(dogs, int)
+    HIPIPE_DEFINE_COLUMN(dogs, int)
     std::vector<int> data = {3, 1, 5, 7, 2, 13};
     auto rng = data
       | create<dogs>()

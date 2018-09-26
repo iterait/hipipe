@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -10,8 +10,8 @@
 #ifndef TEST_COMMON_HPP
 #define TEST_COMMON_HPP
 
-#include <cxtream/core/stream/column.hpp>
-#include <cxtream/core/utility/tuple.hpp>
+#include <hipipe/core/stream/column.hpp>
+#include <hipipe/core/utility/tuple.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -21,14 +21,14 @@
 
 // make the tuple print visible for boost test
 // this is forbidden by the standard (simple workarounds?)
-namespace std { using cxtream::utility::operator<<; }
+namespace std { using hipipe::utility::operator<<; }
 
-CXTREAM_DEFINE_COLUMN(Int, int)
-CXTREAM_DEFINE_COLUMN(Double, double)
-CXTREAM_DEFINE_COLUMN(Unique, std::unique_ptr<int>)
-CXTREAM_DEFINE_COLUMN(Shared, std::shared_ptr<int>)
-CXTREAM_DEFINE_COLUMN(UniqueVec, std::vector<std::unique_ptr<int>>)
-CXTREAM_DEFINE_COLUMN(IntVec, std::vector<int>)
+HIPIPE_DEFINE_COLUMN(Int, int)
+HIPIPE_DEFINE_COLUMN(Double, double)
+HIPIPE_DEFINE_COLUMN(Unique, std::unique_ptr<int>)
+HIPIPE_DEFINE_COLUMN(Shared, std::shared_ptr<int>)
+HIPIPE_DEFINE_COLUMN(UniqueVec, std::vector<std::unique_ptr<int>>)
+HIPIPE_DEFINE_COLUMN(IntVec, std::vector<int>)
 
 std::vector<std::tuple<int, std::vector<std::unique_ptr<int>>>> generate_move_only_data()
 {

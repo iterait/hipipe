@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -7,8 +7,8 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <cxtream/python/initialize.hpp>
-#include <cxtream/python/range.hpp>
+#include <hipipe/python/initialize.hpp>
+#include <hipipe/python/range.hpp>
 
 #include <range/v3/view/all.hpp>
 
@@ -16,7 +16,7 @@
 #include <vector>
 
 namespace py = boost::python;
-namespace cxpy = cxtream::python;
+namespace cxpy = hipipe::python;
 
 using list_iter_t = cxpy::range<std::list<long>>;
 list_iter_t empty_list_range()
@@ -44,8 +44,8 @@ view_iter_t view_range()
 
 BOOST_PYTHON_MODULE(range_py_cpp)
 {
-    // initialize cxtream OpenCV converters, exceptions, etc.
-    cxtream::python::initialize();
+    // initialize hipipe OpenCV converters, exceptions, etc.
+    hipipe::python::initialize();
 
     // expose the functions
     py::def("empty_list_range", empty_list_range);

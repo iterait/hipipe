@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -12,7 +12,7 @@
 
 #include "common.hpp"
 
-#include <cxtream/core/index_mapper.hpp>
+#include <hipipe/core/index_mapper.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/all.hpp>
@@ -22,7 +22,7 @@
 
 #include <stdexcept>
 
-using namespace cxtream;
+using namespace hipipe;
 
 BOOST_AUTO_TEST_CASE(test_construction)
 {

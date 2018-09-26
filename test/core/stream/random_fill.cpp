@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -12,9 +12,9 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/stream/create.hpp>
-#include <cxtream/core/stream/random_fill.hpp>
-#include <cxtream/core/utility/vector.hpp>
+#include <hipipe/core/stream/create.hpp>
+#include <hipipe/core/stream/random_fill.hpp>
+#include <hipipe/core/utility/vector.hpp>
 
 #include <range/v3/action/sort.hpp>
 #include <range/v3/view/unique.hpp>
@@ -23,11 +23,11 @@
 
 #include <vector>
 
-using namespace cxtream::stream;
-using namespace cxtream::utility;
+using namespace hipipe::stream;
+using namespace hipipe::utility;
 
-CXTREAM_DEFINE_COLUMN(IntVec2d, std::vector<std::vector<int>>)
-CXTREAM_DEFINE_COLUMN(Random, std::vector<double>)
+HIPIPE_DEFINE_COLUMN(IntVec2d, std::vector<std::vector<int>>)
+HIPIPE_DEFINE_COLUMN(Random, std::vector<double>)
 
 template<typename Vector2d>
 void check(Vector2d vec, std::vector<long> unique, long unique_total)

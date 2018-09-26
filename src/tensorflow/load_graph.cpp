@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -7,13 +7,13 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <cxtream/tensorflow/load_graph.hpp>
+#include <hipipe/tensorflow/load_graph.hpp>
 
 #include <tensorflow/core/framework/graph.pb.h>
 
 #include <exception>
 
-namespace cxtream::tensorflow {
+namespace hipipe::tensorflow {
 
 namespace fs = std::experimental::filesystem;
 
@@ -42,4 +42,4 @@ std::unique_ptr<::tensorflow::Session> load_graph(fs::path graph_file_name) {
   return session;
 }
 
-}  // namespace cxtream::tensorflow
+}  // namespace hipipe::tensorflow

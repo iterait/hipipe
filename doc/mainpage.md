@@ -7,17 +7,17 @@ Preface
 -------
 ---
 
-__cxtream__ is a C++ library for efficient data processing. Its main purpose is to simplify
+__HiPipe__ is a C++ library for efficient data processing. Its main purpose is to simplify
 and acclelerate data preparation for deep learning models, but it is generic enough to be used
 in many other areas.
 
-__cxtream__ lets the programmer build intuitive data streams that transform,
+__HiPipe__ lets the programmer build intuitive data streams that transform,
 combine and filter the data that pass through. Those streams are compiled,
 batched, and asynchronous, therefore maximizing the utilization of the provided
 hardware.
 
 The complete source code can be downloaded from our official GitHub
-[repository](https://github.com/Cognexa/cxtream).
+[repository](https://github.com/iterait/hipipe).
 
 **This project is under heavy development. The API is continuously changing without regard
 to backward compatibility.**
@@ -26,10 +26,10 @@ Quick Start
 -----------
 ---
 
-Before proceeding, please install __cxtream__ by following the
+Before proceeding, please install __HiPipe__ by following the
 \ref installation "installation guide".
 
-__cxtream__ provides many smaller utilities, such as loading \ref CSV "CSV files" to
+__HiPipe__ provides many smaller utilities, such as loading \ref CSV "CSV files" to
 \ref Dataframe "dataframes", \ref Base64 "base64 decoders",
 \ref Groups "data splitting" and [much more](modules.html). However, probably the most
 useful funcionality of the library is \ref Stream "data stream processing".
@@ -40,7 +40,7 @@ Ranges will soon become a fundamental part of C++ standard and Range-v3 library
 is an experimental implementation of the proposal. To sum up the idea, a range can be
 thought of as a pair of begin/end iterators with potentially infinite distance.
 
-Now, a stream in the context of __cxtream__ is a range of tuples, where the tuples
+Now, a stream in the context of __HiPipe__ is a range of tuples, where the tuples
 contain so-called _columns_.  Each column contains a single _batch_ of data of
 the same type. To demonstrate this concept on an example, let us assume that
 we have a table of four users and each user consists of two
@@ -56,8 +56,8 @@ columns: `login` and `age`:
 A stream made of such data with batch size of two may look as following:
 
 ```{.cpp}
-CXTREAM_DEFINE_COLUMN(login, std::string)  # helper macro to define a column of strings
-CXTREAM_DEFINE_COLUMN(age, int)
+HIPIPE_DEFINE_COLUMN(login, std::string)  # helper macro to define a column of strings
+HIPIPE_DEFINE_COLUMN(age, int)
 
 std::tuple<login, age> data1 = {{"marry", "ted"}, {24, 41}},
 std::tuple<login, age> data2 = {{"anna", "josh"}, {16, 59}};
@@ -65,16 +65,16 @@ std::vector<std::tuple<login, age>> stream = {data1, data2};
 ```
 
 Of course, the stream may as well be loaded from a file or a database and may even
-be infinite. __cxtream__ provides \ref Stream "many tools" to manipulate such
+be infinite. __HiPipe__ provides \ref Stream "many tools" to manipulate such
 streams using the pipe "|" operator. The following example demonstrates the main idea of
 stream pipelining (see the full example in [example.cpp](example_8cpp_source.html)):
 
 ```{.cpp}
-namespace cxs = cxtream::stream;
+namespace cxs = hipipe::stream;
 using cxs::from; using cxs::to; using cxs::by; using cxs::dim;
 
-CXTREAM_DEFINE_COLUMN(login, std::string)  // helper macro to define a column of strings
-CXTREAM_DEFINE_COLUMN(age, int)
+HIPIPE_DEFINE_COLUMN(login, std::string)  // helper macro to define a column of strings
+HIPIPE_DEFINE_COLUMN(age, int)
 
 std::vector<std::string> logins = {"marry", "ted", "anna", "josh"};
 std::vector<int>           ages = {     24,    41,     16,     59};
@@ -126,7 +126,7 @@ Multidimensional data
 ---------------------
 ---
 
-In __cxtream__, when we talk about multidimensional data, we are talking about nested
+In __HiPipe__, when we talk about multidimensional data, we are talking about nested
 ranges. For instance, `std::vector<int>` is a one dimensional vector and
 `std::vector<std::vector<int>>` is a two dimensional vector.
 
@@ -135,7 +135,7 @@ that denotes in which dimension should the modifier operate. For instance,
 consider the transform() from our previous example:
 
 ```{.cpp}
-CXTREAM_DEFINE_COLUMN(login, std::string)
+HIPIPE_DEFINE_COLUMN(login, std::string)
 
 ...
 
@@ -155,7 +155,7 @@ CXTREAM_DEFINE_COLUMN(login, std::string)
     })
 ```
 
-In __cxtream__, there are no constraints on the shape of the columns. Batch
+In __HiPipe__, there are no constraints on the shape of the columns. Batch
 sizes can differ batch to batch, as well as the sizes of the data across a
 single dimension. For instance, it is possible to have a batch of variably long
 sequences (e.g., a batch of video frames from videos of different length) and
@@ -165,20 +165,13 @@ solution is to wrap the data in `std::vector` (but any reasonable container will
 suffice):
 
 ```
-CXTREAM_DEFINE_COLUMN(stock_price_evolution, std::vector<double>)
+HIPIPE_DEFINE_COLUMN(stock_price_evolution, std::vector<double>)
 ```
 
 Python
 ------
 ---
 
-__cxtream__ provides a convenient functions to convert and stream data to Python.
+__HiPipe__ provides a convenient functions to convert and stream data to Python.
 This part of the documentation is yet to be prepared.
 Meanwhile, please refer to the \ref Python "Python binding API" documentation.
-
-Example
--------
----
-
-Please refer to [Cognexa/cxMNIST](https://github.com/Cognexa/cxMNIST) repository for
-a comprehensive usage example.

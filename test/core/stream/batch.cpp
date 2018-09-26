@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -12,7 +12,7 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/stream/batch.hpp>
+#include <hipipe/core/stream/batch.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/indirect.hpp>
@@ -23,7 +23,7 @@
 #include <vector>
 #include <memory>
 
-using namespace cxtream::stream;
+using namespace hipipe::stream;
 
 auto generate_batched_data(std::vector<int> batch_sizes)
 {

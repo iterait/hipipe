@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -12,7 +12,7 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/utility/tuple.hpp>
+#include <hipipe/core/utility/tuple.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/all.hpp>
@@ -23,11 +23,11 @@
 #include <memory>
 #include <vector>
 
-using namespace cxtream::utility;
+using namespace hipipe::utility;
 
 // make the tuple print visible for boost test
 // this is forbidden by the standard (simple workarounds?)
-namespace std { using cxtream::utility::operator<<; }
+namespace std { using hipipe::utility::operator<<; }
 
 BOOST_AUTO_TEST_CASE(test_variadic_find)
 {

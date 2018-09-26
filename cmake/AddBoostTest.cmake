@@ -6,7 +6,7 @@ function(add_boost_test EXECUTABLE_FILE_NAME SOURCE_FILE_NAME LIBRARIES)
 
   target_link_libraries(
     ${EXECUTABLE_FILE_NAME} 
-    cxtream_core
+    hipipe_core
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
     ${LIBRARIES}
   )

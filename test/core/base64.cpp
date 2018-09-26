@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -10,14 +10,14 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE base64_test
 
-#include <cxtream/core/base64.hpp>
+#include <hipipe/core/base64.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/all.hpp>
 
 #include <vector>
 
-using namespace cxtream;
+using namespace hipipe;
 
 std::vector<std::vector<unsigned char>> data{
   {},

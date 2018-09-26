@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -12,8 +12,8 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/stream/create.hpp>
-#include <cxtream/core/stream/for_each.hpp>
+#include <hipipe/core/stream/create.hpp>
+#include <hipipe/core/stream/for_each.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/to_container.hpp>
@@ -24,7 +24,7 @@
 #include <tuple>
 #include <vector>
 
-using namespace cxtream::stream;
+using namespace hipipe::stream;
 
 BOOST_AUTO_TEST_CASE(test_for_each_of_two)
 {
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only)
     auto rng = data
       | ranges::view::move
       | create<Int, UniqueVec>(2)
-      | cxtream::stream::for_each(from<UniqueVec>,
+      | hipipe::stream::for_each(from<UniqueVec>,
           [&generated](std::unique_ptr<int>& ptr) {
               generated.push_back(*ptr + 1);
           }, dim<2>)
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only_mutable)
     auto rng = data
       | ranges::view::move
       | create<Int, UniqueVec>(2)
-      | cxtream::stream::for_each(from<UniqueVec>,
+      | hipipe::stream::for_each(from<UniqueVec>,
           [&generated, i = 4](std::unique_ptr<int>&) mutable {
               generated.push_back(i++);
           }, dim<2>)

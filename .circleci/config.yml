@@ -82,7 +82,7 @@ jobs:
   test_archlinux_gcc:
     docker:
       - image: archimg/base-devel
-    working_directory: ~/cxtream
+    working_directory: ~/hipipe
     steps:
       - *arch_deps
       - checkout
@@ -93,7 +93,7 @@ jobs:
   test_archlinux_clang:
     docker:
       - image: archimg/base-devel
-    working_directory: ~/cxtream
+    working_directory: ~/hipipe
     steps:
       - *arch_deps
       - checkout
@@ -104,7 +104,7 @@ jobs:
   test_ubuntu_latest_gcc:
     docker:
       - image: ubuntu:latest
-    working_directory: ~/cxtream
+    working_directory: ~/hipipe
     steps:
       - *ubuntu_deps
       - checkout
@@ -115,7 +115,7 @@ jobs:
   test_ubuntu_latest_gcc_tf_static:
     docker:
       - image: ubuntu:latest
-    working_directory: ~/cxtream
+    working_directory: ~/hipipe
     steps:
       - *ubuntu_deps
       - *ubuntu_install_tensorflow_cc
@@ -129,7 +129,7 @@ jobs:
   test_ubuntu_latest_clang:
     docker:
       - image: ubuntu:latest
-    working_directory: ~/cxtream
+    working_directory: ~/hipipe
     steps:
       - *ubuntu_deps
       - checkout
@@ -146,7 +146,7 @@ workflows:
       - test_archlinux_clang
       - test_ubuntu_latest_gcc
       - test_ubuntu_latest_clang
-      # TODO: It would be convenient to test cxtream::tensorflow as well, but
+      # TODO: It would be convenient to test hipipe::tensorflow as well, but
       # TensorFlow cannot be compiled in the current CircleCI limits. If those
       # increase, uncomment the following:
       # - test_ubuntu_latest_gcc_tf_static

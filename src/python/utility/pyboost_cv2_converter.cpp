@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2015, Gregory Kramida
  *  Modified by Filip Matzner
  *
@@ -10,9 +10,9 @@
 #include <opencv2/core/core.hpp>
 #if CV_VERSION_EPOCH == 2 || (!defined CV_VERSION_EPOCH && CV_VERSION_MAJOR == 2)
 
-#include <cxtream/python/utility/pyboost_cv_converter.hpp>
+#include <hipipe/python/utility/pyboost_cv_converter.hpp>
 
-namespace cxtream::python::utility {
+namespace hipipe::python::utility {
 
 //===================   ERROR HANDLING     =========================================================
 
@@ -430,5 +430,5 @@ void matFromNDArrayBoostConverter::construct(
     data->convertible = storage;
 }
 
-}  // namespace cxtream::python::utility
+}  // namespace hipipe::python::utility
 #endif

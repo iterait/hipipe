@@ -11,7 +11,7 @@ add_custom_target(
 
 execute_process(
   COMMAND "${GIT_EXECUTABLE}" -C "${CMAKE_SOURCE_DIR}" rev-parse --short HEAD
-  OUTPUT_VARIABLE CXTREAM_GIT_HEAD_SHORT_SHA
+  OUTPUT_VARIABLE HIPIPE_GIT_HEAD_SHORT_SHA
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
@@ -27,7 +27,7 @@ add_custom_target(doc.deploy
                                                "${CMAKE_CURRENT_LIST_DIR}/gh-pages"
   # commit
   COMMAND "${GIT_EXECUTABLE}" add --all
-  COMMAND "${GIT_EXECUTABLE}" commit -m "Update docs (commit ${CXTREAM_GIT_HEAD_SHORT_SHA})"
+  COMMAND "${GIT_EXECUTABLE}" commit -m "Update docs (commit ${HIPIPE_GIT_HEAD_SHORT_SHA})"
   # push
   COMMAND "${GIT_EXECUTABLE}" push
   WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/gh-pages"

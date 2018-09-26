@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -10,7 +10,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE thread_test
 
-#include <cxtream/core/thread.hpp>
+#include <hipipe/core/thread.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -22,7 +22,7 @@ using namespace std::chrono_literals;
 
 BOOST_AUTO_TEST_CASE(test_enqueue)
 {
-    cxtream::thread_pool tp{2};
+    hipipe::thread_pool tp{2};
     std::vector<std::thread::id> ids(3);
     auto task = [&ids](std::shared_ptr<int> ptr) {
         // save the id of this thread
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(test_enqueue)
 BOOST_AUTO_TEST_CASE(test_enqueue_move)
 {
     // test that thread_pool.enqueue accepts move-only arguments
-    cxtream::thread_pool tp{2};
+    hipipe::thread_pool tp{2};
     auto task = [](std::unique_ptr<int> ptr) { return *ptr; };
     std::future<int> f = tp.enqueue(std::move(task), std::make_unique<int>(10));
     BOOST_TEST(f.get() == 10);
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(test_graceful_destruction)
     };
 
     {
-        cxtream::thread_pool tp{2};
+        hipipe::thread_pool tp{2};
         for (int i = 0; i < 5; ++i) futures.push_back(tp.enqueue(task, i));
         // at the end of this block, the thread pool is destroyed
     }

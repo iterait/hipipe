@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -7,11 +7,11 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <cxtream/build_config.hpp>
-#include <cxtream/python/initialize.hpp>
-#include <cxtream/python/range.hpp>
+#include <hipipe/build_config.hpp>
+#include <hipipe/python/initialize.hpp>
+#include <hipipe/python/range.hpp>
 
-// the header file cxtream/python/initialize.hpp sets NO_IMPORT_ARRAY
+// the header file hipipe/python/initialize.hpp sets NO_IMPORT_ARRAY
 // but we actually really import_array here (this is the only place), so unset it.
 #undef NO_IMPORT_ARRAY
 
@@ -19,12 +19,12 @@
 #include <boost/python.hpp>
 #include <numpy/ndarrayobject.h>
 
-#ifdef CXTREAM_BUILD_PYTHON_OPENCV
-#include <cxtream/python/utility/pyboost_cv_converter.hpp>
+#ifdef HIPIPE_BUILD_PYTHON_OPENCV
+#include <hipipe/python/utility/pyboost_cv_converter.hpp>
 #endif
-#include <cxtream/python/utility/pyboost_fs_path_converter.hpp>
+#include <hipipe/python/utility/pyboost_fs_path_converter.hpp>
 
-namespace cxtream::python {
+namespace hipipe::python {
 
 static void* init_array()
 {
@@ -44,7 +44,7 @@ void initialize()
     // register stop_iteration_exception
     py::register_exception_translator<stop_iteration_exception>(stop_iteration_translator);
 
-#ifdef CXTREAM_BUILD_PYTHON_OPENCV
+#ifdef HIPIPE_BUILD_PYTHON_OPENCV
     // register OpenCV converters
     py::to_python_converter<cv::Mat, utility::matToNDArrayBoostConverter>();
     utility::matFromNDArrayBoostConverter();
@@ -55,4 +55,4 @@ void initialize()
     utility::fs_path_from_python_str();
 }
 
-}  // namespace cxtream::python
+}  // namespace hipipe::python

@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -7,8 +7,8 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <cxtream/python/initialize.hpp>
-#include <cxtream/python/utility/pyboost_ndarray_converter.hpp>
+#include <hipipe/python/initialize.hpp>
+#include <hipipe/python/utility/pyboost_ndarray_converter.hpp>
 
 #include <limits>
 #include <memory>
@@ -70,7 +70,7 @@ struct test_data {
     py::object sample_array()
     {
         std::vector<T> vec{std::numeric_limits<T>::min(), 0, 1, std::numeric_limits<T>::max()};
-        py::handle<> handle{cxtream::python::utility::to_ndarray(vec)};
+        py::handle<> handle{hipipe::python::utility::to_ndarray(vec)};
         return py::object{handle};
     }
 
@@ -94,7 +94,7 @@ struct test_data {
 
     py::object empty_array()
     {
-        py::handle<> handle{cxtream::python::utility::to_ndarray(std::vector<int>{})};
+        py::handle<> handle{hipipe::python::utility::to_ndarray(std::vector<int>{})};
         return py::object{handle};
     }
 
@@ -105,14 +105,14 @@ struct test_data {
 
     py::object shared_ptr_array()
     {
-        py::handle<> handle{cxtream::python::utility::to_ndarray(shared_ptr_vec)};
+        py::handle<> handle{hipipe::python::utility::to_ndarray(shared_ptr_vec)};
         return py::object{handle};
     }
 };
 
 BOOST_PYTHON_MODULE(pyboost_ndarray_converter_py_cpp)
 {
-    cxtream::python::initialize();
+    hipipe::python::initialize();
 
     // register the class wrapping std::shared_ptr
     py::class_<SharedPtr>("SharedPtr", py::no_init)

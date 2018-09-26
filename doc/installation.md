@@ -5,8 +5,8 @@ Requirements
 ------------
 ---
 
-Officially supported systems are Ubuntu 16.10+ and Arch Linux, although __cxtream__ should
-work on any recent enough system. The __cxtream core__ is a pure C++ library with a
+Officially supported systems are Ubuntu 16.10+ and Arch Linux, although __hipipe__ should
+work on any recent enough system. The __hipipe core__ is a pure C++ library with a
 single dependency to [Boost C++ Libraries](http://www.boost.org/)
 (Boost 1.61+ is required). Extensions to the core library are __Python bindings__ with
 automatic [OpenCV](http://opencv.org/) image conversion between C++ and Python.
@@ -22,7 +22,7 @@ pacman -S git base-devel cmake boost opencv python python-numpy
 apt install git build-essential cmake libboost-all-dev libopencv-dev python3-dev python3-numpy
 ```
 
-If you want to use __cxtream core__ only, use one of the following instead:
+If you want to use __hipipe core__ only, use one of the following instead:
 
 ```
 # Arch Linux
@@ -42,11 +42,11 @@ Download
 ---
 
 The complete source code can be downloaded from our official GitHub
-[repository](https://github.com/Cognexa/cxtream) using the following commands:
+[repository](https://github.com/iterait/hipipe) using the following commands:
 
 ```
-git clone --recursive https://github.com/Cognexa/cxtream.git
-cd cxtream
+git clone --recursive https://github.com/iterait/hipipe.git
+cd hipipe
 ```
 
 Build & Install
@@ -106,5 +106,5 @@ The full list of supported options is the following:
 | BUILD_PYTHON_OPENCV  | Build Python OpenCV converters (requires BUILD_PYTHON).                       | ON           |
 | BUILD_TENSORFLOW     | Build TensorFlow functionality (unnecessary if you use TensorFlow in Python). | OFF          |
 | BUILTIN_RANGEV3      | Install and use the built-in Range-v3 library.                                | ON           |
-| CMAKE_INSTALL_PREFIX | The path where cxtream will be installed.                                     | OS-dependent |
+| CMAKE_INSTALL_PREFIX | The path where hipipe will be installed.                                      | OS-dependent |
 | CMAKE_CXX_COMPILER   | The compiler command to be used, e.g., g++ or clang++.                        | OS-dependent |

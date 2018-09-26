@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -11,7 +11,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE example_test
 
-#include <cxtream/core.hpp>
+#include <hipipe/core.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/zip.hpp>
@@ -23,11 +23,11 @@
 
 BOOST_AUTO_TEST_CASE(test_example)
 {
-    namespace cxs = cxtream::stream;
+    namespace cxs = hipipe::stream;
     using cxs::from; using cxs::to; using cxs::by; using cxs::dim;
 
-    CXTREAM_DEFINE_COLUMN(login, std::string)  // helper macro to define a column of strings
-    CXTREAM_DEFINE_COLUMN(age, int)
+    HIPIPE_DEFINE_COLUMN(login, std::string)  // helper macro to define a column of strings
+    HIPIPE_DEFINE_COLUMN(age, int)
 
     std::vector<std::string> logins = {"marry", "ted", "anna", "josh"};
     std::vector<int>           ages = {     24,    41,     16,     59};

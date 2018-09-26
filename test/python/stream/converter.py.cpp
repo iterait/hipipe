@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -7,9 +7,9 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <cxtream/core/stream/column.hpp>
-#include <cxtream/python/initialize.hpp>
-#include <cxtream/python/stream/converter.hpp>
+#include <hipipe/core/stream/column.hpp>
+#include <hipipe/python/initialize.hpp>
+#include <hipipe/python/stream/converter.hpp>
 
 #include <range/v3/view/all.hpp>
 
@@ -17,10 +17,10 @@
 #include <vector>
 
 namespace py = boost::python;
-namespace cxpy = cxtream::python;
+namespace cxpy = hipipe::python;
 
-CXTREAM_DEFINE_COLUMN(Int, int)
-CXTREAM_DEFINE_COLUMN(Double, double)
+HIPIPE_DEFINE_COLUMN(Int, int)
+HIPIPE_DEFINE_COLUMN(Double, double)
 
 std::vector<std::tuple<Int, Double>> empty_data;
 std::vector<std::tuple<Int, Double>> empty_batch_data(1);
@@ -44,8 +44,8 @@ auto number_stream()
 
 BOOST_PYTHON_MODULE(converter_py_cpp)
 {
-    // initialize cxtream OpenCV converters, exceptions, etc.
-    cxtream::python::initialize();
+    // initialize hipipe OpenCV converters, exceptions, etc.
+    hipipe::python::initialize();
 
     // expose the functions
     py::def("empty_stream", empty_stream);

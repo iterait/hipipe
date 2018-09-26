@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -7,24 +7,24 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef CXTREAM_BUILD_CONFIG_HPP
-#define CXTREAM_BUILD_CONFIG_HPP
+#ifndef HIPIPE_BUILD_CONFIG_HPP
+#define HIPIPE_BUILD_CONFIG_HPP
 
 #cmakedefine BUILD_PYTHON
 #ifdef BUILD_PYTHON
-  #define CXTREAM_BUILD_PYTHON
+  #define HIPIPE_BUILD_PYTHON
   #undef BUILD_PYTHON
 #endif
 
 #cmakedefine BUILD_PYTHON_OPENCV
 #ifdef BUILD_PYTHON_OPENCV
-  #define CXTREAM_BUILD_PYTHON_OPENCV
+  #define HIPIPE_BUILD_PYTHON_OPENCV
   #undef BUILD_PYTHON_OPENCV
 #endif
 
 #cmakedefine BUILD_TENSORFLOW
 #ifdef BUILD_TENSORFLOW
-  #define CXTREAM_BUILD_TENSORFLOW
+  #define HIPIPE_BUILD_TENSORFLOW
   #undef BUILD_TENSORFLOW
 #endif
 

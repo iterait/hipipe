@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -10,14 +10,14 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE utility_filesystem_test
 
-#include <cxtream/core/utility/filesystem.hpp>
+#include <hipipe/core/utility/filesystem.hpp>
 
 #include <boost/test/unit_test.hpp>
 
 #include <set>
 #include <string>
 
-using namespace cxtream::utility;
+using namespace hipipe::utility;
 namespace fs = std::experimental::filesystem;
 const char* hexchars = "0123456789abcdef";
 const char* pattern = "my_dir_%%%";

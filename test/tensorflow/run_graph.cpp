@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -12,12 +12,12 @@
 
 #include "../core/common.hpp"
 
-#include <cxtream/tensorflow/load_graph.hpp>
-#include <cxtream/tensorflow/run_graph.hpp>
+#include <hipipe/tensorflow/load_graph.hpp>
+#include <hipipe/tensorflow/run_graph.hpp>
 
 #include <boost/test/unit_test.hpp>
 
-using namespace cxtream::tensorflow;
+using namespace hipipe::tensorflow;
 using namespace boost;
 
 BOOST_AUTO_TEST_CASE(test_simple_run)

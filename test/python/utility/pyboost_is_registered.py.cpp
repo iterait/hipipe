@@ -1,5 +1,5 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Author(s) Filip Matzner
  *
@@ -7,14 +7,14 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <cxtream/python/initialize.hpp>
-#include <cxtream/python/utility/pyboost_is_registered.hpp>
+#include <hipipe/python/initialize.hpp>
+#include <hipipe/python/utility/pyboost_is_registered.hpp>
 
 #include <cassert>
 #include <vector>
 
 namespace py = boost::python;
-namespace cxpy = cxtream::python;
+namespace cxpy = hipipe::python;
 // make sure that assert() will be evaluated
 #undef NDEBUG
 
