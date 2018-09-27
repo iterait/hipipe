@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(
-  "cxtream"
+  "hipipe"
   VERSION 0.5.1
 )
 set(PROJECT_DESCRIPTION "C++17 data pipeline with Python bindings.")
@@ -34,7 +34,7 @@ endif()
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/build_config.hpp.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/include/cxtream/build_config.hpp"
+  "${CMAKE_CURRENT_BINARY_DIR}/include/hipipe/build_config.hpp"
 )
 
 # --------------
@@ -84,25 +84,25 @@ else()
 endif()
 
 # ------------------
-# Build cxtream core
+# Build hipipe core
 # ------------------
 
-add_library(cxtream_core INTERFACE)
+add_library(hipipe_core INTERFACE)
 set_target_properties(
-  cxtream_core PROPERTIES EXPORT_NAME Core
+  hipipe_core PROPERTIES EXPORT_NAME Core
 )
 target_compile_options(
-  cxtream_core INTERFACE
+  hipipe_core INTERFACE
   "-std=c++1z"
 )
 target_link_libraries(
-  cxtream_core INTERFACE
+  hipipe_core INTERFACE
   ${Boost_LIBRARIES}
   pthread
   stdc++fs
 )
 target_include_directories(
-  cxtream_core INTERFACE
+  hipipe_core INTERFACE
   ${Boost_INCLUDE_DIRS}
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> # build_config.hpp is here
@@ -110,66 +110,66 @@ target_include_directories(
 )
 if(BUILTIN_RANGEV3)
   target_include_directories(
-    cxtream_core INTERFACE
+    hipipe_core INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/range-v3/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/cxtream/third_party/range-v3>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/hipipe/third_party/range-v3>
   )
 endif()
 
 # ---------------------
-# Build cxtream::python
+# Build hipipe::python
 # ---------------------
 
 if(BUILD_PYTHON)
 
   # -------------------------
-  # Build cxtream::python .so
+  # Build hipipe::python .so
   # -------------------------
 
   add_library(
-    cxtream_python SHARED
+    hipipe_python SHARED
     "${CMAKE_CURRENT_SOURCE_DIR}/src/python/initialize.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_fs_path_converter.cpp"
   )
   set_target_properties(
-    cxtream_python PROPERTIES EXPORT_NAME Python
+    hipipe_python PROPERTIES EXPORT_NAME Python
   )
   target_include_directories(
-    cxtream_python
+    hipipe_python
     PUBLIC ${Boost_INCLUDE_DIRS}
     PUBLIC ${PYTHON_INCLUDE_DIRS}
     PUBLIC ${PYTHON_NUMPY_INCLUDE_DIR}
     PUBLIC ${BoostPython3_INCLUDE_DIRS}
   )
   target_link_libraries(
-    cxtream_python
-    cxtream_core
+    hipipe_python
+    hipipe_core
     ${Boost_LIBRARIES}
     ${PYTHON_LIBRARIES}
     ${BoostPython3_LIBRARIES}
     stdc++fs
   )
   set_target_properties(
-    cxtream_python
+    hipipe_python
     PROPERTIES VERSION ${PROJECT_VERSION}
   )
 
   # -----------------------------------------------------
-  # Build cxtream::python::utility::pyboost_cv3_converter
+  # Build hipipe::python::utility::pyboost_cv3_converter
   # -----------------------------------------------------
 
   if(BUILD_PYTHON_OPENCV)
     target_sources(
-      cxtream_python
+      hipipe_python
       PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_cv2_converter.cpp"
       PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_cv3_converter.cpp"
     )
     target_include_directories(
-      cxtream_python
+      hipipe_python
       PUBLIC ${OpenCV_INCLUDE_DIRS}
     )
     target_link_libraries(
-      cxtream_python
+      hipipe_python
       ${OpenCV_LIBRARIES}
     )
   endif()
@@ -177,27 +177,27 @@ if(BUILD_PYTHON)
 endif()
 
 # -------------------------
-# Build cxtream::tensorflow
+# Build hipipe::tensorflow
 # -------------------------
 
 if(BUILD_TENSORFLOW)
   add_library(
-    cxtream_tensorflow SHARED
+    hipipe_tensorflow SHARED
     "${CMAKE_CURRENT_SOURCE_DIR}/src/tensorflow/load_graph.cpp"
   )
   set_target_properties(
-    cxtream_tensorflow PROPERTIES EXPORT_NAME Tensorflow
+    hipipe_tensorflow PROPERTIES EXPORT_NAME Tensorflow
   )
   target_link_libraries(
-    cxtream_tensorflow
-    PUBLIC cxtream_core
+    hipipe_tensorflow
+    PUBLIC hipipe_core
     PUBLIC stdc++fs
   )
   # try the shared tensorflow library first
   find_package(TensorflowCC COMPONENTS Shared)
   if(TensorflowCC_Shared_FOUND)
     target_link_libraries(
-      cxtream_tensorflow
+      hipipe_tensorflow
       PUBLIC TensorflowCC::Shared
     )
     set_target_properties(
@@ -210,11 +210,11 @@ if(BUILD_TENSORFLOW)
   else()
     find_package(TensorflowCC REQUIRED COMPONENTS Static)
     target_include_directories(
-      cxtream_tensorflow
+      hipipe_tensorflow
       PUBLIC "$<TARGET_PROPERTY:TensorflowCC::Static,INTERFACE_INCLUDE_DIRECTORIES>"
     )
     target_link_libraries(
-      cxtream_tensorflow
+      hipipe_tensorflow
       PRIVATE TensorflowCC::Static
     )
     set_target_properties(
@@ -223,7 +223,7 @@ if(BUILD_TENSORFLOW)
     )
   endif()
   set_target_properties(
-    cxtream_tensorflow
+    hipipe_tensorflow
     PROPERTIES VERSION ${PROJECT_VERSION}
   )
 endif()
@@ -258,18 +258,18 @@ endif()
 if(BUILTIN_RANGEV3)
   install(
     DIRECTORY third_party/range-v3/include/
-    DESTINATION include/cxtream/third_party/range-v3
+    DESTINATION include/hipipe/third_party/range-v3
   )
 endif()
 
 # install core header files
 install(
-  DIRECTORY include/cxtream/core/
-  DESTINATION include/cxtream/core
+  DIRECTORY include/hipipe/core/
+  DESTINATION include/hipipe/core
 )
 install(
-  FILES include/cxtream/core.hpp
-  DESTINATION include/cxtream
+  FILES include/hipipe/core.hpp
+  DESTINATION include/hipipe
 )
 
 # install generated files (e.g., build_config.hpp)
@@ -278,44 +278,44 @@ install(
   DESTINATION include
 )
 
-# install cxtream::core target
+# install hipipe::core target
 install(
-  TARGETS cxtream_core
-  EXPORT CxtreamCoreTargets
+  TARGETS hipipe_core
+  EXPORT HiPipeCoreTargets
 )
 
-# install cxtream::python library
+# install hipipe::python library
 if(BUILD_PYTHON)
   install(
-    DIRECTORY include/cxtream/python/
-    DESTINATION include/cxtream/python
+    DIRECTORY include/hipipe/python/
+    DESTINATION include/hipipe/python
   )
   install(
-    FILES include/cxtream/python.hpp
-    DESTINATION include/cxtream
+    FILES include/hipipe/python.hpp
+    DESTINATION include/hipipe
   )
   install(
-    TARGETS cxtream_python
-    EXPORT CxtreamPythonTargets
+    TARGETS hipipe_python
+    EXPORT HiPipePythonTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )
 endif()
 
-# install cxtream::tensorflow library
+# install hipipe::tensorflow library
 if(BUILD_TENSORFLOW)
   install(
-    DIRECTORY include/cxtream/tensorflow/
-    DESTINATION include/cxtream/tensorflow
+    DIRECTORY include/hipipe/tensorflow/
+    DESTINATION include/hipipe/tensorflow
   )
   install(
-    FILES include/cxtream/tensorflow.hpp
-    DESTINATION include/cxtream
+    FILES include/hipipe/tensorflow.hpp
+    DESTINATION include/hipipe
   )
   install(
-    TARGETS cxtream_tensorflow
-    EXPORT CxtreamTensorflowTargets
+    TARGETS hipipe_tensorflow
+    EXPORT HiPipeTensorflowTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
@@ -336,71 +336,71 @@ add_custom_target(
 # ------------------------------
 
 include(CMakePackageConfigHelpers)
-set(CMAKECFG_INSTALL_DIR lib/cmake/Cxtream)
+set(CMAKECFG_INSTALL_DIR lib/cmake/HiPipe)
 
 # configure package files
 write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/CxtreamConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/HiPipeConfigVersion.cmake"
   VERSION ${PROJECT_VERSION}
   COMPATIBILITY SameMajorVersion
 )
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CxtreamConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/CxtreamConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/HiPipeConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/HiPipeConfig.cmake"
   INSTALL_DESTINATION "${CMAKECFG_INSTALL_DIR}"
-  NO_SET_AND_CHECK_MACRO # Cxtream only uses interface libraries
+  NO_SET_AND_CHECK_MACRO # HiPipe only uses interface libraries
 )
 
 # install the core targets file
 install(
-  EXPORT CxtreamCoreTargets
-  FILE CxtreamCoreTargets.cmake
-  NAMESPACE Cxtream::
+  EXPORT HiPipeCoreTargets
+  FILE HiPipeCoreTargets.cmake
+  NAMESPACE HiPipe::
   DESTINATION "${CMAKECFG_INSTALL_DIR}"
 )
 # export the targets also for local use
 export(
-  TARGETS cxtream_core
-  FILE CxtreamCoreTargets.cmake
-  NAMESPACE Cxtream::
+  TARGETS hipipe_core
+  FILE HiPipeCoreTargets.cmake
+  NAMESPACE HiPipe::
 )
 
 # install the python targets file
 if(BUILD_PYTHON)
   install(
-    EXPORT CxtreamPythonTargets
-    FILE CxtreamPythonTargets.cmake
-    NAMESPACE Cxtream::
+    EXPORT HiPipePythonTargets
+    FILE HiPipePythonTargets.cmake
+    NAMESPACE HiPipe::
     DESTINATION "${CMAKECFG_INSTALL_DIR}"
   )
   # export the targets also for local use
   export(
-    TARGETS cxtream_python
-    FILE CxtreamPythonTargets.cmake
-    NAMESPACE Cxtream::
+    TARGETS hipipe_python
+    FILE HiPipePythonTargets.cmake
+    NAMESPACE HiPipe::
   )
 endif()
 
 # install the tensorflow targets file
 if(BUILD_TENSORFLOW)
   install(
-    EXPORT CxtreamTensorflowTargets
-    FILE CxtreamTensorflowTargets.cmake
-    NAMESPACE Cxtream::
+    EXPORT HiPipeTensorflowTargets
+    FILE HiPipeTensorflowTargets.cmake
+    NAMESPACE HiPipe::
     DESTINATION "${CMAKECFG_INSTALL_DIR}"
   )
   # export the targets also for local use
   export(
-    TARGETS cxtream_tensorflow
-    FILE CxtreamTensorflowTargets.cmake
-    NAMESPACE Cxtream::
+    TARGETS hipipe_tensorflow
+    FILE HiPipeTensorflowTargets.cmake
+    NAMESPACE HiPipe::
   )
 endif()
 
 # install the package files
 install(
   FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/CxtreamConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/CxtreamConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/HiPipeConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/HiPipeConfigVersion.cmake
   DESTINATION ${CMAKECFG_INSTALL_DIR}
 )

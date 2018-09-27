@@ -14,7 +14,7 @@ function(build_pyboost_test_module MODULE_NAME SOURCE_FILE)
   
   target_link_libraries(
     "${MODULE_NAME}"
-    PRIVATE cxtream_python
+    PRIVATE hipipe_python
   )
 
 endfunction()

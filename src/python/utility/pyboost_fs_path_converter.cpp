@@ -1,19 +1,20 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <cxtream/python/utility/pyboost_fs_path_converter.hpp>
+#include <hipipe/python/utility/pyboost_fs_path_converter.hpp>
 
 #include <boost/python.hpp>
 
 #include <experimental/filesystem>
 
-namespace cxtream::python::utility {
+namespace hipipe::python::utility {
 
 PyObject* fs_path_to_python_str::convert(const std::experimental::filesystem::path& path)
 {
@@ -47,4 +48,4 @@ void fs_path_from_python_str::construct(
       data->convertible = storage;
 }
 
-} // namespace cxtream::python::utility
+} // namespace hipipe::python::utility

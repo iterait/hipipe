@@ -1,6 +1,7 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
@@ -12,7 +13,7 @@
 
 #include "common.hpp"
 
-#include <cxtream/core/csv.hpp>
+#include <hipipe/core/csv.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/algorithm/find_first_of.hpp>
@@ -23,7 +24,7 @@
 #include <sstream>
 #include <vector>
 
-using namespace cxtream;
+using namespace hipipe;
 namespace fs = std::experimental::filesystem;
 
 // 2d container transposition //

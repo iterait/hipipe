@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/HiPipeCoreTargets.cmake")
+
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/HiPipePythonTargets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/HiPipePythonTargets.cmake")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/HiPipeTensorflowTargets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/HiPipeTensorflowTargets.cmake")
+endif()

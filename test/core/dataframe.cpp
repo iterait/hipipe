@@ -1,6 +1,7 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
@@ -12,7 +13,7 @@
 
 #include "common.hpp"
 
-#include <cxtream/core/dataframe.hpp>
+#include <hipipe/core/dataframe.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -21,7 +22,7 @@
 #include <string>
 #include <vector>
 
-using namespace cxtream;
+using namespace hipipe;
 
 const dataframe<> simple_df{
     // columns

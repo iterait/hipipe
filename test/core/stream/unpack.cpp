@@ -1,6 +1,7 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
@@ -12,8 +13,8 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/stream/create.hpp>
-#include <cxtream/core/stream/unpack.hpp>
+#include <hipipe/core/stream/create.hpp>
+#include <hipipe/core/stream/unpack.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/indirect.hpp>
@@ -24,7 +25,7 @@
 #include <tuple>
 #include <vector>
 
-using namespace cxtream::stream;
+using namespace hipipe::stream;
 
 std::vector<std::tuple<int, std::vector<int>>> generate_data()
 {

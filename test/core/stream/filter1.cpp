@@ -1,6 +1,7 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
@@ -14,7 +15,7 @@
 
 #include "filter.hpp"
 
-using namespace cxtream::stream;
+using namespace hipipe::stream;
 
 BOOST_AUTO_TEST_CASE(test_dim0)
 {
@@ -147,8 +148,8 @@ BOOST_AUTO_TEST_CASE(test_dim1_move_only)
 
 BOOST_AUTO_TEST_CASE(test_dim2)
 {
-    CXTREAM_DEFINE_COLUMN(IntVec1, std::vector<int>)
-    CXTREAM_DEFINE_COLUMN(IntVec2, std::vector<int>)
+    HIPIPE_DEFINE_COLUMN(IntVec1, std::vector<int>)
+    HIPIPE_DEFINE_COLUMN(IntVec2, std::vector<int>)
     const std::vector<std::tuple<std::vector<int>, std::vector<int>>> data = {
       {{{3, 2}, {1, 5}}, {{1, 5}, {2, 4}}, {{2, 4}, {7, 1}}, {{6, 4}, {3, 5}}}};
 

@@ -1,22 +1,22 @@
-# cxtream
-[![CircleCI](https://circleci.com/gh/Cognexa/cxtream/tree/dev.svg?style=shield)](https://circleci.com/gh/Cognexa/cxtream/tree/master)
+# HiPipe
+[![CircleCI](https://circleci.com/gh/iterait/hipipe/tree/dev.svg?style=shield)](https://circleci.com/gh/iterait/hipipe/tree/master)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 [![Development Status](https://img.shields.io/badge/status-CX%20Regular-brightgreen.svg?style=flat)]()
 [![Master Developer](https://img.shields.io/badge/master-Filip%20Matzner-lightgrey.svg?style=flat)]()
 
 **This project is under heavy development. The API is continuously changing without regard to backward compatibility.**
 
-__cxtream__ is a C++ library for efficient data processing. Its main purpose is to simplify
+__HiPipe__ is a C++ library for efficient data processing. Its main purpose is to simplify
 and acclelerate data preparation for deep learning models, but it is generic enough to be used
 in many other areas.
 
-__cxtream__ lets the programmer build intuitive data streams that transform,
+__HiPipe__ lets the programmer build intuitive data streams that transform,
 combine and filter the data that pass through. Those streams are compiled,
 batched, and asynchronous, therefore maximizing the utilization of the provided
 hardware.
 
-- [Documentation and API reference](https://cxtream.org/).
-- [Installation guide](https://cxtream.org/installation.html).
+- [Documentation and API reference](https://hipipe.org/).
+- [Installation guide](https://hipipe.org/installation.html).
 
 ## Example
 

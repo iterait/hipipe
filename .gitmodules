@@ -1,6 +1,6 @@
 [submodule "doc/gh-pages"]
 	path = doc/gh-pages
-	url = https://github.com/Cognexa/cxtream.git
+	url = https://github.com/iterait/hipipe.git
 	branch = gh-pages
 [submodule "third_party/range-v3"]
 	path = third_party/range-v3

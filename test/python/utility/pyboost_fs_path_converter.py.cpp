@@ -1,13 +1,14 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <cxtream/python/initialize.hpp>
+#include <hipipe/python/initialize.hpp>
 
 #include <boost/python.hpp>
 
@@ -42,8 +43,8 @@ bool check_paths(py::list data)
 
 BOOST_PYTHON_MODULE(pyboost_fs_path_converter_py_cpp)
 {
-    // initialize cxtream OpenCV converters, exceptions, etc.
-    cxtream::python::initialize();
+    // initialize hipipe OpenCV converters, exceptions, etc.
+    hipipe::python::initialize();
 
     // expose the functions
     py::def("paths", paths);

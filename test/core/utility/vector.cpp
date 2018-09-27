@@ -1,6 +1,7 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
@@ -12,7 +13,7 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/utility/vector.hpp>
+#include <hipipe/core/utility/vector.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/action/sort.hpp>
@@ -25,7 +26,7 @@
 #include <random>
 #include <vector>
 
-using namespace cxtream::utility;
+using namespace hipipe::utility;
 
 BOOST_AUTO_TEST_CASE(test_ndims)
 {

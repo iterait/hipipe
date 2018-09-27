@@ -1,6 +1,7 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
@@ -14,7 +15,7 @@
 
 #include "transform.hpp"
 
-using namespace cxtream::stream;
+using namespace hipipe::stream;
 
 BOOST_AUTO_TEST_CASE(test_partial_transform)
 {

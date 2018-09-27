@@ -42,8 +42,8 @@ def main():
     assert(np.array_equal(pycpp.py_vector1d()[-2:-1], [2]))
 
     # It is not necessary to test the conversion more in here, since it is
-    # already covered by cxtream::python::range,
-    # cxtream::python::utility::to_ndarray or python's list.
+    # already covered by hipipe::python::range,
+    # hipipe::python::utility::to_ndarray or python's list.
 
     columns = pycpp.columns()
     assert(set(columns.keys()) == {"Int", "Double"})

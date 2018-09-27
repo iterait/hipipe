@@ -1,6 +1,7 @@
 /****************************************************************************
- *  cxtream library
+ *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
+ *  Copyright (c) 2018, Iterait a.s.
  *  Author(s) Filip Matzner
  *
  *  This file is distributed under the MIT License.
@@ -12,8 +13,8 @@
 
 #include "../common.hpp"
 
-#include <cxtream/core/stream/buffer.hpp>
-#include <cxtream/core/stream/transform.hpp>
+#include <hipipe/core/stream/buffer.hpp>
+#include <hipipe/core/stream/transform.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/indirect.hpp>
@@ -23,7 +24,7 @@
 #include <memory>
 #include <vector>
 
-using namespace cxtream::stream;
+using namespace hipipe::stream;
 using namespace std::chrono_literals;
 
 void test_use_count(const std::vector<std::shared_ptr<int>>& ptrs, const std::vector<int>& desired)
