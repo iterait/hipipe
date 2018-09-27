@@ -24,8 +24,8 @@
 
 BOOST_AUTO_TEST_CASE(test_example)
 {
-    namespace cxs = hipipe::stream;
-    using cxs::from; using cxs::to; using cxs::by; using cxs::dim;
+    namespace hps = hipipe::stream;
+    using hps::from; using hps::to; using hps::by; using hps::dim;
 
     HIPIPE_DEFINE_COLUMN(login, std::string)  // helper macro to define a column of strings
     HIPIPE_DEFINE_COLUMN(age, int)
@@ -35,32 +35,32 @@ BOOST_AUTO_TEST_CASE(test_example)
 
     auto stream = ranges::view::zip(logins, ages)
       // create a batched stream out of the raw data
-      | cxs::create<login, age>(2)
+      | hps::create<login, age>(2)
       // make everyone older by one year
-      | cxs::transform(from<age>, to<age>, [](int a) { return a + 1; })
+      | hps::transform(from<age>, to<age>, [](int a) { return a + 1; })
       // increase each letter in the logins by one (i.e., a->b, e->f ...)
-      | cxs::transform(from<login>, to<login>, [](char c) { return c + 1; }, dim<2>)
+      | hps::transform(from<login>, to<login>, [](char c) { return c + 1; }, dim<2>)
       // increase the ages by the length of the login
-      | cxs::transform(from<login, age>, to<age>, [](std::string l, int a) {
+      | hps::transform(from<login, age>, to<age>, [](std::string l, int a) {
             return a + l.length();
         })
       // probabilistically rename 50% of the people to "buzz"
-      | cxs::transform(from<login>, to<login>, 0.5, [](std::string) -> std::string {
+      | hps::transform(from<login>, to<login>, 0.5, [](std::string) -> std::string {
             return "buzz";
         })
       // drop the login column from the stream
-      | cxs::drop<login>
+      | hps::drop<login>
       // introduce the login column back to the stream
-      | cxs::transform(from<age>, to<login>, [](int a) {
+      | hps::transform(from<age>, to<login>, [](int a) {
             return "person_" + std::to_string(a) + "_years_old";
         })
       // filter only people older than 30 years
-      | cxs::filter(from<login, age>, by<age>, [](int a) { return a > 30; })
+      | hps::filter(from<login, age>, by<age>, [](int a) { return a > 30; })
       // asynchronously buffer the stream during iteration
-      | cxs::buffer(2);
+      | hps::buffer(2);
 
     // extract the ages from the stream to std::vector
-    ages = cxs::unpack(stream, from<age>);
+    ages = hps::unpack(stream, from<age>);
     std::vector<int> desired = {45, 64};
     BOOST_TEST(ages == desired, boost::test_tools::per_element());
     assert((ages == std::vector<int>{45, 64}));
