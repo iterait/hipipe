@@ -27,39 +27,39 @@ std::vector<int>           ages = {     24,    41,     16,     59};
 auto stream = ranges::view::zip(logins, ages)
 
   // create a batched stream out of the raw data
-  | cxs::create<login, age>(2)
+  | hipipe::create<login, age>(2)
 
   // make everyone older by one year
-  | cxs::transform(from<age>, to<age>, [](int a) { return a + 1; })
+  | hipipe::transform(from<age>, to<age>, [](int a) { return a + 1; })
 
   // increase each letter in the logins by one (i.e., a->b, e->f ...)
-  | cxs::transform(from<login>, to<login>, [](char c) { return c + 1; }, dim<2>)
+  | hipipe::transform(from<login>, to<login>, [](char c) { return c + 1; }, dim<2>)
 
   // increase the ages by the length of the login
-  | cxs::transform(from<login, age>, to<age>, [](std::string l, int a) {
+  | hipipe::transform(from<login, age>, to<age>, [](std::string l, int a) {
         return a + l.length();
     })
 
   // probabilistically rename 50% of the people to "buzz"
-  | cxs::transform(from<login>, to<login>, 0.5, [](std::string) -> std::string {
+  | hipipe::transform(from<login>, to<login>, 0.5, [](std::string) -> std::string {
         return "buzz";
     })
 
   // drop the login column from the stream
-  | cxs::drop<login>
+  | hipipe::drop<login>
 
   // introduce the login column back to the stream
-  | cxs::transform(from<age>, to<login>, [](int a) {
+  | hipipe::transform(from<age>, to<login>, [](int a) {
         return "person_" + std::to_string(a) + "_years_old";
     })
 
   // filter only people older than 30 years
-  | cxs::filter(from<login, age>, by<age>, [](int a) { return a > 30; })
+  | hipipe::filter(from<login, age>, by<age>, [](int a) { return a > 30; })
 
   // asynchronously buffer the stream during iteration
-  | cxs::buffer(2);
+  | hipipe::buffer(2);
 
 // extract the ages from the stream to std::vector
-ages = cxs::unpack(stream, from<age>);
+ages = hipipe::unpack(stream, from<age>);
 assert((ages == std::vector<int>{45, 64}));
 ```

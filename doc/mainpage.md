@@ -70,8 +70,8 @@ streams using the pipe "|" operator. The following example demonstrates the main
 stream pipelining (see the full example in [example.cpp](example_8cpp_source.html)):
 
 ```{.cpp}
-namespace cxs = hipipe::stream;
-using cxs::from; using cxs::to; using cxs::by; using cxs::dim;
+namespace hps = hipipe::stream;
+using hps::from; using hps::to; using hps::by; using hps::dim;
 
 HIPIPE_DEFINE_COLUMN(login, std::string)  // helper macro to define a column of strings
 HIPIPE_DEFINE_COLUMN(age, int)
@@ -82,40 +82,40 @@ std::vector<int>           ages = {     24,    41,     16,     59};
 auto stream = ranges::view::zip(logins, ages)
 
   // create a batched stream out of the raw data
-  | cxs::create<login, age>(2)
+  | hps::create<login, age>(2)
 
   // make everyone older by one year
-  | cxs::transform(from<age>, to<age>, [](int a) { return a + 1; })
+  | hps::transform(from<age>, to<age>, [](int a) { return a + 1; })
 
   // increase each letter in the logins by one (i.e., a->b, e->f ...)
-  | cxs::transform(from<login>, to<login>, [](char c) { return c + 1; }, dim<2>)
+  | hps::transform(from<login>, to<login>, [](char c) { return c + 1; }, dim<2>)
 
   // increase the ages by the length of the login
-  | cxs::transform(from<login, age>, to<age>, [](std::string l, int a) {
+  | hps::transform(from<login, age>, to<age>, [](std::string l, int a) {
         return a + l.length();
     })
 
   // probabilistically rename 50% of the people to "buzz"
-  | cxs::transform(from<login>, to<login>, 0.5, [](std::string) -> std::string {
+  | hps::transform(from<login>, to<login>, 0.5, [](std::string) -> std::string {
         return "buzz";
     })
 
   // drop the login column from the stream
-  | cxs::drop<login>
+  | hps::drop<login>
 
   // introduce the login column back to the stream
-  | cxs::transform(from<age>, to<login>, [](int a) {
+  | hps::transform(from<age>, to<login>, [](int a) {
         return "person_" + std::to_string(a) + "_years_old";
     })
 
   // filter only people older than 30 years
-  | cxs::filter(from<login, age>, by<age>, [](int a) { return a > 30; })
+  | hps::filter(from<login, age>, by<age>, [](int a) { return a > 30; })
 
   // asynchronously buffer the stream during iteration
-  | cxs::buffer(2);
+  | hps::buffer(2);
 
 // extract the ages from the stream to std::vector
-ages = cxs::unpack(stream, from<age>);
+ages = hps::unpack(stream, from<age>);
 assert((ages == std::vector<int>{45, 64}));
 ```
 
@@ -141,15 +141,15 @@ HIPIPE_DEFINE_COLUMN(login, std::string)
 
   // This transformation is applied in dimension 1 (default), so in the case of the
   // login column, the transformation function expects std::string.
-  | cxs::transform(from<login>, to<login>, [](std::string l) { return l + "_abc"; })
+  | hps::transform(from<login>, to<login>, [](std::string l) { return l + "_abc"; })
 
   // This transformation is applied in dimension 2, which for std::string means
   // that it is applied on each letter.
-  | cxs::transform(from<login>, to<login>, dim<2>, [](char c) { return c + 1; })
+  | hps::transform(from<login>, to<login>, dim<2>, [](char c) { return c + 1; })
 
   // And this transformation is applied in dimension 0, which denotes that the function
   // expects the whole batch.
-  | cxs::transform(from<login>, to<login>, dim<0>, [](std::vector<std::string> login_batch) {
+  | hps::transform(from<login>, to<login>, dim<0>, [](std::vector<std::string> login_batch) {
         login_batch.push_back("new_login");  // this inserts a new login to the current batch
         return login_batch;
     })
