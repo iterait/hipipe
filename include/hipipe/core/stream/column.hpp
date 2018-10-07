@@ -8,25 +8,73 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_COLUMN_HPP
-#define HIPIPE_CORE_STREAM_COLUMN_HPP
+#pragma once
 
+#include <range/v3/view/any_view.hpp>
+
+#include <cassert>
 #include <initializer_list>
+#include <stdexcept>
+#include <string>
 #include <type_traits>
+#include <typeindex>
+#include <typeinfo>
+#include <unordered_map>
 #include <vector>
 
 namespace hipipe::stream {
 
 /// \ingroup Stream
-/// \brief Base class for hipipe columns.
-///
-/// Stores a vector of given types and provides convenient constructors.
-template <typename T, bool = std::is_copy_constructible<T>{}>
-class column_base {
+/// \brief Abstract base class for HiPipe columns.
+class abstract_column {
+
+public:
+    // typed value extractor //
+
+    template<typename Column>
+    void throw_check_extraction_type() const
+    {
+        if (typeid(*this) != typeid(Column)) {
+            throw std::runtime_error{
+              std::string{"Trying to extract batch of type `"} + typeid(Column).name()
+              + "` from a batch of type `" + typeid(*this).name() + "`."};
+        }
+    }
+
+    // TODO add documentation
+    template<typename Column>
+    typename Column::batch_type& extract()
+    {
+        throw_check_extraction_type<Column>();
+        return dynamic_cast<Column&>(*this).value();
+    }
+
+    template<typename Column>
+    const typename Column::batch_type& extract() const
+    {
+        throw_check_extraction_type<Column>();
+        return dynamic_cast<const Column&>(*this).value();
+    }
+
+    // name accessor
+
+    virtual std::string name() = 0;
+
+    // virtual destrutor
+
+    virtual ~abstract_column() = default;
+};
+
+/// \ingroup Stream
+/// \brief Implementation stub of a column used in HIPIPE_DEFINE_COLUMN.
+template <typename T>
+class column_base : public abstract_column {
 private:
     std::vector<T> value_;
 
 public:
+
+    // types //
 
     using batch_type = std::vector<T>;
     using example_type = T;
@@ -34,10 +82,14 @@ public:
     // constructors //
 
     column_base() = default;
+
     column_base(T&& rhs)
     {
+        static_assert(std::is_copy_constructible_v<T>,
+          "HiPipe columns need to be copy constructible.");
         value_.emplace_back(std::move(rhs));
     }
+
     column_base(const T& rhs)
       : value_{rhs}
     {}
@@ -54,33 +106,81 @@ public:
       : value_{rhs}
     {}
 
-    // conversion operators //
-
-    operator std::vector<T>&() &
-    {
-        return value_;
-    }
-
-    operator std::vector<T>&&() &&
-    {
-        return std::move(value_);
-    }
-
     // value accessors //
 
     std::vector<T>& value() { return value_; }
     const std::vector<T>& value() const { return value_; }
 };
 
-/// Specialization of column_base for non-copy-constructible types.
-template <typename T>
-struct column_base<T, false> : column_base<T, true> {
-    using column_base<T, true>::column_base;
 
-    column_base() = default;
-    column_base(const T& rhs) = delete;
-    column_base(const std::vector<T>& rhs) = delete;
+class batch_t {
+private:
+    std::unordered_map<std::type_index, std::unique_ptr<abstract_column>> columns_;
+
+public:
+    // value extraction //
+
+    template<typename Column>
+    void throw_check_extraction_type() const
+    {
+        if (columns_.count(std::type_index{typeid(Column)}) == 0) {
+            throw std::runtime_error{
+              std::string{"Trying to retrieve column `"} + typeid(Column).name()
+              + "`, but the batch contains no such column."};
+        }
+    }
+
+    template<typename Column>
+    typename Column::batch_type& extract()
+    {
+        throw_check_extraction_type<Column>();
+        return columns_.at(std::type_index{typeid(Column)})->extract<Column>();
+    }
+
+    template<typename Column>
+    const typename Column::batch_type& extract() const
+    {
+        throw_check_extraction_type<Column>();
+        return columns_.at(std::type_index{typeid(Column)})->extract<Column>();
+    }
+
+    // raw column access //
+
+    template<typename Column>
+    Column& at()
+    {
+        throw_check_extraction_type<Column>();
+        return *columns_.at(std::type_index{typeid(Column)});
+    }
+
+    template<typename Column>
+    const Column& at() const
+    {
+        throw_check_extraction_type<Column>();
+        return *columns_.at(std::type_index{typeid(Column)});
+    }
+
+    // column insertion/rewrite //
+
+    template<typename Column, typename Source>
+    void insert(Source source)
+    {
+        static_assert(std::is_constructible_v<Column, Source>,
+          "Cannot convert the given data source to the given column.");
+        columns_[std::type_index{typeid(Column)}] =
+          std::make_unique<Column>(std::move(source));
+    }
+
+    // column check //
+
+    template<typename Column>
+    bool contains() const
+    {
+        return columns_.count(std::type_index{typeid(Column)});
+    }
 };
+
+using stream_t = ranges::any_view<batch_t, ranges::category::forward>;
 
 }  // namespace hipipe::stream
 
@@ -88,10 +188,8 @@ struct column_base<T, false> : column_base<T, true> {
 /// \brief Macro for fast column definition.
 ///
 /// Under the hood, it creates a new type derived from column_base.
-#define HIPIPE_DEFINE_COLUMN(col_name, col_type)               \
+#define HIPIPE_DEFINE_COLUMN(col_name, col_type)                \
 struct col_name : hipipe::stream::column_base<col_type> {       \
     using hipipe::stream::column_base<col_type>::column_base;   \
-    static constexpr const char* name() { return #col_name; }   \
+    std::string name() override { return #col_name; }           \
 };
-
-#endif
