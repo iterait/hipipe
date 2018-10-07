@@ -8,13 +8,16 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_CREATE_HPP
-#define HIPIPE_CORE_STREAM_CREATE_HPP
+#pragma once
 
+#include <hipipe/core/stream/column.hpp>
 #include <hipipe/core/utility/tuple.hpp>
 
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/chunk.hpp>
+
+#include <typeinfo>
+#include <unordered_map>
 
 namespace hipipe::stream {
 
@@ -24,12 +27,28 @@ namespace detail {
     struct create_impl {
 
         template<typename Source>
-        constexpr std::tuple<Columns...> operator()(Source&& source) const
+        batch_t operator()(Source&& source) const
         {
-            return std::tuple<Columns...>{
-              utility::unzip_if<(sizeof...(Columns) > 1)>(std::forward<Source>(source))};
-        }
+            batch_t batch;
 
+            if constexpr(sizeof...(Columns) == 0) {
+                static_assert("hipipe::stream::create: At least one column has to be provided.");
+            } else if constexpr(sizeof...(Columns) == 1) {
+                static_assert(std::is_constructible_v<Columns..., Source&&>,
+                  "hipipe::stream::create: Cannot convert the given data range to the selected column type.");
+                batch.insert<Columns...>(std::forward<Source>(source));
+            } else {
+                using SourceValue = ranges::range_value_type_t<Source>;
+                static_assert(std::is_constructible_v<std::tuple<typename Columns::example_type...>, SourceValue&&>,
+                  "hipipe::stream::create: Cannot convert the given data range to the selected column types.");
+                std::tuple<Columns...> data = utility::unzip(std::forward<Source>(source));
+                utility::tuple_for_each(data, [&batch](auto& column){
+                    batch.insert<std::decay_t<decltype(column)>>(std::move(column));
+                });
+            }
+
+            return batch;
+        }
     };
 
     template<typename... Columns>
@@ -44,7 +63,7 @@ namespace detail {
 
     public:
         template<typename Rng, CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
-        constexpr auto operator()(Rng&& rng, std::size_t batch_size = 1) const
+        stream_t operator()(Rng&& rng, std::size_t batch_size = 1) const
         {
             return ranges::view::transform(
               ranges::view::chunk(std::forward<Rng>(rng), batch_size),
@@ -64,7 +83,7 @@ namespace detail {
 }  // namespace detail
 
 /// \ingroup Stream
-/// \brief Converts a range to a stream (i.e., to a range of tuples of columns).
+/// \brief Converts a data range to a HiPipe stream.
 ///
 /// The value type of the input range is supposed
 /// to be either the type represented by the column to be created,
@@ -85,9 +104,8 @@ namespace detail {
 ///     auto rng = view::zip(view::iota(0, 10), view::iota(30, 50)) | create<id, age>();
 /// \endcode
 ///
-/// \param batch_size The requested batch size for the provided data.
+/// \param batch_size The requested batch size of the new stream.
 template<typename... Columns>
 constexpr ranges::view::view<detail::create_fn<Columns...>> create{};
 
 } // end namespace hipipe::stream
-#endif
