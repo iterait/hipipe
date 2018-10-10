@@ -35,12 +35,15 @@ namespace detail {
                 static_assert("hipipe::stream::create: At least one column has to be provided.");
             } else if constexpr(sizeof...(Columns) == 1) {
                 static_assert(std::is_constructible_v<Columns..., Source&&>,
-                  "hipipe::stream::create: Cannot convert the given data range to the selected column type.");
+                  "hipipe::stream::create: "
+                  "Cannot convert the given data range to the selected column type.");
                 batch.insert<Columns...>(std::forward<Source>(source));
             } else {
                 using SourceValue = ranges::range_value_type_t<Source>;
-                static_assert(std::is_constructible_v<std::tuple<typename Columns::example_type...>, SourceValue&&>,
-                  "hipipe::stream::create: Cannot convert the given data range to the selected column types.");
+                static_assert(std::is_constructible_v<
+                  std::tuple<typename Columns::example_type...>, SourceValue&&>,
+                  "hipipe::stream::create: "
+                  "Cannot convert the given data range to the selected column types.");
                 std::tuple<Columns...> data = utility::unzip(std::forward<Source>(source));
                 utility::tuple_for_each(data, [&batch](auto& column){
                     batch.insert<std::decay_t<decltype(column)>>(std::move(column));
@@ -106,6 +109,6 @@ namespace detail {
 ///
 /// \param batch_size The requested batch size of the new stream.
 template<typename... Columns>
-constexpr ranges::view::view<detail::create_fn<Columns...>> create{};
+inline ranges::view::view<detail::create_fn<Columns...>> create{};
 
 } // end namespace hipipe::stream
