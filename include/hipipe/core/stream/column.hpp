@@ -116,6 +116,13 @@ private:
     std::unordered_map<std::type_index, std::unique_ptr<abstract_column>> columns_;
 
 public:
+
+    // constructors //
+
+    batch_t() = default;
+    batch_t(const batch_t&) = delete;
+    batch_t(batch_t&&) = default;
+
     // value extraction //
 
     template<typename Column>
@@ -160,6 +167,7 @@ public:
 
     // column insertion/rewrite //
 
+    // TODO rename to insert_or_assign or similar
     template<typename Column, typename... Args>
     void insert(Args&&... args)
     {
