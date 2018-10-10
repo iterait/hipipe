@@ -162,13 +162,13 @@ public:
 
     // column insertion/rewrite //
 
-    template<typename Column, typename Source>
-    void insert(Source source)
+    template<typename Column, typename... Args>
+    void insert(Args&&... args)
     {
-        static_assert(std::is_constructible_v<Column, Source>,
-          "Cannot convert the given data source to the given column.");
+        static_assert(std::is_constructible_v<Column, Args&&...>,
+          "Cannot cosntruct the given column from the provided arguments.");
         columns_[std::type_index{typeid(Column)}] =
-          std::make_unique<Column>(std::move(source));
+          std::make_unique<Column>(std::forward<Args>(args)...);
     }
 
     // column check //
