@@ -34,6 +34,7 @@
 // test with a seeded random generator
 std::mt19937 prng{1000033};
 
+/* TODO remove?
 auto unique_vec_to_int_vec()
 {
     using namespace hipipe::stream;
@@ -43,5 +44,6 @@ auto unique_vec_to_int_vec()
         }, dim<1>)
       | drop<UniqueVec>;
 }
+*/
 
 #endif
