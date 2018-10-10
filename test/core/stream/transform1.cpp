@@ -116,92 +116,147 @@ BOOST_AUTO_TEST_CASE(test_to_itself)
 }
 
 
-/*
+// Transform a move-only column.
 BOOST_AUTO_TEST_CASE(test_move_only)
 {
-    // transform move-only column
-    std::vector<std::tuple<Int, Unique>> data;
-    data.emplace_back(3, std::make_unique<int>(5));
-    data.emplace_back(1, std::make_unique<int>(2));
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
 
-    auto generated = data
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Unique>(std::make_unique<int>(5));
+    data.push_back(std::move(batch1));
+    batch2.insert<Unique>(std::make_unique<int>(2));
+    data.push_back(std::move(batch2));
+
+    std::vector<batch_t> stream = data
       | ranges::view::move
-      | transform(from<Unique>, to<Unique, Double>,
+      | hipipe::stream::transform(from<Unique>, to<Unique>,
           [](const std::unique_ptr<int> &ptr) {
-            return std::make_tuple(std::make_unique<int>(*ptr), (double)*ptr);
-        })
-      | ranges::to_vector;
+              return std::make_unique<int>(*ptr + 1);
+        });
 
-    // check unique pointers
-    std::vector<int> desired_ptr_vals{5, 2};
-    for (int i = 0; i < 2; ++i) {
-        BOOST_TEST(*(std::get<0>(generated[i]).value()[0]) == desired_ptr_vals[i]);
-    }
-
-    // check other
-    auto to_check = generated | ranges::view::move | drop<Unique>;
-    std::vector<std::tuple<Double, Int>> desired = {{5., 3}, {2., 1}};
-    test_ranges_equal(to_check, desired);
+    BOOST_TEST(stream.size() == 2);
+    BOOST_TEST(stream.at(0).extract<Unique>().size() == 1);
+    BOOST_TEST(*stream.at(0).extract<Unique>().at(0) == 6);
+    BOOST_TEST(stream.at(1).extract<Unique>().size() == 1);
+    BOOST_TEST(*stream.at(1).extract<Unique>().at(0) == 3);
 }
 
+
+// Test mutable transformation function.
 BOOST_AUTO_TEST_CASE(test_mutable)
 {
-    std::vector<std::tuple<Int>> data = {{{1, 3}}, {{5, 7}}};
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
 
-    auto generated = data
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Int>(Int::batch_type{1, 5, 3});
+    data.push_back(std::move(batch1));
+    batch2.insert<Int>(Int::batch_type{3, 5});
+    data.push_back(std::move(batch2));
+
+    std::vector<batch_t> stream = data
       | ranges::view::move
       | transform(from<Int>, to<Int>, [i = 0](const int&) mutable {
             return i++;
-        })
-      | ranges::to_vector;
+        });
 
-    std::vector<std::tuple<Int>> desired = {{{0, 1}}, {{2, 3}}};
-    test_ranges_equal(generated, desired);
+    BOOST_TEST(stream.size() == 2);
+    BOOST_TEST(stream.at(0).extract<Int>() == (std::vector<int>{0, 1, 2}));
+    BOOST_TEST(stream.at(1).extract<Int>() == (std::vector<int>{3, 4}));
 }
 
+
+// Two columns to one column.
 BOOST_AUTO_TEST_CASE(test_two_to_one)
 {
-    // transform two columns to a single column
-    std::vector<std::tuple<Int, Double>> data = {{{3, 7}, {5., 1.}}, {1, 2.}};
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Int>(Int::batch_type{3, 7});
+    batch1.insert<Double>(Double::batch_type{5., 1.});
+    data.push_back(std::move(batch1));
+    batch2.insert<Int>(Int::batch_type{1, 2});
+    batch2.insert<Double>(Double::batch_type{3., 7.});
+    data.push_back(std::move(batch2));
   
-    auto generated = data
-      | transform(from<Int, Double>, to<Double>, [](int i, double d) {
-            return (double)(i + d);
+    std::vector<batch_t> stream = data
+      | ranges::view::move
+      | transform(from<Int, Double>, to<Double>, [](int i, double d) -> double {
+            return i + d;
         });
   
-    std::vector<std::tuple<Double, Int>> desired = {{{3 + 5., 7 + 1.}, {3, 7}}, {1 + 2., 1}};
-    test_ranges_equal(generated, desired);
+    BOOST_TEST(stream.size() == 2);
+    BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {3, 7}));
+    BOOST_TEST(stream.at(0).extract<Double>() == (std::vector<double>{8., 8.}));
+    BOOST_TEST(stream.at(1).extract<Int>()    == (std::vector<int>   {1, 2}));
+    BOOST_TEST(stream.at(1).extract<Double>() == (std::vector<double>{4., 9.}));
 }
 
+
+// One column to two columns.
 BOOST_AUTO_TEST_CASE(test_one_to_two)
 {
-    // transform a single column to two columns
-    std::vector<std::tuple<Int>> data = {{{3}}, {{1}}};
-  
-    auto generated = data
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Int>(Int::batch_type{3, 7});
+    data.push_back(std::move(batch1));
+    batch2.insert<Int>(Int::batch_type{1, 2});
+    data.push_back(std::move(batch2));
+
+    std::vector<batch_t> stream = data
+      | ranges::view::move
       | transform(from<Int>, to<Int, Double>, [](int i) {
             return std::make_tuple(i + i, (double)(i * i));
         });
   
-    std::vector<std::tuple<Int, Double>> desired = {{6, 9.}, {2, 1.}};
-    test_ranges_equal(generated, desired);
+    BOOST_TEST(stream.size() == 2);
+    BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {6,  14 }));
+    BOOST_TEST(stream.at(0).extract<Double>() == (std::vector<double>{9., 49.}));
+    BOOST_TEST(stream.at(1).extract<Int>()    == (std::vector<int>   {2,  4  }));
+    BOOST_TEST(stream.at(1).extract<Double>() == (std::vector<double>{1., 4. }));
 }
 
+
+// Test transformation of whole batches.
 BOOST_AUTO_TEST_CASE(test_dim0)
 {
-    std::vector<std::tuple<Int, Double>> data = {{{3, 2}, 5.}, {1, 2.}};
-    auto data_orig = data;
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::dim;
 
-    auto generated = data
-      | transform(from<Int>, to<Int>, [](const Int& int_batch) {
-            std::vector<int> new_batch = int_batch.value();
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Int>(Int::batch_type{3, 7});
+    batch1.insert<Double>(Double::batch_type{2.});
+    data.push_back(std::move(batch1));
+    batch2.insert<Int>(Int::batch_type{1, 2});
+    batch2.insert<Double>(Double::batch_type{6.});
+    data.push_back(std::move(batch2));
+
+    std::vector<batch_t> stream = data
+      | ranges::view::move
+      | transform(from<Int>, to<Int>, [](const Int::batch_type& int_batch) {
+            std::vector<int> new_batch = int_batch;
             new_batch.push_back(4);
             return new_batch;
-        }, dim<0>)
-      | ranges::to_vector;
+        }, dim<0>);
 
-    std::vector<std::tuple<Int, Double>> desired = {{{3, 2, 4}, 5.}, {{1, 4}, 2.}};
-    BOOST_CHECK(generated == desired);
-    BOOST_CHECK(data == data_orig);
+    BOOST_TEST(stream.size() == 2);
+    BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {3, 7, 4}));
+    BOOST_TEST(stream.at(0).extract<Double>() == (std::vector<double>{2.     }));
+    BOOST_TEST(stream.at(1).extract<Int>()    == (std::vector<int>   {1, 2, 4}));
+    BOOST_TEST(stream.at(1).extract<Double>() == (std::vector<double>{6.     }));
 }
-*/
