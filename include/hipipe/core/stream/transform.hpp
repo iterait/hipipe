@@ -52,7 +52,6 @@ namespace detail {
               std::tuple<ToTypes...>, Fun, decltype(slice_view)&&>,
               "hipipe::stream::partial_transform: "
               "The function return type does not correspond to the selected `to<>` columns.");
-            // TODO ToTypes::batch_type would be prettiter
             std::tuple<ToTypes...> result{std::invoke(fun, std::move(slice_view))};
             // replace the corresponding fields in the source
             utility::tuple_for_each(result, [&source](auto& column){
@@ -112,12 +111,11 @@ inline ranges::view::view<detail::partial_transform_fn> partial_transform{};
 namespace detail {
 
     // Apply fun to each element in tuple of ranges in the given dimension.
-    template<typename Fun, std::size_t Dim, std::size_t NOuts, typename From, typename To>
+    template<typename Fun, std::size_t Dim, typename From, typename To>
     struct wrap_fun_for_dim;
 
-    template<typename Fun, std::size_t Dim, std::size_t NOuts,
-             typename... FromTypes, typename... ToTypes>
-    struct wrap_fun_for_dim<Fun, Dim, NOuts, from_t<FromTypes...>, to_t<ToTypes...>> {
+    template<typename Fun, std::size_t Dim, typename... FromTypes, typename... ToTypes>
+    struct wrap_fun_for_dim<Fun, Dim, from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
         using FunRef = decltype(std::ref(fun));
 
@@ -126,7 +124,7 @@ namespace detail {
         {
             assert(utility::same_size(tuple_of_ranges));
             // build the function to be applied
-            wrap_fun_for_dim<FunRef, Dim-1, NOuts,
+            wrap_fun_for_dim<FunRef, Dim-1,
               from_t<ranges::range_value_type_t<FromTypes>...>,
               to_t<ranges::range_value_type_t<ToTypes>...>>
                 fun_wrapper{std::ref(fun)};
@@ -135,12 +133,12 @@ namespace detail {
               ranges::view::transform(
                 boost::hana::unpack(std::move(tuple_of_ranges), ranges::view::zip),
                 std::move(fun_wrapper));
-            return utility::unzip_if<(NOuts > 1)>(std::move(range_of_tuples));
+            return utility::unzip_if<(sizeof...(ToTypes) > 1)>(std::move(range_of_tuples));
         }
     };
 
-    template<typename Fun, std::size_t NOuts, typename... FromTypes, typename... ToTypes>
-    struct wrap_fun_for_dim<Fun, 0, NOuts, from_t<FromTypes...>, to_t<ToTypes...>> {
+    template<typename Fun, typename... FromTypes, typename... ToTypes>
+    struct wrap_fun_for_dim<Fun, 0, from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
 
         utility::maybe_tuple<ToTypes...>
@@ -149,10 +147,17 @@ namespace detail {
             static_assert(std::is_invocable_v<Fun, FromTypes&...>,
               "hipipe::stream::transform: "
               "Cannot call the given function on the selected from<> columns.");
-            static_assert(std::is_invocable_r_v<
-              utility::maybe_tuple<ToTypes...>, Fun, FromTypes&...>,
-              "hipipe::stream::transform: "
-              "The function does not return the selected to<> column (or a tuple of those).");
+            if constexpr(sizeof...(ToTypes) == 1) {
+                static_assert(std::is_invocable_r_v<
+                  ToTypes..., Fun, FromTypes&...>,
+                  "hipipe::stream::transform: "
+                  "The function does not return the selected to<> column.");
+            } else {
+                static_assert(std::is_invocable_r_v<
+                  std::tuple<ToTypes...>, Fun, FromTypes&...>,
+                  "hipipe::stream::transform: "
+                  "The function does not return the tuple of the selected to<> columns.");
+            }
             return boost::hana::unpack(std::move(tuple), fun);
         }
     };
@@ -190,7 +195,7 @@ inline auto transform(
 {
     // wrap the function to be applied in the appropriate dimension
     detail::wrap_fun_for_dim<
-      Fun, Dim, sizeof...(ToColumns),
+      Fun, Dim,
       from_t<typename FromColumns::batch_type...>,
       to_t<typename ToColumns::batch_type...>>
         fun_wrapper{std::move(fun)};
