@@ -15,26 +15,68 @@
 
 #include "transform.hpp"
 
-using namespace hipipe::stream;
 
 BOOST_AUTO_TEST_CASE(test_partial_transform)
 {
-    // partial_transform (int){'f', ..., 'i'} to (char){'a', ..., 'd'}
-    // the char column is appended
-    auto data = ranges::view::iota((int)'f', (int)'j')
-      | ranges::view::transform(std::make_tuple<int>)
-      | partial_transform(from<int>, to<char>, [](std::tuple<int> t) {
-            return std::make_tuple((char)(std::get<0>(t) - 5));
-        });
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
 
-    auto desired =
-      ranges::view::zip(ranges::view::iota((char)'a', (char)'e'),
-                ranges::view::iota((int)'f', (int)'j'))
-      | ranges::view::transform([](auto t) { return std::tuple<char, int>(t); });
+    // Two batches of two columns of a single example.
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Int>(3);
+    batch1.insert<Unique>(std::make_unique<int>(5));
+    data.push_back(std::move(batch1));
+    batch2.insert<Int>(1);
+    batch2.insert<Unique>(std::make_unique<int>(2));
+    data.push_back(std::move(batch2));
 
-    test_ranges_equal(data, desired);
+    std::vector<batch_t> stream = data
+      | ranges::view::move
+      // increment unique_ptr values by one
+      | hipipe::stream::partial_transform(from<Unique>, to<Unique>,
+          [](std::tuple<Unique::batch_type&> data)
+            -> std::tuple<Unique::batch_type> {
+              BOOST_TEST(std::get<0>(data).size() == 1);
+              Unique::batch_type new_data;
+              new_data.push_back(std::make_unique<int>(*std::get<0>(data).at(0) + 1));
+              return std::make_tuple(std::move(new_data));
+        })
+      // put sum of pointer values and ints into ints
+      | hipipe::stream::partial_transform(from<Unique, Int>, to<Int>,
+          [](std::tuple<Unique::batch_type&, Int::batch_type> data)
+            -> std::tuple<Int::batch_type> {
+              BOOST_TEST(std::get<0>(data).size() == 1);
+              Int::batch_type new_data;
+              new_data.push_back(*std::get<0>(data).at(0) + std::get<1>(data).at(0));
+              return std::make_tuple(std::move(new_data));
+        })
+      // swap pointer values and ints
+      | hipipe::stream::partial_transform(from<Unique, Int>, to<Int, Unique>,
+          [](std::tuple<Unique::batch_type&, Int::batch_type> data)
+            -> std::tuple<Int::batch_type, Unique::batch_type> {
+              Unique::batch_type new_unique_data;
+              new_unique_data.push_back(std::make_unique<int>(std::get<1>(data).at(0)));
+              Int::batch_type new_int_data;
+              new_int_data.push_back(*std::get<0>(data).at(0));
+              return std::make_tuple(std::move(new_int_data), std::move(new_unique_data));
+        })
+      ;
+    
+    // check contents
+    BOOST_TEST(stream.size() == 2);
+    BOOST_TEST(stream.at(0).extract<Unique>().size() == 1);
+    BOOST_TEST(stream.at(0).extract<Int>().size() == 1);
+    BOOST_TEST(*stream.at(0).extract<Unique>().at(0) == 9);
+    BOOST_TEST(stream.at(0).extract<Int>().at(0) == 6);
+    BOOST_TEST(stream.at(1).extract<Unique>().size() == 1);
+    BOOST_TEST(stream.at(1).extract<Int>().size() == 1);
+    BOOST_TEST(*stream.at(1).extract<Unique>().at(0) == 4);
+    BOOST_TEST(stream.at(1).extract<Int>().at(0) == 3);
 }
 
+/*
 BOOST_AUTO_TEST_CASE(test_to_itself)
 {
     // transform a single column to itself
@@ -132,3 +174,4 @@ BOOST_AUTO_TEST_CASE(test_dim0)
     BOOST_CHECK(generated == desired);
     BOOST_CHECK(data == data_orig);
 }
+*/
