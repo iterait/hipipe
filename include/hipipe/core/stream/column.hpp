@@ -85,8 +85,6 @@ public:
 
     column_base(T&& rhs)
     {
-        static_assert(std::is_copy_constructible_v<T>,
-          "HiPipe columns need to be copy constructible.");
         value_.emplace_back(std::move(rhs));
     }
 
