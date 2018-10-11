@@ -15,22 +15,82 @@
 
 #include "transform.hpp"
 
-using namespace hipipe::stream;
 
 BOOST_AUTO_TEST_CASE(test_dim2_move_only)
 {
-    auto data = generate_move_only_data();
+    // TODO put all those to a single namespace that can be used at once.
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::dim;
 
-    auto rng = data
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<IntVec>();
+    batch1.extract<IntVec>().resize(2);
+    batch1.extract<IntVec>().at(0).push_back(2);
+    batch1.extract<IntVec>().at(0).push_back(5);
+    batch1.extract<IntVec>().at(1).push_back(4);
+    batch1.extract<IntVec>().at(1).push_back(9);
+    batch1.insert<UniqueVec>();
+    batch1.extract<UniqueVec>().resize(3);
+    batch1.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(6));
+    batch1.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(3));
+    batch1.extract<UniqueVec>().at(1).push_back(std::make_unique<int>(7));
+    batch1.extract<UniqueVec>().at(1).push_back(std::make_unique<int>(4));
+    batch1.extract<UniqueVec>().at(2).push_back(std::make_unique<int>(2));
+    batch1.extract<UniqueVec>().at(2).push_back(std::make_unique<int>(1));
+    data.push_back(std::move(batch1));
+    batch2.insert<IntVec>();
+    batch2.extract<IntVec>().resize(1);
+    batch2.extract<IntVec>().at(0).push_back(8);
+    batch2.extract<IntVec>().at(0).push_back(9);
+    batch2.insert<UniqueVec>();
+    batch2.extract<UniqueVec>().resize(1);
+    batch2.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(2));
+    batch2.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(8));
+    data.push_back(std::move(batch2));
+
+    std::vector<batch_t> stream = data
       | ranges::view::move
-      | create<Int, UniqueVec>(2)
-      | transform(from<UniqueVec>, to<UniqueVec>, [](std::unique_ptr<int>& ptr) {
-            return std::make_unique<int>(*ptr + 1);
-        }, dim<2>)
-      | drop<Int>
-      | unique_vec_to_int_vec();
+      | hipipe::stream::transform(from<UniqueVec>, to<UniqueVec>,
+          [](std::unique_ptr<int>& ptr) -> std::unique_ptr<int> {
+              return std::make_unique<int>(*ptr + 1);
+        }, dim<2>);
 
-    std::vector<std::vector<std::vector<int>>> generated = unpack(rng, from<IntVec>, dim<0>);
-    std::vector<std::vector<std::vector<int>>> desired = {{{2, 5}, {9, 3}}, {{3, 6}}};
-    BOOST_CHECK(generated == desired);
+    BOOST_TEST(stream.size() == 2);
+
+    // batch 1 //
+
+    // int vector
+    BOOST_TEST(stream.at(0).extract<IntVec>().size() == 2);
+    BOOST_TEST(stream.at(0).extract<IntVec>().at(0)  == (std::vector<int>{2, 5}));
+    BOOST_TEST(stream.at(0).extract<IntVec>().at(1)  == (std::vector<int>{4, 9}));
+
+    // unique vector
+    BOOST_TEST(stream.at(0).extract<UniqueVec>().size() == 3);
+    // example 1
+    BOOST_TEST(stream.at(0).extract<UniqueVec>().at(0).size()  == 2);
+    BOOST_TEST(*stream.at(0).extract<UniqueVec>().at(0).at(0)  == 7);
+    BOOST_TEST(*stream.at(0).extract<UniqueVec>().at(0).at(1)  == 4);
+    // example 2
+    BOOST_TEST(stream.at(0).extract<UniqueVec>().at(1).size()  == 2);
+    BOOST_TEST(*stream.at(0).extract<UniqueVec>().at(1).at(0)  == 8);
+    BOOST_TEST(*stream.at(0).extract<UniqueVec>().at(1).at(1)  == 5);
+    // example 3
+    BOOST_TEST(stream.at(0).extract<UniqueVec>().at(2).size()  == 2);
+    BOOST_TEST(*stream.at(0).extract<UniqueVec>().at(2).at(0)  == 3);
+    BOOST_TEST(*stream.at(0).extract<UniqueVec>().at(2).at(1)  == 2);
+
+    // batch 2 //
+
+    // int vector
+    BOOST_TEST(stream.at(1).extract<IntVec>().size() == 1);
+    BOOST_TEST(stream.at(1).extract<IntVec>().at(0)  == (std::vector<int>{8, 9}));
+    // unique vector
+    BOOST_TEST(stream.at(1).extract<UniqueVec>().size() == 1);
+    // example 1
+    BOOST_TEST(stream.at(1).extract<UniqueVec>().at(0).size()  == 2);
+    BOOST_TEST(*stream.at(1).extract<UniqueVec>().at(0).at(0)  == 3);
+    BOOST_TEST(*stream.at(1).extract<UniqueVec>().at(0).at(1)  == 9);
 }
