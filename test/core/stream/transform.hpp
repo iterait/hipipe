@@ -31,19 +31,4 @@
 #include <tuple>
 #include <vector>
 
-// test with a seeded random generator
-std::mt19937 prng{1000033};
-
-/* TODO remove?
-auto unique_vec_to_int_vec()
-{
-    using namespace hipipe::stream;
-    return
-        transform(from<UniqueVec>, to<IntVec>, [](auto&& ptrs) {
-            return ptrs | ranges::view::indirect;
-        }, dim<1>)
-      | drop<UniqueVec>;
-}
-*/
-
 #endif
