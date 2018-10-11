@@ -75,11 +75,11 @@ namespace detail {
 template<typename FromColumn, typename ToColumn, typename Gen,
          int Dim = utility::ndims<typename ToColumn::batch_type>::value
                  - utility::ndims<std::result_of_t<Gen()>>::value>
-constexpr auto generate(from_t<FromColumn> size_from,
-                        to_t<ToColumn> fill_to,
-                        Gen gen,
-                        long gendims = std::numeric_limits<long>::max(),
-                        dim_t<Dim> d = dim_t<Dim>{})
+inline auto generate(from_t<FromColumn> size_from,
+                     to_t<ToColumn> fill_to,
+                     Gen gen,
+                     long gendims = std::numeric_limits<long>::max(),
+                     dim_t<Dim> d = dim_t<Dim>{})
 {
     detail::wrap_generate_fun_for_transform<FromColumn, ToColumn, Gen, Dim>
       trans_fun{std::move(gen), gendims};
