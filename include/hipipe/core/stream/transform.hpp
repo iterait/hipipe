@@ -12,6 +12,7 @@
 #define HIPIPE_CORE_STREAM_TRANSFORM_HPP
 
 #include <hipipe/build_config.hpp>
+#include <hipipe/core/stream/column.hpp>
 #include <hipipe/core/stream/template_arguments.hpp>
 #include <hipipe/core/utility/random.hpp>
 #include <hipipe/core/utility/tuple.hpp>

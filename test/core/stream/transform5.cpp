@@ -13,8 +13,9 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE transform5_test
 
-#include "transform.hpp"
+#include "../common.hpp"
 
+#include <hipipe/core/stream/transform.hpp>
 #include <hipipe/core/utility/vector.hpp>
 
 

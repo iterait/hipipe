@@ -13,7 +13,9 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE transform1_test
 
-#include "transform.hpp"
+#include "../common.hpp"
+
+#include <hipipe/core/stream/transform.hpp>
 
 
 BOOST_AUTO_TEST_CASE(test_partial_transform)
