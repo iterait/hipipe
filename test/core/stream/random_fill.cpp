@@ -45,7 +45,6 @@ BOOST_AUTO_TEST_CASE(test_simple)
     using hipipe::stream::batch_t;
     using hipipe::stream::from;
     using hipipe::stream::to;
-    using hipipe::stream::dim;
 
     HIPIPE_DEFINE_COLUMN(IntVec2d, std::vector<std::vector<int>>)
     HIPIPE_DEFINE_COLUMN(Random, std::vector<double>)
