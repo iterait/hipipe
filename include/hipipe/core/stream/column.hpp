@@ -36,8 +36,8 @@ public:
     {
         if (typeid(*this) != typeid(Column)) {
             throw std::runtime_error{
-              std::string{"Trying to extract batch of type `"} + typeid(Column).name()
-              + "` from a batch of type `" + typeid(*this).name() + "`."};
+              std::string{"Trying to extract column `"} + Column{}.name()
+              + "` from a column of type `" + this->name() + "`."};
         }
     }
 
@@ -58,7 +58,7 @@ public:
 
     // name accessor
 
-    virtual std::string name() = 0;
+    virtual std::string name() const = 0;
 
     // virtual destrutor
 
@@ -130,7 +130,7 @@ public:
     {
         if (columns_.count(std::type_index{typeid(Column)}) == 0) {
             throw std::runtime_error{
-              std::string{"Trying to retrieve column `"} + typeid(Column).name()
+              std::string{"Trying to retrieve column `"} + Column{}.name()
               + "`, but the batch contains no such column."};
         }
     }
@@ -194,8 +194,8 @@ using stream_t = ranges::any_view<batch_t, ranges::category::forward>;
 /// \brief Macro for fast column definition.
 ///
 /// Under the hood, it creates a new type derived from column_base.
-#define HIPIPE_DEFINE_COLUMN(col_name, col_type)                \
-struct col_name : hipipe::stream::column_base<col_type> {       \
-    using hipipe::stream::column_base<col_type>::column_base;   \
-    std::string name() override { return #col_name; }           \
+#define HIPIPE_DEFINE_COLUMN(column_name, example_type)            \
+struct column_name : hipipe::stream::column_base<example_type> {   \
+    using hipipe::stream::column_base<example_type>::column_base;  \
+    std::string name() const override { return #column_name; }     \
 };
