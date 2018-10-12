@@ -8,8 +8,7 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_GENERATE_HPP
-#define HIPIPE_CORE_STREAM_GENERATE_HPP
+#pragma once
 
 #include <hipipe/core/stream/transform.hpp>
 #include <hipipe/core/utility/vector.hpp>
@@ -28,14 +27,20 @@ namespace detail {
             using SourceVector = typename FromColumn::batch_type;
             using TargetVector = typename ToColumn::batch_type;
             constexpr long SourceDims = utility::ndims<SourceVector>::value;
-            static_assert(Dim <= SourceDims, "stream::generate requires"
+            constexpr long TargetDims = utility::ndims<TargetVector>::value;
+            static_assert(Dim <= SourceDims, "hipipe::stream::generate requires"
               " the dimension in which to apply the generator to be at most the number"
               " of dimensions of the source column (i.e., the column the shape is taken"
               " from).");
+            static_assert(Dim <= TargetDims, "hipipe::stream::generate: The requested"
+              " dimension is higher than the number of dimensions of the target column.");
             // get the size of the source up to the dimension of the target
             std::vector<std::vector<long>> target_size = utility::ndim_size<Dim>(source);
             // create, resize, and fill the target using the generator
             TargetVector target;
+            static_assert(std::is_invocable_r_v<utility::ndim_type_t<TargetVector, Dim>, Gen>,
+              " hipipe::stream::generate: The given generator does not generate a"
+              " type convertible to the given column in the given dimension.");
             utility::ndim_resize<Dim>(target, target_size);
             utility::generate<Dim>(target, gen, gendims);
             return target;
@@ -87,4 +92,3 @@ inline auto generate(from_t<FromColumn> size_from,
 }
 
 }  // namespace hipipe::stream
-#endif

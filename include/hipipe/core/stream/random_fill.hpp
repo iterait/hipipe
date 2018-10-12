@@ -8,13 +8,9 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_RANDOM_FILL_HPP
-#define HIPIPE_CORE_STREAM_RANDOM_FILL_HPP
+#pragma once
 
 #include <hipipe/core/stream/generate.hpp>
-
-#include <functional>
-#include <random>
 
 namespace hipipe::stream {
 
@@ -66,4 +62,3 @@ inline auto random_fill(from_t<FromColumn> size_from,
 }
 
 }  // namespace hipipe::stream
-#endif
