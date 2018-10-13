@@ -87,7 +87,7 @@ template<
     typename utility::ndim_type_t<
       typename FromColumn::batch_type, 
       utility::ndims<typename MaskColumn::batch_type>::value>>
-constexpr auto pad(from_t<FromColumn> f, mask_t<MaskColumn> m, ValT value = ValT{})
+inline auto pad(from_t<FromColumn> f, mask_t<MaskColumn> m, ValT value = ValT{})
 {
     detail::wrap_pad_fun_for_transform<FromColumn, MaskColumn, ValT>
       trans_fun{std::move(value)};

@@ -13,79 +13,95 @@
 
 #include "../common.hpp"
 
-#include <hipipe/core/stream/create.hpp>
 #include <hipipe/core/stream/pad.hpp>
 
-#include <boost/test/unit_test.hpp>
 
-#include <vector>
+HIPIPE_DEFINE_COLUMN(Sequences, std::vector<int>)
+HIPIPE_DEFINE_COLUMN(Sequences2d, std::list<std::vector<double>>)
+HIPIPE_DEFINE_COLUMN(Mask, std::vector<bool>)
 
-using namespace hipipe::stream;
-using namespace hipipe::utility;
 
-HIPIPE_DEFINE_COLUMN(sequences_2d, std::vector<int>)
-HIPIPE_DEFINE_COLUMN(sequences_3d, std::list<std::vector<double>>)
-HIPIPE_DEFINE_COLUMN(masks_2d, std::vector<bool>)
-
-BOOST_AUTO_TEST_CASE(test_seq_2d_mask_2d)
+BOOST_AUTO_TEST_CASE(test_sequences_mask)
 {
-    std::vector<std::vector<int>> data = {{1, 2}, {3, 4, 5}, {}, {6, 7}};
-    auto stream = data
-      | create<sequences_2d>(2)
-      | pad(from<sequences_2d>, mask<masks_2d>, -1);
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::mask;
 
-    int batch_i = 0;
-    for (auto batch : stream) {
-        auto seqs = std::get<sequences_2d>(batch).value();
-        auto mask = std::get<masks_2d>(batch).value();
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Sequences>();
+    batch1.extract<Sequences>().push_back(Sequences::example_type{1, 2   });
+    batch1.extract<Sequences>().push_back(Sequences::example_type{3, 4, 5});
+    data.push_back(std::move(batch1));
+    batch2.insert<Sequences>();
+    batch2.extract<Sequences>().push_back(Sequences::example_type{       });
+    batch2.extract<Sequences>().push_back(Sequences::example_type{6, 7   });
+    data.push_back(std::move(batch2));
 
-        // check the contents
-        switch (batch_i) {
-        case 0: BOOST_CHECK((seqs ==
-                  std::vector<std::vector<int>>{{1, 2, -1}, {3, 4, 5}}));
-                BOOST_CHECK((mask ==
-                  std::vector<std::vector<bool>>{{true, true, false}, {true, true, true}}));
+    std::vector<batch_t> stream = data
+      | ranges::view::move
+      | hipipe::stream::pad(from<Sequences>, mask<Mask>, -1);
+
+    for (std::size_t i = 0; i < stream.size(); ++i) {
+        Sequences::batch_type seqs = stream.at(i).extract<Sequences>();
+        Mask::batch_type     mask = stream.at(i).extract<Mask>();
+        switch (i) {
+        case 0: BOOST_TEST(seqs ==
+                  (std::vector<std::vector<int>>{{1, 2, -1}, {3, 4, 5}}));
+                BOOST_TEST(mask ==
+                  (std::vector<std::vector<bool>>{{true, true, false}, {true, true, true}}));
                 break;
-        case 1: BOOST_CHECK((seqs ==
-                  std::vector<std::vector<int>>{{-1, -1}, {6, 7}}));
-                BOOST_CHECK((mask ==
-                  std::vector<std::vector<bool>>{{false, false}, {true, true}}));
+        case 1: BOOST_TEST(seqs ==
+                  (std::vector<std::vector<int>>{{-1, -1}, {6, 7}}));
+                BOOST_TEST(mask ==
+                  (std::vector<std::vector<bool>>{{false, false}, {true, true}}));
                 break;
-        default: BOOST_FAIL("Only two batches should be provided");
+        default: BOOST_FAIL("Only two batches should be provided.");
         }
-        ++batch_i;
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_seq_3d_mask_2d)
+
+BOOST_AUTO_TEST_CASE(test_sequences_2d_mask)
 {
-    std::vector<std::list<std::vector<double>>> data =
-      {{{1.}, {2., 3.}}, {{3., 4.}}, {}, {{5., 1}}};
-    auto stream = data
-      | create<sequences_3d>(2)
-      | pad(from<sequences_3d>, mask<masks_2d>, {-1., -1.});
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::mask;
 
-    int batch_i = 0;
-    for (auto batch : stream) {
-        auto seqs = std::get<sequences_3d>(batch).value();
-        auto mask = std::get<masks_2d>(batch).value();
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Sequences2d>();
+    batch1.extract<Sequences2d>().push_back(Sequences2d::example_type{{1.}, {2., 3.}});
+    batch1.extract<Sequences2d>().push_back(Sequences2d::example_type{{3., 4.}});
+    data.push_back(std::move(batch1));
+    batch2.insert<Sequences2d>();
+    batch2.extract<Sequences2d>().push_back(Sequences2d::example_type{        });
+    batch2.extract<Sequences2d>().push_back(Sequences2d::example_type{{5., 1.}});
+    data.push_back(std::move(batch2));
 
-        // check the contents
-        switch (batch_i) {
-        case 0: BOOST_CHECK((seqs ==
-                  std::vector<std::list<std::vector<double>>>
+    std::vector<batch_t> stream = data
+      | ranges::view::move
+      | hipipe::stream::pad(from<Sequences2d>, mask<Mask>, {-1., -1.});
+
+    for (std::size_t i = 0; i < stream.size(); ++i) {
+        Sequences2d::batch_type seqs = stream.at(i).extract<Sequences2d>();
+        Mask::batch_type        mask = stream.at(i).extract<Mask>();
+        switch (i) {
+        case 0: BOOST_TEST(seqs ==
+                  (std::vector<std::list<std::vector<double>>>
                     {{{1.}, {2., 3.}}, {{3., 4.}, {-1., -1.}}}));
-                BOOST_CHECK((mask ==
-                  std::vector<std::vector<bool>>{{true, true}, {true, false}}));
+                BOOST_TEST(mask ==
+                  (std::vector<std::vector<bool>>{{true, true}, {true, false}}));
                 break;
-        case 1: BOOST_CHECK((seqs ==
-                  std::vector<std::list<std::vector<double>>>
+        case 1: BOOST_TEST(seqs ==
+                  (std::vector<std::list<std::vector<double>>>
                     {{{-1., -1.}}, {{5., 1.}}}));
-                BOOST_CHECK((mask ==
-                  std::vector<std::vector<bool>>{{false}, {true}}));
+                BOOST_TEST(mask ==
+                  (std::vector<std::vector<bool>>{{false}, {true}}));
                 break;
         default: BOOST_FAIL("Only two batches should be provided");
         }
-        ++batch_i;
     }
 }
