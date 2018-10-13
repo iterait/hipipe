@@ -40,6 +40,7 @@ template<typename Tuple>
 constexpr std::size_t batch_size(const Tuple& tuple)
 {
     static_assert(std::tuple_size<Tuple>{} && "Cannot get batch size if there are no columns");
+    // TODO throw if not
     assert(is_same_batch_size(tuple) && "All the columns have to have equal batch size");
     return std::get<0>(tuple).value().size();
 }

@@ -32,7 +32,7 @@ public:
     // typed value extractor //
 
     template<typename Column>
-    void throw_check_extraction_type() const
+    void throw_check_contains() const
     {
         if (typeid(*this) != typeid(Column)) {
             throw std::runtime_error{
@@ -45,14 +45,14 @@ public:
     template<typename Column>
     typename Column::batch_type& extract()
     {
-        throw_check_extraction_type<Column>();
+        throw_check_contains<Column>();
         return dynamic_cast<Column&>(*this).value();
     }
 
     template<typename Column>
     const typename Column::batch_type& extract() const
     {
-        throw_check_extraction_type<Column>();
+        throw_check_contains<Column>();
         return dynamic_cast<const Column&>(*this).value();
     }
 
@@ -126,7 +126,7 @@ public:
     // value extraction //
 
     template<typename Column>
-    void throw_check_extraction_type() const
+    void throw_check_contains() const
     {
         if (columns_.count(std::type_index{typeid(Column)}) == 0) {
             throw std::runtime_error{
@@ -138,14 +138,14 @@ public:
     template<typename Column>
     typename Column::batch_type& extract()
     {
-        throw_check_extraction_type<Column>();
+        throw_check_contains<Column>();
         return columns_.at(std::type_index{typeid(Column)})->extract<Column>();
     }
 
     template<typename Column>
     const typename Column::batch_type& extract() const
     {
-        throw_check_extraction_type<Column>();
+        throw_check_contains<Column>();
         return columns_.at(std::type_index{typeid(Column)})->extract<Column>();
     }
 
@@ -154,14 +154,14 @@ public:
     template<typename Column>
     Column& at()
     {
-        throw_check_extraction_type<Column>();
+        throw_check_contains<Column>();
         return *columns_.at(std::type_index{typeid(Column)});
     }
 
     template<typename Column>
     const Column& at() const
     {
-        throw_check_extraction_type<Column>();
+        throw_check_contains<Column>();
         return *columns_.at(std::type_index{typeid(Column)});
     }
 
@@ -179,10 +179,24 @@ public:
 
     // column check //
 
+    std::size_t size() const
+    {
+        return columns_.size();
+    }
+
     template<typename Column>
     bool contains() const
     {
         return columns_.count(std::type_index{typeid(Column)});
+    }
+
+    // column removal //
+
+    template<typename Column>
+    void erase()
+    {
+        throw_check_contains<Column>();
+        columns_.erase(std::type_index{typeid(Column)});
     }
 };
 
