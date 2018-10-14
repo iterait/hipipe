@@ -77,9 +77,9 @@ private:
             fill_buffer();
         }
 
-        reference_type read() const
+        value_type&& read() const
         {
-            return *buffer_.front().get();
+            return std::move(*buffer_.front().get());
         }
 
         bool equal(ranges::default_sentinel) const
@@ -162,11 +162,6 @@ public:
 /// Asynchronously evaluates the given number of elements in advance. When queried for the
 /// next element, it is already prepared. This view works for any range, not only
 /// for hipipe streams.
-///
-/// Warning: To avoid recomputing of already buffered results, this object internally creates a
-/// container of ready results and provides only references to them. Therefore, if you want to
-/// extend the hipipe pipeline after the buffer, you need to follow the buffer by
-/// ranges::view::move, since \ref hipipe::stream::batch_t is not copyable.
 ///
 /// \code
 ///     std::vector<int> data = {1, 2, 3, 4, 5};

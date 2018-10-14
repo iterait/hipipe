@@ -43,11 +43,11 @@ BOOST_AUTO_TEST_CASE(test_simple_traverse)
     auto rng2 = data | hipipe::stream::buffer(2);
 
     auto it1 = ranges::begin(rng1);
-    static_assert(std::is_same<int&, decltype(*it1)>{});
+    static_assert(std::is_same<int&&, decltype(*it1)>{});
     BOOST_TEST(*it1 == 1);
 
     auto it2 = ranges::begin(rng2);
-    static_assert(std::is_same<int&, decltype(*it2)>{});
+    static_assert(std::is_same<int&&, decltype(*it2)>{});
     BOOST_TEST(*it2 == 1);
 
     BOOST_TEST(ranges::to_vector(rng1) == data);
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(test_check_if_buffered)
     ++it2;
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {2, 3, 2, 1, 1});
-    static_assert(std::is_same<std::shared_ptr<int>&, decltype(*it)>{});
+    static_assert(std::is_same<std::shared_ptr<int>&&, decltype(*it)>{});
 
     BOOST_TEST(ranges::to_vector(ranges::view::indirect(rng)) ==
                ranges::to_vector(ranges::view::iota(0, 5)));
@@ -172,8 +172,7 @@ BOOST_AUTO_TEST_CASE(test_buffer_transformed_stream)
           [](int i, std::unique_ptr<int>& p) -> int {
             return i + *p;
         })
-      | hipipe::stream::buffer(3)
-      | ranges::view::move;
+      | hipipe::stream::buffer(3);
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>().size() == 2);
