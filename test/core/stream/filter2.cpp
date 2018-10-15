@@ -11,19 +11,34 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE filter2_test
 
-#include "filter.hpp"
+#include "../common.hpp"
 
-using namespace hipipe::stream;
+#include <hipipe/core/stream/filter.hpp>
+#include <hipipe/core/stream/for_each.hpp>
+
+#include <range/v3/to_container.hpp>
+
 
 BOOST_AUTO_TEST_CASE(test_mutable)
 {
-    HIPIPE_DEFINE_COLUMN(IntVec, std::vector<int>)
-    const std::vector<std::tuple<int, std::vector<int>>> data = {
-      {{3, {1, 5}}, {1, {2, 4}}, {2, {7, 1}}, {6, {3, 5}}}};
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::by;
+    using hipipe::stream::dim;
+
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Int>(Int::batch_type{3, 1});
+    batch1.insert<IntVec>(IntVec::batch_type{{1, 5}, {2, 4}});
+    data.push_back(std::move(batch1));
+    batch2.insert<Int>(Int::batch_type{2, 6});
+    batch2.insert<IntVec>(IntVec::batch_type{{7, 1}, {3, 5}});
+    data.push_back(std::move(batch2));
 
     std::size_t i = 0;
     auto generated = data
-      | create<Int, IntVec>(2)
+      | ranges::view::move
       | filter(from<Int, IntVec>, by<Int>, [i = 0](int v) mutable { return i++ % 2 == 0; })
       | for_each(from<Int, IntVec>, [&i](auto& ints, auto& intvecs) {
             switch (i++) {
@@ -33,21 +48,35 @@ BOOST_AUTO_TEST_CASE(test_mutable)
             case 1: BOOST_TEST(ints    == (std::vector<int>{2}));
                     BOOST_TEST(intvecs == (std::vector<std::vector<int>>{{7, 1}}));
                     break;
+            default:
+                    BOOST_FAIL("Only two batches should be provided.");
             }
         }, dim<0>)
       | ranges::to_vector;
     BOOST_TEST(i == 2);
 }
 
+
 BOOST_AUTO_TEST_CASE(test_dim2_partial)
 {
-    HIPIPE_DEFINE_COLUMN(IntVec, std::vector<int>)
-    const std::vector<std::tuple<int, std::vector<int>>> data = {
-      {{3, {1, 5}}, {1, {2, 4}}, {2, {7, 1}}, {6, {3, 5}}}};
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::by;
+    using hipipe::stream::dim;
+
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert<Int>(Int::batch_type{3, 1});
+    batch1.insert<IntVec>(IntVec::batch_type{{1, 5}, {2, 4}});
+    data.push_back(std::move(batch1));
+    batch2.insert<Int>(Int::batch_type{2, 6});
+    batch2.insert<IntVec>(IntVec::batch_type{{7, 1}, {3, 5}});
+    data.push_back(std::move(batch2));
 
     std::size_t i = 0;
     auto generated = data
-      | create<Int, IntVec>(2)
+      | ranges::view::move
       | filter(from<IntVec>, by<IntVec>, [](int v) { return v >= 4; }, dim<2>)
       | for_each(from<Int, IntVec>, [&i](auto& ints, auto& intvecs) {
             switch (i++) {
@@ -57,27 +86,37 @@ BOOST_AUTO_TEST_CASE(test_dim2_partial)
             case 1: BOOST_TEST(ints    == (std::vector<int>{2, 6}));
                     BOOST_TEST(intvecs == (std::vector<std::vector<int>>{{7}, {5}}));
                     break;
+            default:
+                    BOOST_FAIL("Only two batches should be provided.");
             }
         }, dim<0>)
       | ranges::to_vector;
     BOOST_TEST(i == 2);
 }
 
+
 BOOST_AUTO_TEST_CASE(test_dim2_move_only)
 {
-    std::vector<std::tuple<UniqueVec>> data;
-    std::vector<std::unique_ptr<int>> v1;
-    std::vector<std::unique_ptr<int>> v2;
-    std::vector<std::unique_ptr<int>> v3;
-    v1.emplace_back(std::make_unique<int>(5));
-    v1.emplace_back(std::make_unique<int>(3));
-    v2.emplace_back(std::make_unique<int>(2));
-    v2.emplace_back(std::make_unique<int>(4));
-    v3.emplace_back(std::make_unique<int>(1));
-    v3.emplace_back(std::make_unique<int>(6));
-    data.emplace_back(std::move(v1));
-    data.emplace_back(std::move(v2));
-    data.emplace_back(std::move(v3));
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::by;
+    using hipipe::stream::dim;
+
+    batch_t batch1, batch2, batch3;
+    std::vector<batch_t> data;
+    batch1.insert<UniqueVec>(UniqueVec::example_type{});
+    batch1.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(5));
+    batch1.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(3));
+    data.push_back(std::move(batch1));
+    batch2.insert<UniqueVec>(UniqueVec::example_type{});
+    batch2.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(2));
+    batch2.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(4));
+    data.push_back(std::move(batch2));
+    batch3.insert<UniqueVec>(UniqueVec::example_type{});
+    batch3.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(1));
+    batch3.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(6));
+    data.push_back(std::move(batch3));
 
     std::size_t i = 0;
     data

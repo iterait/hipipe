@@ -8,8 +8,7 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_FILTER_HPP
-#define HIPIPE_CORE_STREAM_FILTER_HPP
+#pragma once
 
 #include <hipipe/core/stream/template_arguments.hpp>
 #include <hipipe/core/stream/transform.hpp>
@@ -60,13 +59,17 @@ namespace detail {
     {
         Fun fun;
 
-        template<typename... SourceColumns>
-        constexpr bool operator()(const std::tuple<SourceColumns...>& tuple)
+        bool operator()(const batch_t& source)
         {
-            auto proj = [](auto& column) { return std::ref(column.value()); };
-            auto slice_view = utility::tuple_type_view<ByColumns...>(tuple);
-            auto values = utility::tuple_transform(std::move(slice_view), std::move(proj));
-            return boost::hana::unpack(std::move(values), fun);
+            std::tuple<const typename ByColumns::batch_type&...> slice_view{
+                source.extract<ByColumns>()...
+            };
+            static_assert(std::is_invocable_r_v<
+              bool, Fun&, const typename ByColumns::batch_type&...>,
+              "hipipe::stream::filter: "
+              "The function has to accept the selected `to<>` columns (specifically "
+              "const Column::batch_type&) and return a bool.");
+            return boost::hana::unpack(std::move(slice_view), fun);
         }
     };
 
@@ -77,7 +80,7 @@ namespace detail {
     struct filter_impl
     {
         template<typename... FromColumns, typename... ByColumns, typename Fun>
-        static constexpr auto impl(from_t<FromColumns...> f, by_t<ByColumns...> b, Fun fun)
+        static auto impl(from_t<FromColumns...> f, by_t<ByColumns...> b, Fun fun)
         {
             static_assert(sizeof...(ByColumns) <= sizeof...(FromColumns),
               "Cannot have more ByColumns than FromColumns.");
@@ -96,7 +99,7 @@ namespace detail {
     struct filter_impl<0>
     {
         template<typename From, typename... ByColumns, typename Fun>
-        static constexpr auto impl(From, by_t<ByColumns...>, Fun fun)
+        static auto impl(From, by_t<ByColumns...>, Fun fun)
         {
             apply_filter_fun_to_columns<Fun, ByColumns...> fun_wrapper{std::move(fun)};
             return ranges::view::filter(std::move(fun_wrapper));
@@ -125,13 +128,12 @@ namespace detail {
 /// \param d The dimension in which the function is applied. Choose 0 to filter
 ///          whole batches (in such a case, the f parameter is ignored).
 template<typename... FromColumns, typename... ByColumns, typename Fun, int Dim = 1>
-constexpr auto filter(from_t<FromColumns...> f,
-                      by_t<ByColumns...> b,
-                      Fun fun,
-                      dim_t<Dim> d = dim_t<1>{})
+inline auto filter(from_t<FromColumns...> f,
+                   by_t<ByColumns...> b,
+                   Fun fun,
+                   dim_t<Dim> d = dim_t<1>{})
 {
     return detail::filter_impl<Dim>::impl(f, b, std::move(fun));
 }
 
 }  // namespace hipipe::stream
-#endif

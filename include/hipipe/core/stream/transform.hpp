@@ -41,16 +41,16 @@ namespace detail {
 
         batch_t operator()(batch_t source)
         {
-            // TODO assert all columns present in stream
             // build the view of the selected source columns for the transformer
-            std::tuple<typename FromTypes::batch_type&...> slice_view{source.extract<FromTypes>()...};
+            std::tuple<typename FromTypes::batch_type&...> slice_view{
+                source.extract<FromTypes>()...
+            };
             // process the transformer's result and convert it to the requested types
-            // TODO assert is invokable
-            static_assert(std::is_invocable_v<Fun, decltype(slice_view)&&>,
+            static_assert(std::is_invocable_v<Fun&, decltype(slice_view)&&>,
               "hipipe::stream::partial_transform: "
               "Cannot apply the given function to the given `from<>` columns.");
             static_assert(std::is_invocable_r_v<
-              std::tuple<ToTypes...>, Fun, decltype(slice_view)&&>,
+              std::tuple<ToTypes...>, Fun&, decltype(slice_view)&&>,
               "hipipe::stream::partial_transform: "
               "The function return type does not correspond to the selected `to<>` columns.");
             std::tuple<ToTypes...> result{std::invoke(fun, std::move(slice_view))};
@@ -145,17 +145,17 @@ namespace detail {
         utility::maybe_tuple<ToTypes...>
         operator()(std::tuple<FromTypes&...> tuple)
         {
-            static_assert(std::is_invocable_v<Fun, FromTypes&...>,
+            static_assert(std::is_invocable_v<Fun&, FromTypes&...>,
               "hipipe::stream::transform: "
               "Cannot call the given function on the selected from<> columns.");
             if constexpr(sizeof...(ToTypes) == 1) {
                 static_assert(std::is_invocable_r_v<
-                  ToTypes..., Fun, FromTypes&...>,
+                  ToTypes..., Fun&, FromTypes&...>,
                   "hipipe::stream::transform: "
                   "The function does not return the selected to<> column.");
             } else {
                 static_assert(std::is_invocable_r_v<
-                  std::tuple<ToTypes...>, Fun, FromTypes&...>,
+                  std::tuple<ToTypes...>, Fun&, FromTypes&...>,
                   "hipipe::stream::transform: "
                   "The function does not return the tuple of the selected to<> columns.");
             }
