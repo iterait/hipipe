@@ -58,3 +58,20 @@ std::vector<hipipe::stream::batch_t> generate_move_only_data_2d()
     data.push_back(std::move(batch2));
     return data;
 }
+
+
+template<typename Rng1, typename Rng2>
+void test_ranges_equal(Rng1&& rng1, Rng2&& rng2)
+{
+    // using this function, ranges with different
+    // begin() and end() types can be compared
+    auto it1 = ranges::begin(rng1);
+    auto it2 = ranges::begin(rng2);
+    while (it1 != ranges::end(rng1) && it2 != ranges::end(rng2)) {
+        BOOST_TEST(*it1 == *it2);
+        ++it1;
+        ++it2;
+    }
+    BOOST_CHECK(it1 == ranges::end(rng1));
+    BOOST_CHECK(it2 == ranges::end(rng2));
+}
