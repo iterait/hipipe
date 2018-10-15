@@ -141,7 +141,7 @@ private:
     }
 
 public:
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
+    template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
     buffer_view<ranges::view::all_t<Rng>>
     operator()(Rng&& rng, std::size_t n = std::numeric_limits<std::size_t>::max()) const
     {
@@ -149,11 +149,11 @@ public:
     }
 
     /// \cond
-    template<typename Rng, CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+    template<typename Rng, CONCEPT_REQUIRES_(!ranges::InputRange<Rng>())>
     void operator()(Rng&&, std::size_t n = 0) const
     {
-        CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
-          "stream::buffer only works on ranges satisfying the ForwardRange concept.");
+        CONCEPT_ASSERT_MSG(ranges::InputRange<Rng>(),
+          "stream::buffer only works on ranges satisfying the InputRange concept.");
     }
     /// \endcond
 };

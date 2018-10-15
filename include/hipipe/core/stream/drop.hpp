@@ -29,7 +29,7 @@ namespace detail {
         }
 
     public:
-        template<typename Rng, CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
+        template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
         inline stream_t operator()(Rng&& rng) const
         {
             return ranges::view::transform(std::forward<Rng>(rng),
@@ -40,11 +40,11 @@ namespace detail {
         }
 
         /// \cond
-        template<typename Rng, CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+        template<typename Rng, CONCEPT_REQUIRES_(!ranges::InputRange<Rng>())>
         void operator()(Rng&&) const
         {
-            CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
-              "stream::drop only works on ranges satisfying the ForwardRange concept.");
+            CONCEPT_ASSERT_MSG(ranges::InputRange<Rng>(),
+              "stream::drop only works on ranges satisfying the InputRange concept.");
         }
         /// \endcond
     };
