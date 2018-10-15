@@ -42,7 +42,6 @@ private:
         using value_type = ranges::range_value_type_t<Rng>;
         using reference_type = value_type&;
 
-
         std::size_t n_;
 
         // std::shared_future only allows retrieving the shared state via
@@ -68,7 +67,10 @@ private:
         }
 
     public:
+        using single_pass = std::true_type;
+
         cursor() = default;
+
         explicit cursor(buffer_view<Rng>& rng)
           : rng_{&rng}
           , it_{ranges::begin(rng.rng_)}
