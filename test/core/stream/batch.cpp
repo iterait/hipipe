@@ -21,111 +21,105 @@
 #include <range/v3/view/move.hpp>
 
 #include <limits>
-#include <vector>
-#include <memory>
 
-using namespace hipipe::stream;
 
 auto generate_batched_data(std::vector<int> batch_sizes)
 {
-    std::vector<std::tuple<Unique, Shared>> data;
     int counter = 0;
+    std::vector<hipipe::stream::batch_t> data;
     for (std::size_t i = 0; i < batch_sizes.size(); ++i) {
-        std::vector<std::unique_ptr<int>> unique_data;
-        std::vector<std::shared_ptr<int>> shared_data;
+        hipipe::stream::batch_t batch;
+        batch.insert<Unique>();
+        batch.insert<Int>();
         for (int j = 0; j < batch_sizes[i]; ++j) {
-            unique_data.emplace_back(std::make_unique<int>(counter));
-            shared_data.emplace_back(std::make_shared<int>(counter));
+            batch.extract<Unique>().push_back(std::make_unique<int>(counter));
+            batch.extract<Int>().push_back(counter);
             ++counter;
         }
-        data.emplace_back(std::make_tuple(std::move(unique_data), std::move(shared_data)));
+        data.push_back(std::move(batch));
     }
     return data;
 }
+
 
 auto generate_regular_batched_data(int batches, int batch_size)
 {
     return generate_batched_data(std::vector<int>(batches, batch_size));
 }
 
-template<typename Data>
-void check_20_elems_batch_size_2(Data data)
+
+void check_20_elems_batch_size_2(std::vector<hipipe::stream::batch_t> data)
 {
-    auto rng = data | ranges::view::move | batch(3);
-    using tuple_type = decltype(*ranges::begin(rng));
-    static_assert(std::is_same<std::tuple<Unique, Shared>&, tuple_type>{});
-    using first_type = decltype(std::get<0>(*ranges::begin(rng)).value()[0]);
-    static_assert(std::is_same<std::unique_ptr<int>&, first_type>{});
-    using second_type = decltype(std::get<1>(*ranges::begin(rng)).value()[0]);
-    static_assert(std::is_same<std::shared_ptr<int>&, second_type>{});
+    std::vector<hipipe::stream::batch_t> stream = data
+      | ranges::view::move
+      | hipipe::stream::batch(3);
 
     // iterate through batches
     std::vector<int> result_unique;
-    std::vector<int> result_shared;
+    std::vector<int> result_int;
     int batch_n = 0;
     int n = 0;
-    for (auto&& tuple : rng) {
+    for (const hipipe::stream::batch_t& batch : stream) {
         // the last batch should be smaller
         if (batch_n == 6) {
-            BOOST_TEST(std::get<0>(tuple).value().size() == 2U);
-            BOOST_TEST(std::get<1>(tuple).value().size() == 2U);
+            BOOST_TEST(batch.batch_size() == 2U);
+            BOOST_TEST(batch.extract<Int>().size() == 2U);
+            BOOST_TEST(batch.extract<Unique>().size() == 2U);
+        } else {
+            BOOST_TEST(batch.batch_size() == 3U);
+            BOOST_TEST(batch.extract<Int>().size() == 3U);
+            BOOST_TEST(batch.extract<Unique>().size() == 3U);
         }
-        else {
-            BOOST_TEST(std::get<0>(tuple).value().size() == 3U);
-            BOOST_TEST(std::get<1>(tuple).value().size() == 3U);
-        }
-        BOOST_CHECK(is_same_batch_size(tuple));
 
         // iterate through batch values
-        for (auto& elem : std::get<0>(tuple).value()) {
-            result_unique.push_back(*elem);
+        for (const int& elem : batch.extract<Int>()) {
+            result_int.push_back(elem);
             ++n;
         }
-        for (auto& elem : std::get<1>(tuple).value()) {
-            result_shared.push_back(*elem);
+        for (const std::unique_ptr<int>& elem : batch.extract<Unique>()) {
+            result_unique.push_back(*elem);
         }
         ++batch_n;
     }
     BOOST_TEST(batch_n == 7);
     BOOST_TEST(n == 20);
 
-    auto desired = ranges::view::iota(0, 20);
-    test_ranges_equal(result_unique, desired);
-    test_ranges_equal(result_shared, desired);
+    std::vector<int> desired = ranges::view::iota(0, 20);
+    BOOST_TEST(result_unique == desired, boost::test_tools::per_element());
+    BOOST_TEST(result_int == desired);
 }
+
 
 BOOST_AUTO_TEST_CASE(test_batch_larger_batches)
 {
     // batch out of larger batches
-    auto data = generate_regular_batched_data(3, 4);
+    std::vector<hipipe::stream::batch_t> data = generate_regular_batched_data(3, 4);
 
-    auto rng = data | ranges::view::move | batch(1);
-    using tuple_type = decltype(*ranges::begin(rng));
-    static_assert(std::is_same<std::tuple<Unique, Shared>&, tuple_type>{});
-    using first_type = decltype(std::get<0>(*ranges::begin(rng)).value()[0]);
-    static_assert(std::is_same<std::unique_ptr<int>&, first_type>{});
-    using second_type = decltype(std::get<1>(*ranges::begin(rng)).value()[0]);
-    static_assert(std::is_same<std::shared_ptr<int>&, second_type>{});
+    std::vector<hipipe::stream::batch_t> stream = data
+      | ranges::view::move
+      | hipipe::stream::batch(1);
 
     // iterate through batches
     std::vector<int> result_unique;
-    std::vector<int> result_shared;
+    std::vector<int> result_int;
     int n = 0;
-    for (auto&& tuple : rng) {
+    for (hipipe::stream::batch_t& batch : stream) {
         // the batch should be only a single element
-        BOOST_TEST(std::get<0>(tuple).value().size() == 1U);
-        BOOST_TEST(std::get<1>(tuple).value().size() == 1U);
+        BOOST_TEST(batch.batch_size() == 1U);
+        BOOST_TEST(batch.extract<Int>().size() == 1U);
+        BOOST_TEST(batch.extract<Unique>().size() == 1U);
         // remember the values
-        result_unique.push_back(*(std::get<0>(tuple).value()[0]));
-        result_shared.push_back(*(std::get<1>(tuple).value()[0]));
+        result_unique.push_back(*batch.extract<Unique>().at(0));
+        result_int.push_back(batch.extract<Int>().at(0));
         ++n;
     }
     BOOST_TEST(n == 12);
 
-    auto desired = ranges::view::iota(0, 12);
-    test_ranges_equal(result_unique, desired);
-    test_ranges_equal(result_shared, desired);
+    std::vector<int> desired = ranges::view::iota(0, 12);
+    BOOST_TEST(result_unique == desired);
+    BOOST_TEST(result_int == desired);
 }
+
 
 BOOST_AUTO_TEST_CASE(test_batch_smaller_batches)
 {
@@ -133,42 +127,53 @@ BOOST_AUTO_TEST_CASE(test_batch_smaller_batches)
     check_20_elems_batch_size_2(generate_regular_batched_data(10, 2));
 }
 
+
 BOOST_AUTO_TEST_CASE(test_batch_irregular_batches)
 {
     // batch out of iregularly sized batches
     check_20_elems_batch_size_2(generate_batched_data({0, 1, 2, 0, 5, 2, 0, 1, 7, 0, 2, 0, 0}));
 }
 
+
 BOOST_AUTO_TEST_CASE(test_batch_empty_batches)
 {
     // batch out of empty batches
-    auto data = generate_batched_data({0, 0, 0, 0});
-    auto rng = data | ranges::view::move | batch(1);
-    BOOST_CHECK(rng.begin() == rng.end());
+    std::vector<hipipe::stream::batch_t> data = generate_batched_data({0, 0, 0, 0});
+    std::vector<hipipe::stream::batch_t> stream = data
+      | ranges::view::move
+      | hipipe::stream::batch(1);
+    BOOST_TEST(stream.empty());
 }
+
 
 BOOST_AUTO_TEST_CASE(test_batch_empty_stream)
 {
     // batch out of empty range
-    auto data = generate_batched_data({});
-    auto rng = data | ranges::view::move | batch(1);
-    BOOST_CHECK(rng.begin() == rng.end());
+    std::vector<hipipe::stream::batch_t> data = generate_batched_data({});
+    std::vector<hipipe::stream::batch_t> stream = data
+      | ranges::view::move
+      | hipipe::stream::batch(1);
+    BOOST_TEST(stream.empty());
 }
+
 
 BOOST_AUTO_TEST_CASE(test_infinite_batch)
 {
-    auto data = generate_regular_batched_data(3, 4);
-    // make batch of infinite size (no parameter given)
-    auto rng = data | ranges::view::move | batch(std::numeric_limits<std::size_t>::max());
-    auto rng_it = rng.begin();
-    auto result = std::move(*rng_it);
-    auto result_unique = std::get<0>(result).value() | ranges::view::indirect;
-    auto result_shared = std::get<1>(result).value() | ranges::view::indirect;
-    BOOST_CHECK(++rng_it == rng.end());
+    std::vector<hipipe::stream::batch_t> data = generate_regular_batched_data(3, 4);
+    // make batch of infinite size
+    auto stream = data
+      | ranges::view::move
+      | hipipe::stream::batch(std::numeric_limits<std::size_t>::max());
+    auto stream_it = ranges::begin(stream);
+    static_assert(std::is_same_v<hipipe::stream::batch_t&&, decltype(*stream_it)>);
+    hipipe::stream::batch_t result = *stream_it;
+    std::vector<int> result_unique = result.extract<Unique>() | ranges::view::indirect;
+    std::vector<int> result_int = result.extract<Int>();
+    BOOST_CHECK(++stream_it == stream.end());
     BOOST_TEST(result_unique.size() == 12);
-    BOOST_TEST(result_shared.size() == 12);
+    BOOST_TEST(result_int.size() == 12);
 
-    auto desired = ranges::view::iota(0, 12);
-    test_ranges_equal(result_unique, desired);
-    test_ranges_equal(result_shared, desired);
+    std::vector<int> desired = ranges::view::iota(0, 12);
+    BOOST_TEST(result_unique == desired);
+    BOOST_TEST(result_int == desired);
 }

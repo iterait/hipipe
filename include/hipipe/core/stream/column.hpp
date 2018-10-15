@@ -60,6 +60,14 @@ public:
 
     virtual std::string name() const = 0;
 
+    // batch utilities //
+
+    virtual std::size_t size() const = 0;
+
+    virtual void push_back(std::unique_ptr<abstract_column> rhs) = 0;
+
+    virtual std::unique_ptr<abstract_column> take(std::size_t n) = 0;
+
     // virtual destrutor
 
     virtual ~abstract_column() = default;
@@ -67,47 +75,89 @@ public:
 
 /// \ingroup Stream
 /// \brief Implementation stub of a column used in HIPIPE_DEFINE_COLUMN.
-template <typename T>
+template <typename ExampleType, typename ColumnName>
 class column_base : public abstract_column {
-private:
-    std::vector<T> value_;
-
 public:
 
     // types //
 
-    using batch_type = std::vector<T>;
-    using example_type = T;
+    using example_type = ExampleType;
+    using batch_type = std::vector<example_type>;
+
+private:
+
+    batch_type value_;
+
+public:
 
     // constructors //
 
     column_base() = default;
 
-    column_base(T&& rhs)
+    column_base(example_type&& rhs)
     {
         value_.emplace_back(std::move(rhs));
     }
 
-    column_base(const T& rhs)
+    column_base(const example_type& rhs)
       : value_{rhs}
     {}
 
-    column_base(std::initializer_list<T> rhs)
+    column_base(std::initializer_list<example_type> rhs)
       : value_{std::move(rhs)}
     {}
 
-    column_base(std::vector<T>&& rhs)
+    column_base(std::vector<example_type>&& rhs)
       : value_{std::move(rhs)}
     {}
 
-    column_base(const std::vector<T>& rhs)
+    column_base(const std::vector<example_type>& rhs)
       : value_{rhs}
     {}
+
+    // batching utilities //
+
+    std::size_t size() const override
+    {
+        // TODO rename value to e.g. data
+        return value_.size();
+    }
+
+    /// \brief Steal the given number of examples from this column
+    /// and create a new column consisting of them.
+    ///
+    /// \param n The number of examples to steal.
+    std::unique_ptr<abstract_column> take(std::size_t n) override
+    {
+        if (n > value_.size()) {
+            throw std::runtime_error{"hipipe: Attempting to take "
+              + std::to_string(n) + " values out of column `" + name()
+              + "` with " + std::to_string(size()) + " values."};
+
+        }
+        batch_type taken_examples(n);
+        std::move(value_.begin(), value_.begin() + n, taken_examples.begin());
+        // TODO linear complexity, batch_type should be a deque
+        value_.erase(value_.begin(), value_.begin() + n);
+        return std::make_unique<ColumnName>(std::move(taken_examples));
+    }
+
+    /// \brief Concatenate the examples from two columns.
+    ///
+    /// \param rhs The column whose examples will be appended.
+    void push_back(std::unique_ptr<abstract_column> rhs) override
+    {
+        ColumnName& typed_rhs = dynamic_cast<ColumnName&>(*rhs);
+        value_.reserve(value_.size() + typed_rhs.value_.size());
+        for (example_type& example : typed_rhs.value_) {
+            value_.push_back(std::move(example));
+        }
+    }
 
     // value accessors //
 
-    std::vector<T>& value() { return value_; }
-    const std::vector<T>& value() const { return value_; }
+    batch_type& value() { return value_; }
+    const batch_type& value() const { return value_; }
 };
 
 
@@ -128,7 +178,7 @@ public:
     template<typename Column>
     void throw_check_contains() const
     {
-        if (columns_.count(std::type_index{typeid(Column)}) == 0) {
+        if (!columns_.count(std::type_index{typeid(Column)})) {
             throw std::runtime_error{
               std::string{"Trying to retrieve column `"} + Column{}.name()
               + "`, but the batch contains no such column."};
@@ -167,12 +217,17 @@ public:
 
     // column insertion/rewrite //
 
+    void insert(std::type_index key, std::unique_ptr<abstract_column> column)
+    {
+        columns_.emplace(std::move(key), std::move(column));
+    }
+
     // TODO rename to insert_or_assign or similar
     template<typename Column, typename... Args>
     void insert(Args&&... args)
     {
         static_assert(std::is_constructible_v<Column, Args&&...>,
-          "Cannot cosntruct the given column from the provided arguments.");
+          "Cannot construct the given column from the provided arguments.");
         columns_[std::type_index{typeid(Column)}] =
           std::make_unique<Column>(std::forward<Args>(args)...);
     }
@@ -198,6 +253,56 @@ public:
         throw_check_contains<Column>();
         columns_.erase(std::type_index{typeid(Column)});
     }
+
+    // batching utilities //
+
+    /// \brief Calculate the batch size.
+    ///
+    /// If the batch contains no columns, returns zero.
+    ///
+    /// \throws std::runtime_error If all the columns do not have the same size.
+    std::size_t batch_size() const
+    {
+        if (columns_.empty()) return 0;
+        std::size_t batch_size = columns_.begin()->second->size();
+        for (auto it = ++columns_.begin(); it != columns_.end(); ++it) {
+            if (it->second->size() != batch_size) {
+                throw std::runtime_error{"hipipe: Canot deduce a batch size from a batch "
+                  "with columns of different size (`" + it->second->name() + "`)."};
+            }
+            batch_size = it->second->size();
+        }
+        return batch_size;
+    }
+
+    /// \brief Steal the given number of examples from all the
+    /// columns and create a new batch of them.
+    ///
+    /// \param n The number of examples to steal.
+    batch_t take(std::size_t n)
+    {
+        batch_t new_batch;
+        for (const auto& [key, col] : columns_) {
+            new_batch.insert(key, col->take(n));
+        }
+        return new_batch;
+    }
+
+    /// \brief Concatenate the columns from two batches.
+    ///
+    /// If some of the pushed columns is not in this batch, it is inserted.
+    ///
+    /// \param rhs The batch whose columns will be stolen and appended.
+    void push_back(batch_t rhs)
+    {
+        for (auto& [key, col] : rhs.columns_) {
+            if (!columns_.count(key)) {
+                columns_[key] = std::move(col);
+            } else {
+                columns_.at(key)->push_back(std::move(col));
+            }
+        }
+    }
 };
 
 using stream_t = ranges::any_view<batch_t, ranges::category::forward>;
@@ -208,8 +313,8 @@ using stream_t = ranges::any_view<batch_t, ranges::category::forward>;
 /// \brief Macro for fast column definition.
 ///
 /// Under the hood, it creates a new type derived from column_base.
-#define HIPIPE_DEFINE_COLUMN(column_name, example_type)            \
-struct column_name : hipipe::stream::column_base<example_type> {   \
-    using hipipe::stream::column_base<example_type>::column_base;  \
-    std::string name() const override { return #column_name; }     \
+#define HIPIPE_DEFINE_COLUMN(column_name_, example_type_)                         \
+struct column_name_ : hipipe::stream::column_base<example_type_, column_name_> {  \
+    using hipipe::stream::column_base<example_type_, column_name_>::column_base;  \
+    std::string name() const override { return #column_name_; }                   \
 };

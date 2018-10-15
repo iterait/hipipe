@@ -8,10 +8,9 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_BATCH_HPP
-#define HIPIPE_CORE_STREAM_BATCH_HPP
+#pragma once
 
-#include <hipipe/core/utility/tuple.hpp>
+#include <hipipe/core/stream/column.hpp>
 
 #include <range/v3/core.hpp>
 #include <range/v3/view/all.hpp>
@@ -21,29 +20,6 @@
 
 namespace hipipe::stream {
 
-/// Check whether all columns in a tuple have the same batch size.
-template<typename Tuple>
-constexpr bool is_same_batch_size(const Tuple& tuple)
-{
-    bool same = true;
-    if (std::tuple_size<Tuple>{} > 0) {
-        auto bs = std::get<0>(tuple).value().size();
-        utility::tuple_for_each(tuple, [bs, &same](const auto& column) {
-            same &= (column.value().size() == bs);
-        });
-    }
-    return same;
-}
-
-/// Get the batch size of a column tuple.
-template<typename Tuple>
-constexpr std::size_t batch_size(const Tuple& tuple)
-{
-    static_assert(std::tuple_size<Tuple>{} && "Cannot get batch size if there are no columns");
-    // TODO throw if not
-    assert(is_same_batch_size(tuple) && "All the columns have to have equal batch size");
-    return std::get<0>(tuple).value().size();
-}
 
 template <typename Rng>
 struct batch_view : ranges::view_facade<batch_view<Rng>> {
@@ -59,49 +35,24 @@ private:
         batch_view<Rng>* rng_ = nullptr;
         ranges::iterator_t<Rng> it_ = {};
 
-        using batch_t_ = ranges::range_value_type_t<Rng>;
-        using column_idxs_t = std::make_index_sequence<std::tuple_size<batch_t_>{}>;
         // the batch into which we accumulate the data
         // the batch will be a pointer to allow moving from it in const functions
-        std::shared_ptr<batch_t_> batch_ = std::make_shared<batch_t_>();
+        std::shared_ptr<batch_t> batch_;
 
         // the subbatch of the original range
-        std::shared_ptr<batch_t_> subbatch_;
-        // the current index into the batch of the original range
-        std::size_t subbatch_idx_ = 0;
+        std::shared_ptr<batch_t> subbatch_;
 
+        // whether the underlying range is at the end of iteration
         bool done_ = false;
-
-        // reserve space in subbatch
-        template <std::size_t... Is>
-        void reserve_batch(std::index_sequence<Is...>)
-        {
-            std::size_t reserve_n = std::min(rng_->n_, std::size_t{1000});
-            (..., (std::get<Is>(*batch_).value().reserve(reserve_n)));
-        }
-
-        // move i-th element from subbatch_ to batch_
-        template <std::size_t... Is>
-        void move_from_subbatch(std::size_t i, std::index_sequence<Is...>)
-        {
-            (..., (std::get<Is>(*batch_).value().push_back(
-                   std::move(std::get<Is>(*subbatch_).value()[i]))));
-        }
 
         // find the first non-empty subbatch and return if successful
         bool find_next()
         {
-            // do nothing if the end of iteration is reached
-            if (subbatch_idx_ == batch_size(*subbatch_) && it_ == ranges::end(rng_->rng_)) {
-                return false;
-            }
-            // otherwise find the first non-empty subbatch
-            while (subbatch_idx_ == batch_size(*subbatch_)) {
-                if (++it_ == ranges::end(rng_->rng_)) {
+            while (subbatch_->batch_size() == 0) {
+                if (it_ == ranges::end(rng_->rng_) || ++it_ == ranges::end(rng_->rng_)) {
                     return false;
                 }
-                subbatch_ = std::make_shared<batch_t_>(*it_);
-                subbatch_idx_ = 0;
+                subbatch_ = std::make_shared<batch_t>(*it_);
             }
             return true;
         }
@@ -109,33 +60,35 @@ private:
         // fill the batch_ with the elements from the current subbatch_
         void fill_batch()
         {
-            reserve_batch(column_idxs_t{});
             do {
-                move_from_subbatch(subbatch_idx_++, column_idxs_t{});
-            } while (batch_size(*batch_) < rng_->n_ && find_next());
+                assert(batch_->batch_size() < rng_->n_);
+                std::size_t to_take =
+                  std::min(rng_->n_ - batch_->batch_size(), subbatch_->batch_size());
+                batch_->push_back(subbatch_->take(to_take));
+            } while (batch_->batch_size() < rng_->n_ && find_next());
         }
 
     public:
+        using single_pass = std::true_type;
+
         cursor() = default;
+
         explicit cursor(batch_view<Rng>& rng)
           : rng_{&rng}
           , it_{ranges::begin(rng_->rng_)}
         {
-            static_assert(std::tuple_size<std::decay_t<decltype(*batch_)>>{} &&
-                          "The range to be batched has to contain at least one column");
             // do nothing if the subrange is empty
-            if (it_ != ranges::end(rng_->rng_)) {
-                subbatch_ = std::make_shared<batch_t_>(*it_);
-                // if the first subbatch is empty, try to find the next non-empty one
-                if (batch_size(*subbatch_) == 0) next();
-                else fill_batch();
+            if (it_ == ranges::end(rng_->rng_)) {
+                done_ = true;
+            } else {
+                subbatch_ = std::make_shared<batch_t>(*it_);
+                next();
             }
-            else done_ = true;
         }
 
-        decltype(auto) read() const
+        batch_t&& read() const
         {
-            return *batch_;
+            return std::move(*batch_);
         }
 
         bool equal(ranges::default_sentinel) const
@@ -146,12 +99,12 @@ private:
         bool equal(const cursor& that) const
         {
             assert(rng_ == that.rng_);
-            return it_ == that.it_ && subbatch_idx_ == that.subbatch_idx_;
+            return it_ == that.it_ && subbatch_->batch_size() == that.subbatch_->batch_size();
         }
 
         void next()
         {
-            batch_ = std::make_shared<batch_t_>();
+            batch_ = std::make_shared<batch_t>();
             if (find_next()) fill_batch();
             else done_ = true;
         }
@@ -165,6 +118,10 @@ public:
       : rng_{rng}
       , n_{n}
     {
+        if (n_ <= 0) {
+            throw std::invalid_argument{"hipipe::stream::batch:"
+              " The new batch size " + std::to_string(n_) + " is not strictly positive."};
+        }
     }
 };  // class batch_view
 
@@ -187,11 +144,17 @@ public:
     }
 };  // class batch_fn
 
+
 /// \ingroup Stream
 /// \brief Accumulate the stream and yield batches of a different size.
 ///
 /// The batch size of the accumulated columns is allowed to differ between batches.
 /// To make one large batch of all the data, use std::numeric_limits<std::size_t>::max().
+///
+/// Note that this object evaluates the batches computed by the stream and builds
+/// batches of a different size. Therefore, if you want to combine this object with
+/// e.g. \ref stream::buffer, the buffer needs to preceed \ref stream::batch for it to have
+/// any effect.
 ///
 /// \code
 ///     HIPIPE_DEFINE_COLUMN(value, int)
@@ -199,7 +162,6 @@ public:
 ///       | create<value>(2)  // batches the data by two examples
 ///       | batch(3);         // changes the batch size to three examples
 /// \endcode
-constexpr ranges::view::view<batch_fn> batch{};
+inline ranges::view::view<batch_fn> batch{};
 
 }  // namespace hipipe::stream
-#endif
