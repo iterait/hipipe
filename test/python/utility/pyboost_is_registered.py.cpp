@@ -15,7 +15,7 @@
 #include <vector>
 
 namespace py = boost::python;
-namespace cxpy = hipipe::python;
+namespace hpy = hipipe::python;
 // make sure that assert() will be evaluated
 #undef NDEBUG
 
@@ -27,12 +27,12 @@ class not_reg {
 
 BOOST_PYTHON_MODULE(pyboost_is_registered_py_cpp)
 {
-    cxpy::initialize();
+    hpy::initialize();
     py::class_<reg>("reg");
 
-    assert(!cxpy::utility::is_registered<double>());
-    assert(!cxpy::utility::is_registered<std::size_t>());
-    assert(cxpy::utility::is_registered<reg>());
-    assert(!cxpy::utility::is_registered<not_reg>());
-    assert(!cxpy::utility::is_registered<std::vector<int>>());
+    assert(!hpy::utility::is_registered<double>());
+    assert(!hpy::utility::is_registered<std::size_t>());
+    assert(hpy::utility::is_registered<reg>());
+    assert(!hpy::utility::is_registered<not_reg>());
+    assert(!hpy::utility::is_registered<std::vector<int>>());
 }
