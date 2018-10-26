@@ -103,8 +103,9 @@ namespace detail {
 ///     // unp_values_dim2 == {5., 7., 2., 4.}
 /// \endcode
 template<typename Rng, typename... FromColumns, int Dim = 1>
-inline
-utility::maybe_tuple<std::vector<utility::ndim_type_t<typename FromColumns::batch_type, Dim>>...>
+auto
+// The return type is actually the following, but GCC won't handle it.
+// utility::maybe_tuple<std::vector<utility::ndim_type_t<typename FromColumns::batch_type, Dim>>...>
 unpack(Rng&& rng, from_t<FromColumns...> f, dim_t<Dim> d = dim_t<1>{})
 {
     return detail::unpack_impl<Dim, (sizeof...(FromColumns)==1), FromColumns...>::impl(
