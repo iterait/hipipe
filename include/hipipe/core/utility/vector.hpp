@@ -712,7 +712,7 @@ namespace detail {
 template<typename Tuple>
 constexpr bool same_size(Tuple&& rngs)
 {
-    return std::experimental::apply(detail::same_size_impl{}, rngs);
+    return std::apply(detail::same_size_impl{}, rngs);
 }
 
 }  // namespace hipipe::utility
