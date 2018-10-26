@@ -10,7 +10,7 @@
 
 #include <hipipe/core/stream/column.hpp>
 #include <hipipe/python/initialize.hpp>
-#include <hipipe/python/utility/pyboost_column_converter.hpp>
+#include <hipipe/python/utility/pyboost_vector_converter.hpp>
 
 #include <tuple>
 #include <vector>
@@ -20,6 +20,7 @@ namespace py = boost::python;
 std::vector<std::int32_t> vec1d = {1, 2, 3};
 std::vector<std::vector<std::int32_t>> vec2d = {vec1d, vec1d, vec1d};
 std::vector<std::vector<std::vector<std::int32_t>>> vec3d = {vec2d, vec2d, vec2d};
+std::vector<bool> vecbool = {true, false, true};
 
 // test to_python //
 
@@ -43,18 +44,12 @@ auto py_vector3d()
     return hipipe::python::utility::to_python(vec3d);
 }
 
-// test columns_to_python //
-
-HIPIPE_DEFINE_COLUMN(Int, int)
-HIPIPE_DEFINE_COLUMN(Double, double)
-
-py::dict columns()
+auto py_vectorbool()
 {
-    using hipipe::python::utility::columns_to_python;
-    return columns_to_python(std::tuple<Int, Double>{{1, 2}, {9., 10.}});
+    return hipipe::python::utility::to_python(vecbool);
 }
 
-BOOST_PYTHON_MODULE(pyboost_column_converter_py_cpp)
+BOOST_PYTHON_MODULE(pyboost_vector_converter_py_cpp)
 {
     // initialize hipipe OpenCV converters, exceptions, etc.
     hipipe::python::initialize();
@@ -64,5 +59,5 @@ BOOST_PYTHON_MODULE(pyboost_column_converter_py_cpp)
     py::def("py_vector1d", py_vector1d);
     py::def("py_vector2d", py_vector2d);
     py::def("py_vector3d", py_vector3d);
-    py::def("columns", columns);
+    py::def("py_vectorbool", py_vectorbool);
 }

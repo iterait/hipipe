@@ -13,6 +13,7 @@
 #include <hipipe/python/stream/converter.hpp>
 
 #include <range/v3/view/all.hpp>
+#include <range/v3/view/move.hpp>
 
 #include <list>
 #include <vector>
@@ -23,26 +24,38 @@ namespace hpy = hipipe::python;
 HIPIPE_DEFINE_COLUMN(Int, int)
 HIPIPE_DEFINE_COLUMN(Double, double)
 
-hipipe
-std::vector<std::tuple<Int, Double>> empty_data;
-std::vector<std::tuple<Int, Double>> empty_batch_data(1);
-const std::list<std::tuple<Int, Double>> number_data = {{{3, 2}, 5.}, {{1, 4}, 2.}};
 
+std::vector<hipipe::stream::batch_t> empty_stream_;
 auto empty_stream()
 {
-    return hpy::stream::to_python(empty_data);
+    empty_stream_.clear();
+    return hpy::stream::to_python(ranges::view::move(empty_stream_));
 }
 
+
+std::vector<hipipe::stream::batch_t> empty_batch_stream_;
 auto empty_batch_stream()
 {
-    // here is also a test of an rvalue of a view
-    return hpy::stream::to_python(empty_batch_data | ranges::view::all);
+    empty_batch_stream_.clear();
+    empty_batch_stream_.resize(2);
+    empty_batch_stream_.at(1).insert<Int>();
+    empty_batch_stream_.at(1).insert<Double>();
+    return hpy::stream::to_python(ranges::view::move(empty_batch_stream_));
 }
 
+
+std::vector<hipipe::stream::batch_t> number_stream_;
 auto number_stream()
 {
-    return hpy::stream::to_python(number_data);
+    number_stream_.clear();
+    number_stream_.resize(2);
+    number_stream_.at(0).insert<Int>(Int::batch_type{3, 2});
+    number_stream_.at(0).insert<Double>(Double::batch_type{5.});
+    number_stream_.at(1).insert<Int>(Int::batch_type{1, 4});
+    number_stream_.at(1).insert<Double>(Double::batch_type{2.});
+    return hpy::stream::to_python(ranges::view::move(number_stream_));
 }
+
 
 BOOST_PYTHON_MODULE(converter_py_cpp)
 {

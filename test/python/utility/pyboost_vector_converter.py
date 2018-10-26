@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import pyboost_column_converter_py_cpp as pycpp
+import pyboost_vector_converter_py_cpp as pycpp
 
 
 def main():
@@ -33,6 +33,11 @@ def main():
             assert(d2_arr.dtype == np.int32)
     assert(np.array_equal(pycpp.py_vector3d(), [[[1, 2, 3]] * 3] * 3))
 
+    # test bool vector - 1d
+    assert(isinstance(pycpp.py_vectorbool(), np.ndarray))
+    assert(pycpp.py_vectorbool().dtype == np.bool)
+    assert(np.array_equal(pycpp.py_vectorbool(), [True, False, True]))
+
     # test slicing
     assert(np.array_equal(pycpp.py_vector1d()[ 0: 3], [1, 2, 3]))
     assert(np.array_equal(pycpp.py_vector1d()[ 1: 3], [2, 3]))
@@ -44,11 +49,6 @@ def main():
     # It is not necessary to test the conversion more in here, since it is
     # already covered by hipipe::python::range,
     # hipipe::python::utility::to_ndarray or python's list.
-
-    columns = pycpp.columns()
-    assert(set(columns.keys()) == {"Int", "Double"})
-    assert(list(columns["Int"]) == [1, 2])
-    assert(list(columns["Double"]) == [9., 10.])
 
 
 if __name__ == '__main__':

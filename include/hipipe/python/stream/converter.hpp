@@ -12,29 +12,18 @@
 #define HIPIPE_PYTHON_STREAM_CONVERTER_HPP
 
 #include <hipipe/python/range.hpp>
-#include <hipipe/python/utility/pyboost_column_converter.hpp>
 
 #include <range/v3/view/transform.hpp>
 
 namespace hipipe::python::stream {
 
 /// \ingroup Python
-/// \brief Make a Python \ref range from a stream (i.e, a range of tuples of hipipe columns).
-///
-/// Only a view of the given range is created, therefore, the given range
-/// cannot be an rvalue of a container.
-///
-/// Tuples of columns are converted using columns_to_python().
-template<typename Rng>
-auto to_python(Rng&& rng)
+/// \brief Make a Python \ref range from a stream (i.e, a view of batches).
+/// TODO compiled function
+inline auto to_python(hipipe::stream::stream_t stream)
 {
-    // by forwarding rng to view::transform, we make sure that it is
-    // not an lvalue of a container
-    auto range_of_dicts = std::forward<Rng>(rng)
-      // transform the range of columns to a range of python types
-      | ranges::view::transform([](auto&& tuple) {
-            return utility::columns_to_python(std::forward<decltype(tuple)>(tuple));
-        });
+    auto range_of_dicts =
+      ranges::view::transform(std::move(stream), &hipipe::stream::batch_t::to_python);
 
     // make python iterator out of the range of python types
     using PyRng = decltype(range_of_dicts);

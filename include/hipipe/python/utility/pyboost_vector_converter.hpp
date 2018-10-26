@@ -8,10 +8,8 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_PYTHON_UTILITY_PYBOOST_COLUMN_CONVERTER_HPP
-#define HIPIPE_PYTHON_UTILITY_PYBOOST_COLUMN_CONVERTER_HPP
+#pragma once
 
-#include <hipipe/core/utility/tuple.hpp>
 #include <hipipe/python/range.hpp>
 #include <hipipe/python/utility/pyboost_ndarray_converter.hpp>
 
@@ -74,22 +72,4 @@ boost::python::object to_python(std::vector<T> v)
     return py::object{py_obj_handle};
 }
 
-/// \ingroup Python
-/// \brief Convert a tuple of hipipe columns into a Python `dict`.
-///
-/// The dict is indexed by `column.name` and the value is `column.value`.
-/// The values (i.e, the batches) are converted to Python lists using to_python().
-/// If the batch is a multidimensional std::vector<std::vector<...>>, it
-/// is converted to multidimensional Python list.
-template<typename Tuple>
-boost::python::dict columns_to_python(Tuple tuple)
-{
-    boost::python::dict res;
-    hipipe::utility::tuple_for_each(tuple, [&res](auto& column) {
-        res[column.name()] = to_python(std::move(column.value()));
-    });
-    return res;
-}
-
 }  // namespace hipipe::python::utility
-#endif

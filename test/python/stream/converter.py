@@ -7,10 +7,11 @@ def main():
     assert(list(pycpp.empty_stream()) == [])
 
     empty_batch_stream = list(pycpp.empty_batch_stream())
-    assert(len(empty_batch_stream) == 1)
-    assert(set(empty_batch_stream[0].keys()) == {"Int", "Double"})
-    assert(list(empty_batch_stream[0]["Int"]) == [])
-    assert(list(empty_batch_stream[0]["Double"]) == [])
+    assert(len(empty_batch_stream) == 2)
+    assert(list(empty_batch_stream[0].keys()) == [])
+    assert(set(empty_batch_stream[1].keys()) == {"Int", "Double"})
+    assert(list(empty_batch_stream[1]["Int"]) == [])
+    assert(list(empty_batch_stream[1]["Double"]) == [])
 
     number_stream = list(pycpp.number_stream())
     assert(len(number_stream)) == 2

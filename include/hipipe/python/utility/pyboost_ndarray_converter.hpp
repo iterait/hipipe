@@ -105,10 +105,17 @@ namespace detail {
 /// \ingroup Python
 /// \brief Build ndarray from a one dimensional std::vector.
 template<typename T>
-PyObject* to_ndarray(const std::vector<T>& vec)
+PyObject* to_ndarray(std::vector<T> vec)
 {
     auto data = std::make_unique<detail::ndarray_type_t<T>[]>(vec.size());
-    for (std::size_t i = 0; i < vec.size(); ++i) data[i] = detail::to_ndarray_element(vec[i]);
+    for (std::size_t i = 0; i < vec.size(); ++i) {
+        // vector<bool> is special as usual :-/
+        if constexpr(std::is_same_v<T, bool>) {
+            data[i] = detail::to_ndarray_element((bool)vec[i]);
+        } else {
+            data[i] = detail::to_ndarray_element(std::move(vec[i]));
+        }
+    }
     npy_intp dims[1]{static_cast<npy_intp>(vec.size())};
 
     PyObject* arr = PyArray_SimpleNewFromData(
