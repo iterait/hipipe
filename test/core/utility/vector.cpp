@@ -35,6 +35,13 @@ BOOST_AUTO_TEST_CASE(test_ndims)
     BOOST_TEST(ndims<std::list<std::vector<std::list<int>>>>{} == 3);
 }
 
+BOOST_AUTO_TEST_CASE(test_is_specialization)
+{
+    static_assert(is_specialization<std::vector<int>, std::vector>::value);
+    static_assert(!is_specialization<std::vector<int>, std::list>::value);
+    static_assert(is_specialization<std::list<std::vector<int>>, std::list>::value);
+}
+
 BOOST_AUTO_TEST_CASE(test_ndim_container)
 {
     ndim_container_t<double, 3> vec_3d;

@@ -58,6 +58,20 @@ struct ndims<T, true>
 };
 
 /// \ingroup Vector
+/// \brief Detect whether the given type is a specialization of the given container template.
+///
+/// Example:
+/// \code
+///     static_assert(is_specialization<std::vector<int>, std::vector>);
+///     static_assert(!is_specialization<std::vector<int>, std::deque>);
+/// \endcode
+template<typename, template<typename...> typename>
+struct is_specialization : std::false_type {};
+
+template<template<typename...> typename Template, typename... Args>
+struct is_specialization<Template<Args...>, Template> : std::true_type {};
+
+/// \ingroup Vector
 /// \brief Fast declaration of a multidimensional container.
 ///
 /// Example:
