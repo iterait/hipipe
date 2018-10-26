@@ -10,6 +10,12 @@
 
 #pragma once
 
+#include <hipipe/build_config.hpp>
+
+#ifdef HIPIPE_BUILD_PYTHON
+#include <hipipe/python/utility/pyboost_vector_converter.hpp>
+#endif
+
 #include <range/v3/view/any_view.hpp>
 
 #include <cassert>
@@ -71,6 +77,12 @@ public:
     // virtual destrutor
 
     virtual ~abstract_column() = default;
+
+    // python conversion
+
+    #ifdef HIPIPE_BUILD_PYTHON
+    virtual boost::python::object to_python() = 0;
+    #endif
 };
 
 /// \ingroup Stream
@@ -158,6 +170,23 @@ public:
 
     batch_type& value() { return value_; }
     const batch_type& value() const { return value_; }
+
+    // python converters
+
+    /// \brief Convert the column value to a python object.
+    ///
+    /// The values (i.e, the batches) are converted to Python lists using to_python().
+    /// If the batch is a multidimensional std::vector<std::vector<...>>, it
+    /// is converted to multidimensional Python list.
+    ///
+    /// WARNING: The data are moved out of this object. Using them results
+    /// in undefined behavior.
+    #ifdef HIPIPE_BUILD_PYTHON
+    boost::python::object to_python() override
+    {
+        return hipipe::python::utility::to_python(std::move(value_));
+    }
+    #endif
 };
 
 
@@ -303,6 +332,25 @@ public:
             }
         }
     }
+
+    /// \brief Convert all the columns into a Python `dict`.
+    ///
+    /// The dict is indexed by `column.name` and the value is `column.to_python()`.
+    ///
+    /// WARNING: The data are moved out of this objects and using this object further
+    /// would result in an undefined behavior.
+    // TODO conditional
+    #ifdef HIPIPE_BUILD_PYTHON
+    boost::python::dict to_python()
+    {
+        boost::python::dict res;
+        for (auto it = columns_.begin(); it != columns_.end(); ++it) {
+            res[it->second->name()] = it->second->to_python();
+        }
+        columns_.clear();
+        return res;
+    }
+    #endif
 };
 
 using stream_t = ranges::any_view<batch_t, ranges::category::forward>;
