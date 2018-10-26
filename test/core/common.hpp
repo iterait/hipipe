@@ -13,6 +13,7 @@
 #include <hipipe/core/stream/column.hpp>
 
 #include <boost/test/unit_test.hpp>
+#include <range/v3/algorithm/count.hpp>
 #include <range/v3/view/move.hpp>
 
 #include <memory>
