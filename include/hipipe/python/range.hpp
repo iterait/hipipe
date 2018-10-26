@@ -33,7 +33,7 @@ struct stop_iteration_exception : public std::runtime_error {
 };
 
 /// boost::python translation function for the stop_iteration_exception.
-void stop_iteration_translator(const stop_iteration_exception& x)
+inline void stop_iteration_translator(const stop_iteration_exception& x)
 {
     PyErr_SetNone(PyExc_StopIteration);
 }
