@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(
   "hipipe"
-  VERSION 0.5.1
+  VERSION 0.6.0
 )
 set(PROJECT_DESCRIPTION "C++17 data pipeline with Python bindings.")
 
@@ -87,94 +87,84 @@ endif()
 # Build hipipe core
 # ------------------
 
-add_library(hipipe_core INTERFACE)
-set_target_properties(
-  hipipe_core PROPERTIES EXPORT_NAME Core
+add_library(hipipe_core SHARED
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/core/placeholder.cpp"
 )
-target_compile_options(
-  hipipe_core INTERFACE
-  "-std=c++1z"
+set_target_properties(
+  hipipe_core PROPERTIES
+    EXPORT_NAME Core
+    INTERFACE_COMPILE_OPTIONS "-std=c++17"
+    VERSION ${PROJECT_VERSION}
 )
 target_link_libraries(
-  hipipe_core INTERFACE
-  ${Boost_LIBRARIES}
-  pthread
-  stdc++fs
+  hipipe_core
+  PUBLIC ${Boost_LIBRARIES}
+  PUBLIC pthread
+  PUBLIC stdc++fs
 )
 target_include_directories(
-  hipipe_core INTERFACE
-  ${Boost_INCLUDE_DIRS}
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> # build_config.hpp is here
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+  hipipe_core
+  PUBLIC ${Boost_INCLUDE_DIRS}
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> # build_config.hpp is here
+  PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
 )
+
+# -----------------------------
+# Use Range-v3 from a submodule
+# -----------------------------
+
 if(BUILTIN_RANGEV3)
   target_include_directories(
-    hipipe_core INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/range-v3/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/hipipe/third_party/range-v3>
+    hipipe_core
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/range-v3/include>
+    PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/hipipe/third_party/range-v3>
   )
 endif()
 
-# ---------------------
-# Build hipipe::python
-# ---------------------
+# --------------------------------------
+# Build hipipe::core with Python support
+# --------------------------------------
 
 if(BUILD_PYTHON)
-
-  # -------------------------
-  # Build hipipe::python .so
-  # -------------------------
-
-  add_library(
-    hipipe_python SHARED
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/python/initialize.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_fs_path_converter.cpp"
-  )
-  set_target_properties(
-    hipipe_python PROPERTIES EXPORT_NAME Python
+  target_sources(
+    hipipe_core
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/initialize.cpp"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_fs_path_converter.cpp"
   )
   target_include_directories(
-    hipipe_python
-    PUBLIC ${Boost_INCLUDE_DIRS}
+    hipipe_core
     PUBLIC ${PYTHON_INCLUDE_DIRS}
     PUBLIC ${PYTHON_NUMPY_INCLUDE_DIR}
     PUBLIC ${BoostPython3_INCLUDE_DIRS}
   )
   target_link_libraries(
-    hipipe_python
     hipipe_core
-    ${Boost_LIBRARIES}
-    ${PYTHON_LIBRARIES}
-    ${BoostPython3_LIBRARIES}
-    stdc++fs
-  )
-  set_target_properties(
-    hipipe_python
-    PROPERTIES VERSION ${PROJECT_VERSION}
+    PUBLIC ${PYTHON_LIBRARIES}
+    PUBLIC ${BoostPython3_LIBRARIES}
   )
 
-  # -----------------------------------------------------
-  # Build hipipe::python::utility::pyboost_cv3_converter
-  # -----------------------------------------------------
+  # -------------------------------------------------
+  # Build hipipe::core with Python and OpenCV support
+  # -------------------------------------------------
 
   if(BUILD_PYTHON_OPENCV)
     target_sources(
-      hipipe_python
+      hipipe_core
       PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_cv2_converter.cpp"
       PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_cv3_converter.cpp"
     )
     target_include_directories(
-      hipipe_python
+      hipipe_core
       PUBLIC ${OpenCV_INCLUDE_DIRS}
     )
     target_link_libraries(
-      hipipe_python
-      ${OpenCV_LIBRARIES}
+      hipipe_core
+      PUBLIC ${OpenCV_LIBRARIES}
     )
   endif()
-
 endif()
+
 
 # -------------------------
 # Build hipipe::tensorflow
@@ -191,7 +181,6 @@ if(BUILD_TENSORFLOW)
   target_link_libraries(
     hipipe_tensorflow
     PUBLIC hipipe_core
-    PUBLIC stdc++fs
   )
   # try the shared tensorflow library first
   find_package(TensorflowCC COMPONENTS Shared)
@@ -202,7 +191,7 @@ if(BUILD_TENSORFLOW)
     )
     set_target_properties(
       TensorflowCC::Shared
-      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++1z"
+      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++17"
     )
   # fallback to the static library
   # static library is linked privately to avoid multiple funtion definitions,
@@ -219,7 +208,7 @@ if(BUILD_TENSORFLOW)
     )
     set_target_properties(
       TensorflowCC::Static
-      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++1z"
+      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++17"
     )
   endif()
   set_target_properties(
@@ -271,20 +260,21 @@ install(
   FILES include/hipipe/core.hpp
   DESTINATION include/hipipe
 )
-
+install(
+  TARGETS hipipe_core
+  EXPORT HiPipeCoreTargets
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
 # install generated files (e.g., build_config.hpp)
 install(
   DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/"
   DESTINATION include
 )
 
-# install hipipe::core target
-install(
-  TARGETS hipipe_core
-  EXPORT HiPipeCoreTargets
-)
-
 # install hipipe::python library
+# TODO move to include/hipipe/core/python and remove from here
 if(BUILD_PYTHON)
   install(
     DIRECTORY include/hipipe/python/
@@ -293,13 +283,6 @@ if(BUILD_PYTHON)
   install(
     FILES include/hipipe/python.hpp
     DESTINATION include/hipipe
-  )
-  install(
-    TARGETS hipipe_python
-    EXPORT HiPipePythonTargets
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
   )
 endif()
 
@@ -364,22 +347,6 @@ export(
   FILE HiPipeCoreTargets.cmake
   NAMESPACE HiPipe::
 )
-
-# install the python targets file
-if(BUILD_PYTHON)
-  install(
-    EXPORT HiPipePythonTargets
-    FILE HiPipePythonTargets.cmake
-    NAMESPACE HiPipe::
-    DESTINATION "${CMAKECFG_INSTALL_DIR}"
-  )
-  # export the targets also for local use
-  export(
-    TARGETS hipipe_python
-    FILE HiPipePythonTargets.cmake
-    NAMESPACE HiPipe::
-  )
-endif()
 
 # install the tensorflow targets file
 if(BUILD_TENSORFLOW)
