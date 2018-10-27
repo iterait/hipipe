@@ -144,7 +144,7 @@ auto filter(from_t<FromColumns...> f,
       " needs to be at most the lowest dimension of all the from<> and by<> columns.");
     // a bit of function type erasure to speed up compilation
     using FunT = std::function<
-      bool(utility::ndim_type_t<const typename ByColumns::batch_type, Dim>&...)>;
+      bool(const utility::ndim_type_t<typename ByColumns::batch_type, Dim>&...)>;
     return detail::filter_impl<Dim>::impl(f, b, FunT{std::move(fun)});
 }
 
