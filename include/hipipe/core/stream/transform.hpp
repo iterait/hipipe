@@ -75,7 +75,7 @@ namespace detail {
 
     public:
         template <typename Rng, typename... FromTypes, typename... ToTypes, typename Fun,
-                  CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
+                  CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
         stream_t operator()(Rng&& rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun) const
         {
             static_assert(sizeof...(ToTypes) > 0,
@@ -89,11 +89,11 @@ namespace detail {
 
         /// \cond
         template <typename Rng, typename From, typename To, typename Fun,
-                  CONCEPT_REQUIRES_(!ranges::InputRange<Rng>())>
+                  CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
         void operator()(Rng&& rng, From, To, Fun) const
         {
-            CONCEPT_ASSERT_MSG(ranges::InputRange<Rng>(),
-              "Stream transformations only work on ranges satisfying the InputRange concept.");
+            CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
+              "Stream transformations only work on ranges satisfying the ForwardRange concept.");
         }
         /// \endcond
     };
