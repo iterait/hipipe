@@ -128,7 +128,7 @@ namespace detail {
 /// \param d The dimension in which the function is applied. Choose 0 to filter
 ///          whole batches (in such a case, the f parameter is ignored).
 template<typename... FromColumns, typename... ByColumns, typename Fun, int Dim = 1>
-inline auto filter(from_t<FromColumns...> f,
+auto filter(from_t<FromColumns...> f,
                    by_t<ByColumns...> b,
                    Fun fun,
                    dim_t<Dim> d = dim_t<1>{})

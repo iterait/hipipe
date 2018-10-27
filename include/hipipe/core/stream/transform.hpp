@@ -188,7 +188,7 @@ namespace detail {
 /// \param d The dimension in which is the function applied. Choose 0 for the function to
 ///          be applied to the whole batch.
 template<typename... FromColumns, typename... ToColumns, typename Fun, int Dim = 1>
-inline auto transform(
+auto transform(
   from_t<FromColumns...> f,
   to_t<ToColumns...> t,
   Fun fun,
@@ -296,7 +296,7 @@ template<
   typename CondColumn,
   typename Fun,
   int Dim = 1>
-inline auto transform(
+auto transform(
   from_t<FromColumns...> f,
   to_t<ToColumns...> t,
   cond_t<CondColumn> c,
@@ -406,7 +406,7 @@ template<
   typename Fun,
   typename Prng = std::mt19937,
   int Dim = 1>
-inline auto transform(
+auto transform(
   from_t<FromColumns...> f,
   to_t<ToColumns...> t,
   double prob,

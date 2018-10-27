@@ -49,7 +49,7 @@ template<typename FromColumn, typename ToColumn, typename Prng = std::mt19937,
          typename Dist = std::uniform_real_distribution<double>,
          int Dim = utility::ndims<typename ToColumn::batch_type>::value
                  - utility::ndims<std::result_of_t<Dist(Prng&)>>::value>
-inline auto random_fill(from_t<FromColumn> size_from,
+auto random_fill(from_t<FromColumn> size_from,
                         to_t<ToColumn> fill_to,
                         long rnddims = std::numeric_limits<long>::max(),
                         Dist dist = Dist{0, 1},

@@ -30,7 +30,7 @@ namespace detail {
 
     public:
         template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
-        inline stream_t operator()(Rng&& rng) const
+        stream_t operator()(Rng&& rng) const
         {
             return ranges::view::transform(std::forward<Rng>(rng),
               [](batch_t batch) -> batch_t {
@@ -63,6 +63,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | drop<id>;
 /// \endcode
 template <typename... Columns>
-inline ranges::view::view<detail::drop_fn<Columns...>> drop{};
+ranges::view::view<detail::drop_fn<Columns...>> drop{};
 
 }  // end namespace hipipe::stream

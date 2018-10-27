@@ -60,7 +60,7 @@ namespace detail {
 /// \param d The dimension in which the function is applied. Choose 0 for the function to
 ///          be applied to the whole batch.
 template<typename... FromColumns, typename Fun, int Dim = 1>
-inline auto for_each(from_t<FromColumns...> f, Fun fun, dim_t<Dim> d = dim_t<1>{})
+auto for_each(from_t<FromColumns...> f, Fun fun, dim_t<Dim> d = dim_t<1>{})
 {
     // wrap the function to be compatible with stream::transform
     detail::wrap_void_fun_for_transform<

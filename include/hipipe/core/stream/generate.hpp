@@ -80,7 +80,7 @@ namespace detail {
 template<typename FromColumn, typename ToColumn, typename Gen,
          int Dim = utility::ndims<typename ToColumn::batch_type>::value
                  - utility::ndims<std::result_of_t<Gen()>>::value>
-inline auto generate(from_t<FromColumn> size_from,
+auto generate(from_t<FromColumn> size_from,
                      to_t<ToColumn> fill_to,
                      Gen gen,
                      long gendims = std::numeric_limits<long>::max(),

@@ -109,6 +109,6 @@ namespace detail {
 ///
 /// \param batch_size The requested batch size of the new stream.
 template<typename... Columns>
-inline ranges::view::view<detail::create_fn<Columns...>> create{};
+ranges::view::view<detail::create_fn<Columns...>> create{};
 
 } // end namespace hipipe::stream
