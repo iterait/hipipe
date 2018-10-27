@@ -66,8 +66,8 @@ namespace detail {
             static_assert(std::is_invocable_r_v<
               bool, Fun&, const typename ByColumns::batch_type&...>,
               "hipipe::stream::filter: "
-              "The function has to accept the selected `to<>` columns (specifically "
-              "const Column::batch_type&) and return a bool.");
+              "The function has to accept the selected `by<>` columns (specifically "
+              "const ByColumns::batch_type&) and return a bool.");
             return std::apply(fun, std::move(slice_view));
         }
     };
@@ -137,7 +137,15 @@ auto filter(from_t<FromColumns...> f,
             Fun fun,
             dim_t<Dim> d = dim_t<1>{})
 {
-    return detail::filter_impl<Dim>::impl(f, b, std::move(fun));
+    static_assert(
+      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ByColumns::batch_type>::value >= Dim) && ...),
+      "hipipe::stream::filter: The dimension in which to apply the operation "
+      " needs to be at most the lowest dimension of all the from<> and by<> columns.");
+    // a bit of function type erasure to speed up compilation
+    using FunT = std::function<
+      bool(utility::ndim_type_t<const typename ByColumns::batch_type, Dim>&...)>;
+    return detail::filter_impl<Dim>::impl(f, b, FunT{std::move(fun)});
 }
 
 }  // namespace hipipe::stream
