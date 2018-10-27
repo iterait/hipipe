@@ -37,13 +37,12 @@ namespace detail {
         Fun fun;
 
         // Properly zips/unzips the data and applies the filter function.
-        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... cols)
+        utility::maybe_tuple<FromTypes...> operator()(FromTypes&... cols)
         {
             auto range_of_tuples =
                 ranges::view::zip(cols...)
               | ranges::view::filter([this](const auto& tuple) -> bool {
-                    auto slice_view = utility::tuple_index_view<ByIdxs...>(tuple);
-                    return boost::hana::unpack(std::move(slice_view), this->fun);
+                    return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
                 })
               | ranges::view::move;
             return utility::maybe_untuple(utility::unzip(std::move(range_of_tuples)));
@@ -69,7 +68,7 @@ namespace detail {
               "hipipe::stream::filter: "
               "The function has to accept the selected `to<>` columns (specifically "
               "const Column::batch_type&) and return a bool.");
-            return boost::hana::unpack(std::move(slice_view), fun);
+            return std::apply(fun, std::move(slice_view));
         }
     };
 
@@ -84,6 +83,11 @@ namespace detail {
         {
             static_assert(sizeof...(ByColumns) <= sizeof...(FromColumns),
               "Cannot have more ByColumns than FromColumns.");
+            static_assert(
+              ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
+              ((utility::ndims<typename ByColumns::batch_type>::value >= Dim) && ...),
+              "hipipe::stream::filter: The dimension in which to apply the operation needs"
+              " to be at most the lowest dimension of all the from<> and by<> columns.");
 
             detail::wrap_filter_fun_for_transform<
               Fun, from_t<utility::ndim_type_t<typename FromColumns::batch_type, Dim-1>...>,
@@ -129,9 +133,9 @@ namespace detail {
 ///          whole batches (in such a case, the f parameter is ignored).
 template<typename... FromColumns, typename... ByColumns, typename Fun, int Dim = 1>
 auto filter(from_t<FromColumns...> f,
-                   by_t<ByColumns...> b,
-                   Fun fun,
-                   dim_t<Dim> d = dim_t<1>{})
+            by_t<ByColumns...> b,
+            Fun fun,
+            dim_t<Dim> d = dim_t<1>{})
 {
     return detail::filter_impl<Dim>::impl(f, b, std::move(fun));
 }

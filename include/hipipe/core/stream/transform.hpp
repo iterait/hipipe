@@ -120,7 +120,7 @@ namespace detail {
             // transform
             auto range_of_tuples =
               ranges::view::transform(
-                boost::hana::unpack(std::move(tuple_of_ranges), ranges::view::zip),
+                std::apply(ranges::view::zip, std::move(tuple_of_ranges)),
                 std::move(fun_wrapper));
             return utility::unzip_if<(sizeof...(ToTypes) > 1)>(std::move(range_of_tuples));
         }
@@ -147,7 +147,7 @@ namespace detail {
                   "hipipe::stream::transform: "
                   "The function does not return the tuple of the selected to<> columns.");
             }
-            return boost::hana::unpack(std::move(tuple), fun);
+            return std::apply(fun, std::move(tuple));
         }
     };
 
@@ -183,6 +183,11 @@ auto transform(
   dim_t<Dim> d = dim_t<1>{})
 {
     // wrap the function to be applied in the appropriate dimension
+    static_assert(
+      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...),
+      "hipipe::stream::transform: The dimension in which to apply the operation needs"
+      " to be at most the lowest dimension of all the from<> and to<> columns.");
     detail::wrap_fun_for_dim<
       Fun, Dim,
       from_t<typename FromColumns::batch_type...>,
@@ -200,9 +205,11 @@ namespace detail {
     template<typename Fun, typename FromIdxs, typename ToIdxs, typename From, typename To>
     struct wrap_fun_with_cond;
 
-    template<typename Fun, typename FromIdxs, std::size_t... ToIdxs,
+    template<typename Fun, std::size_t... FromIdxs, std::size_t... ToIdxs,
              typename CondCol, typename... Cols, typename... ToTypes>
-    struct wrap_fun_with_cond<Fun, FromIdxs, std::index_sequence<ToIdxs...>,
+    struct wrap_fun_with_cond<Fun,
+                              std::index_sequence<FromIdxs...>,
+                              std::index_sequence<ToIdxs...>,
                               from_t<CondCol, Cols...>, to_t<ToTypes...>> {
         Fun fun;
 
@@ -214,9 +221,16 @@ namespace detail {
             if (cond) {
                 // the function is applied only on a subset of the arguments
                 // representing FromColumns
-                // TODO check callability
-                return boost::hana::unpack(
-                  utility::tuple_index_view(args_view, FromIdxs{}), fun);
+                static_assert(std::is_invocable_v<Fun&,
+                  std::tuple_element_t<FromIdxs, decltype(args_view)>...>,
+                  "hipipe::stream::conditional_transform: "
+                  "Cannot apply the given function to the given `from<>` columns.");
+                static_assert(std::is_invocable_r_v<
+                  std::tuple<ToTypes...>, Fun&,
+                  std::tuple_element_t<FromIdxs, decltype(args_view)>...>,
+                  "hipipe::stream::conditional_transform: "
+                  "The function return type does not correspond to the selected `to<>` columns.");
+                return std::invoke(fun, std::get<FromIdxs>(args_view)...);
             }
             // return the original arguments if the condition is false
             // only a subset of the arguments representing ToColumns is returned
@@ -299,6 +313,12 @@ auto transform(
     using ToIdxs = utility::make_offset_index_sequence<n_from, n_to>;
 
     // wrap the function to be applied in the appropriate dimension using the condition column
+    static_assert(
+      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...) &&
+      utility::ndims<typename CondColumn::batch_type>::value >= Dim,
+      "hipipe::stream::conditional_transform: The dimension in which to apply the operation needs"
+      " to be at most the lowest dimension of all the from<>, to<> and cond<> columns.");
     detail::wrap_fun_with_cond<
       Fun, FromIdxs, ToIdxs,
       from_t<utility::ndim_type_t<typename CondColumn::batch_type, Dim>,
@@ -324,10 +344,11 @@ namespace detail {
     struct wrap_fun_with_prob;
 
     template<typename Fun, typename Prng,
-             typename FromIdxs, std::size_t... ToIdxs,
+             std::size_t... FromIdxs, std::size_t... ToIdxs,
              typename... FromTypes, typename... ToTypes>
     struct wrap_fun_with_prob<Fun, Prng,
-                              FromIdxs, std::index_sequence<ToIdxs...>,
+                              std::index_sequence<FromIdxs...>,
+                              std::index_sequence<ToIdxs...>,
                               from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
         std::reference_wrapper<Prng> prng;
@@ -343,9 +364,16 @@ namespace detail {
             if (prob == 1. || (prob > 0. && dis(prng.get()) < prob)) {
                 // the function is applied only on a subset of the arguments
                 // representing FromColumns
-                // TODO check callability
-                return boost::hana::unpack(
-                  utility::tuple_index_view(args_view, FromIdxs{}), fun);
+                static_assert(std::is_invocable_v<Fun&,
+                  std::tuple_element_t<FromIdxs, decltype(args_view)>...>,
+                  "hipipe::stream::probabilistic_transform: "
+                  "Cannot apply the given function to the given `from<>` columns.");
+                static_assert(std::is_invocable_r_v<
+                  std::tuple<ToTypes...>, Fun&,
+                  std::tuple_element_t<FromIdxs, decltype(args_view)>...>,
+                  "hipipe::stream::probabilistic_transform: "
+                  "The function return type does not correspond to the selected `to<>` columns.");
+                return std::invoke(fun, std::get<FromIdxs>(args_view)...);
             }
             // return the original arguments if the dice roll fails
             // only a subset of the arguments representing ToColumns is returned
@@ -410,6 +438,11 @@ auto transform(
     using ToIdxs = utility::make_offset_index_sequence<n_from, n_to>;
 
     // wrap the function to be applied in the appropriate dimension with the given probabiliy
+    static_assert(
+      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...),
+      "hipipe::stream::probabilistic_transform: The dimension in which to apply the operation "
+      " needs to be at most the lowest dimension of all the from<> and to<> columns.");
     detail::wrap_fun_with_prob<
       Fun, Prng, FromIdxs, ToIdxs,
       from_t<utility::ndim_type_t<typename FromColumns::batch_type, Dim>...,
