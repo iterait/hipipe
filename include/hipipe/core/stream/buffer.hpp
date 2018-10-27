@@ -165,6 +165,13 @@ public:
 /// next element, it is already prepared. This view works for any range, not only
 /// for hipipe streams.
 ///
+/// Note that this transformer is not lazy and instead _eagerly evaluates_ the
+/// data in asynchronous threads. To avoid recalculation of the entire underlying
+/// range whenever e.g., std::distance is called, this transformer intentionally
+/// changes the stream type to InputRange. The downside is that no further
+/// transformations can be appended and everything has to be prepared before the
+/// application of this transformer.
+///
 /// \code
 ///     std::vector<int> data = {1, 2, 3, 4, 5};
 ///     auto buffered_rng = data

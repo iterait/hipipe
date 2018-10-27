@@ -151,10 +151,13 @@ public:
 /// The batch size of the accumulated columns is allowed to differ between batches.
 /// To make one large batch of all the data, use std::numeric_limits<std::size_t>::max().
 ///
-/// Note that this object evaluates the batches computed by the stream and builds
-/// batches of a different size. Therefore, if you want to combine this object with
-/// e.g. \ref stream::buffer, the buffer needs to preceed \ref stream::batch for it to have
-/// any effect.
+/// Note that this stream transformer is not lazy and instead _eagerly evaluates_
+/// the batches computed by the previous stream pipeline and reorganizes the
+/// evaluated data to batches of a different size. To avoid recalculation of the
+/// entire stream whenever e.g., std::distance is called, this transformer
+/// intentionally changes the stream type to InputRange. The downside is that no
+/// further transformations or buffering can be appended and everything has to be
+/// prepared before the application of this transformer.
 ///
 /// \code
 ///     HIPIPE_DEFINE_COLUMN(value, int)
