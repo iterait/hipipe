@@ -183,16 +183,17 @@ auto transform(
   Fun fun,
   dim_t<Dim> d = dim_t<1>{})
 {
-    // wrap the function to be applied in the appropriate dimension
     static_assert(
       ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
       ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...),
       "hipipe::stream::transform: The dimension in which to apply the operation needs"
       " to be at most the lowest dimension of all the from<> and to<> columns.");
 
+    // a bit of function type erasure to speed up compilation
     using FunT = std::function<
       utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>
       (utility::ndim_type_t<typename FromColumns::batch_type, Dim>&...)>;
+    // wrap the function to be applied in the appropriate dimension
     detail::wrap_fun_for_dim<
       FunT, Dim,
       from_t<typename FromColumns::batch_type...>,
@@ -317,15 +318,20 @@ auto transform(
     using FromIdxs = std::make_index_sequence<n_from>;
     using ToIdxs = utility::make_offset_index_sequence<n_from, n_to>;
 
-    // wrap the function to be applied in the appropriate dimension using the condition column
     static_assert(
       ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
       ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...) &&
       utility::ndims<typename CondColumn::batch_type>::value >= Dim,
       "hipipe::stream::conditional_transform: The dimension in which to apply the operation needs"
       " to be at most the lowest dimension of all the from<>, to<> and cond<> columns.");
+
+    // a bit of function type erasure to speed up compilation
+    using FunT = std::function<
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::batch_type, Dim>&...)>;
+    // wrap the function to be applied in the appropriate dimension using the condition column
     detail::wrap_fun_with_cond<
-      Fun, FromIdxs, ToIdxs,
+      FunT, FromIdxs, ToIdxs,
       from_t<utility::ndim_type_t<typename CondColumn::batch_type, Dim>,
              utility::ndim_type_t<typename FromColumns::batch_type, Dim>...,
              utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>,
@@ -442,14 +448,19 @@ auto transform(
     using FromIdxs = std::make_index_sequence<n_from>;
     using ToIdxs = utility::make_offset_index_sequence<n_from, n_to>;
 
-    // wrap the function to be applied in the appropriate dimension with the given probabiliy
     static_assert(
       ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
       ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...),
       "hipipe::stream::probabilistic_transform: The dimension in which to apply the operation "
       " needs to be at most the lowest dimension of all the from<> and to<> columns.");
+
+    // a bit of function type erasure to speed up compilation
+    using FunT = std::function<
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::batch_type, Dim>&...)>;
+    // wrap the function to be applied in the appropriate dimension with the given probabiliy
     detail::wrap_fun_with_prob<
-      Fun, Prng, FromIdxs, ToIdxs,
+      FunT, Prng, FromIdxs, ToIdxs,
       from_t<utility::ndim_type_t<typename FromColumns::batch_type, Dim>...,
              utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>,
       to_t<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>>
