@@ -30,7 +30,7 @@ namespace detail {
 
     public:
         template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
-        stream_t operator()(Rng&& rng) const
+        forward_stream_t operator()(Rng&& rng) const
         {
             return ranges::view::transform(std::forward<Rng>(rng),
               [](batch_t batch) -> batch_t {

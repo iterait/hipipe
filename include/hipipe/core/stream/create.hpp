@@ -66,7 +66,7 @@ namespace detail {
 
     public:
         template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
-        stream_t operator()(Rng&& rng, std::size_t batch_size = 1) const
+        forward_stream_t operator()(Rng&& rng, std::size_t batch_size = 1) const
         {
             return ranges::view::transform(
               ranges::view::chunk(std::forward<Rng>(rng), batch_size),

@@ -74,7 +74,8 @@ namespace detail {
 
     public:
         template <typename... FromTypes, typename... ToTypes, typename Fun>
-        stream_t operator()(stream_t rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun) const
+        forward_stream_t operator()(
+          forward_stream_t rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun) const
         {
             static_assert(sizeof...(ToTypes) > 0,
               "For non-transforming operations, please use stream::for_each.");

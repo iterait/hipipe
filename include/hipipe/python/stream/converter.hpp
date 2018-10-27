@@ -20,7 +20,7 @@ namespace hipipe::python::stream {
 /// \ingroup Python
 /// \brief Make a Python \ref range from a stream (i.e, a view of batches).
 /// TODO compiled function
-inline auto to_python(hipipe::stream::stream_t stream)
+inline auto to_python(hipipe::stream::input_stream_t stream)
 {
     auto range_of_dicts =
       ranges::view::transform(std::move(stream), &hipipe::stream::batch_t::to_python);

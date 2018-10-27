@@ -353,7 +353,8 @@ public:
     #endif
 };
 
-using stream_t = ranges::any_view<batch_t, ranges::category::forward>;
+using forward_stream_t = ranges::any_view<batch_t, ranges::category::forward>;
+using input_stream_t = ranges::any_view<batch_t, ranges::category::input>;
 
 }  // namespace hipipe::stream
 
