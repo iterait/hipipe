@@ -21,18 +21,23 @@
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/unique.hpp>
 
+#include <experimental/filesystem>
 #include <list>
 #include <memory>
 #include <random>
 #include <vector>
 
 using namespace hipipe::utility;
+namespace fs = std::experimental::filesystem;
 
 BOOST_AUTO_TEST_CASE(test_ndims)
 {
     BOOST_TEST(ndims<std::vector<int>>{} == 1);
     BOOST_TEST(ndims<std::vector<std::vector<int>>>{} == 2);
     BOOST_TEST(ndims<std::list<std::vector<std::list<int>>>>{} == 3);
+    // fs::path is a recursive type for which value_type is again fs::path
+    BOOST_TEST(ndims<fs::path>{} == 0);
+    BOOST_TEST(ndims<std::vector<fs::path>>{} == 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_is_specialization)

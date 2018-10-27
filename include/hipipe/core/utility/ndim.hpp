@@ -43,17 +43,23 @@ namespace hipipe::utility {
 ///     std::size_t rng_ndims = ndims<std::vector<std::list<int>>>{};
 ///     // rng_ndims == 2;
 /// \endcode
-template<typename T, bool IsRange = ranges::Range<T>()>
+template<typename Rng, typename PrevRng = void, bool IsRange = ranges::Range<Rng>()>
 struct ndims {
 };
 
-template<typename T>
-struct ndims<T, false> : std::integral_constant<long, 0L> {
+template<typename Rng, typename PrevRng>
+struct ndims<Rng, PrevRng, false> : std::integral_constant<long, 0L> {
 };
 
-template<typename T>
-struct ndims<T, true>
-  : std::integral_constant<long, ndims<ranges::range_value_type_t<T>>{} + 1L> {
+template<typename Rng, typename PrevRng>
+struct ndims<Rng, PrevRng, true>
+  : std::integral_constant<long, ndims<ranges::range_value_type_t<Rng>, Rng>{} + 1> {
+};
+
+// For recursive ranges, such as std::filesystem::path, do not recurse further and
+// consider it to be a scalar.
+template<typename Rng>
+struct ndims<Rng, Rng, true> : std::integral_constant<long, -1L> {
 };
 
 /// \ingroup NDim
