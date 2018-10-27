@@ -189,8 +189,12 @@ auto transform(
       ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...),
       "hipipe::stream::transform: The dimension in which to apply the operation needs"
       " to be at most the lowest dimension of all the from<> and to<> columns.");
+
+    using FunT = std::function<
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::batch_type, Dim>&...)>;
     detail::wrap_fun_for_dim<
-      Fun, Dim,
+      FunT, Dim,
       from_t<typename FromColumns::batch_type...>,
       to_t<typename ToColumns::batch_type...>>
         fun_wrapper{std::move(fun)};
