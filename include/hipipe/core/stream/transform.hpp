@@ -8,8 +8,7 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_TRANSFORM_HPP
-#define HIPIPE_CORE_STREAM_TRANSFORM_HPP
+#pragma once
 
 #include <hipipe/build_config.hpp>
 #include <hipipe/core/stream/column.hpp>
@@ -74,9 +73,8 @@ namespace detail {
         }
 
     public:
-        template <typename Rng, typename... FromTypes, typename... ToTypes, typename Fun,
-                  CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
-        stream_t operator()(Rng&& rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun) const
+        template <typename... FromTypes, typename... ToTypes, typename Fun>
+        stream_t operator()(stream_t rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun) const
         {
             static_assert(sizeof...(ToTypes) > 0,
               "For non-transforming operations, please use stream::for_each.");
@@ -84,18 +82,8 @@ namespace detail {
             detail::partial_transform_impl<Fun, from_t<FromTypes...>, to_t<ToTypes...>>
               trans_fun{std::move(fun)};
 
-            return ranges::view::transform(std::forward<Rng>(rng), std::move(trans_fun));
+            return ranges::view::transform(std::move(rng), std::move(trans_fun));
         }
-
-        /// \cond
-        template <typename Rng, typename From, typename To, typename Fun,
-                  CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
-        void operator()(Rng&& rng, From, To, Fun) const
-        {
-            CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
-              "Stream transformations only work on ranges satisfying the ForwardRange concept.");
-        }
-        /// \endcond
     };
 
 }  // namespace detail
@@ -435,4 +423,3 @@ auto transform(
 }
 
 } // namespace hipipe::stream
-#endif
