@@ -14,14 +14,13 @@
 #include "../common.hpp"
 
 #include <hipipe/core/stream/random_fill.hpp>
-#include <hipipe/core/utility/vector.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 
 #include <range/v3/action/sort.hpp>
 #include <range/v3/view/move.hpp>
 #include <range/v3/view/unique.hpp>
 
 #include <vector>
-
 
 
 // Check that the given 2D vector has the given number of unique values in each subvector.

@@ -11,8 +11,8 @@
 #pragma once
 
 #include <hipipe/core/stream/template_arguments.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 #include <hipipe/core/utility/tuple.hpp>
-#include <hipipe/core/utility/vector.hpp>
 
 #include <range/v3/view/move.hpp>
 #include <range/v3/view/transform.hpp>

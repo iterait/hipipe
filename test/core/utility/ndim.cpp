@@ -13,7 +13,7 @@
 
 #include "../common.hpp"
 
-#include <hipipe/core/utility/vector.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/action/sort.hpp>

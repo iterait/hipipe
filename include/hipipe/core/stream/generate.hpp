@@ -11,7 +11,7 @@
 #pragma once
 
 #include <hipipe/core/stream/transform.hpp>
-#include <hipipe/core/utility/vector.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 
 namespace hipipe::stream {
 namespace detail {

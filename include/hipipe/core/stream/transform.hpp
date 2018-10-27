@@ -14,9 +14,9 @@
 #include <hipipe/build_config.hpp>
 #include <hipipe/core/stream/column.hpp>
 #include <hipipe/core/stream/template_arguments.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 #include <hipipe/core/utility/random.hpp>
 #include <hipipe/core/utility/tuple.hpp>
-#include <hipipe/core/utility/vector.hpp>
 
 #include <range/v3/view/any_view.hpp>
 #include <range/v3/view/transform.hpp>
