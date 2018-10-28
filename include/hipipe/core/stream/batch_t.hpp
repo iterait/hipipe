@@ -46,28 +46,6 @@ private:
         }
     }
 
-/*
-TODO delete
-    /// TODO rename to insert_or_assign
-    /// \brief Insert a new column to the batch or overwrite an existing one.
-    ///
-    /// Example:
-    /// \code
-    ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
-    ///     stream::batch b;
-    ///     b.insert<IntCol>(std::vector<int>{0, 1, 2});
-    ///     b.at<IntCol>().value() == std::vector<int>{0, 1, 2};
-    ///     TODO
-    /// \endcode
-    ///
-    /// \param key The type index of the column (defined by e.g., HIPIPE_DEFINE_COLUMN).
-    /// \param column The pointer to the column to be inserted.
-    void insert(std::type_index key, std::unique_ptr<abstract_column> column)
-    {
-        columns_.insert_or_assign(std::move(key), std::move(column));
-    }
-*/
-
 public:
 
     // constructors //
