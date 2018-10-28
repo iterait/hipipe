@@ -13,7 +13,7 @@
 
 #include "../common.hpp"
 
-#include <hipipe/core/stream/batch.hpp>
+#include <hipipe/core/stream/rebatch.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/view/indirect.hpp>
@@ -52,7 +52,7 @@ void check_20_elems_batch_size_2(std::vector<hipipe::stream::batch_t> data)
 {
     std::vector<hipipe::stream::batch_t> stream = data
       | ranges::view::move
-      | hipipe::stream::batch(3);
+      | hipipe::stream::rebatch(3);
 
     // iterate through batches
     std::vector<int> result_unique;
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(test_batch_larger_batches)
 
     std::vector<hipipe::stream::batch_t> stream = data
       | ranges::view::move
-      | hipipe::stream::batch(1);
+      | hipipe::stream::rebatch(1);
 
     // iterate through batches
     std::vector<int> result_unique;
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(test_batch_empty_batches)
     std::vector<hipipe::stream::batch_t> data = generate_batched_data({0, 0, 0, 0});
     std::vector<hipipe::stream::batch_t> stream = data
       | ranges::view::move
-      | hipipe::stream::batch(1);
+      | hipipe::stream::rebatch(1);
     BOOST_TEST(stream.empty());
 }
 
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(test_batch_empty_stream)
     std::vector<hipipe::stream::batch_t> data = generate_batched_data({});
     std::vector<hipipe::stream::batch_t> stream = data
       | ranges::view::move
-      | hipipe::stream::batch(1);
+      | hipipe::stream::rebatch(1);
     BOOST_TEST(stream.empty());
 }
 
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(test_infinite_batch)
     // make batch of infinite size
     auto stream = data
       | ranges::view::move
-      | hipipe::stream::batch(std::numeric_limits<std::size_t>::max());
+      | hipipe::stream::rebatch(std::numeric_limits<std::size_t>::max());
     auto stream_it = ranges::begin(stream);
     static_assert(std::is_same_v<hipipe::stream::batch_t&&, decltype(*stream_it)>);
     hipipe::stream::batch_t result = *stream_it;

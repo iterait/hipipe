@@ -1,6 +1,4 @@
-add_boost_test("test.core.stream.batch" "batch.cpp" "")
-
-add_boost_test("test.core.stream.buffer" "buffer.cpp" "-lpthread")
+add_boost_test("test.core.stream.buffer" "buffer.cpp" "")
 
 add_boost_test("test.core.stream.create" "create.cpp" "")
 
@@ -19,6 +17,8 @@ add_boost_test("test.core.stream.generate" "generate.cpp" "")
 add_boost_test("test.core.stream.pad" "pad.cpp" "")
 
 add_boost_test("test.core.stream.random_fill" "random_fill.cpp" "")
+
+add_boost_test("test.core.stream.rebatch" "rebatch.cpp" "")
 
 add_boost_test("test.core.stream.transform1" "transform1.cpp" "")
 

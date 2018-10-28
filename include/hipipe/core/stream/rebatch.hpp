@@ -22,7 +22,7 @@ namespace hipipe::stream {
 
 
 template <typename Rng>
-struct batch_view : ranges::view_facade<batch_view<Rng>> {
+struct rebatch_view : ranges::view_facade<rebatch_view<Rng>> {
 private:
     /// \cond
     friend ranges::range_access;
@@ -32,7 +32,7 @@ private:
 
     struct cursor {
     private:
-        batch_view<Rng>* rng_ = nullptr;
+        rebatch_view<Rng>* rng_ = nullptr;
         ranges::iterator_t<Rng> it_ = {};
 
         // the batch into which we accumulate the data
@@ -73,7 +73,7 @@ private:
 
         cursor() = default;
 
-        explicit cursor(batch_view<Rng>& rng)
+        explicit cursor(rebatch_view<Rng>& rng)
           : rng_{&rng}
           , it_{ranges::begin(rng_->rng_)}
         {
@@ -113,36 +113,36 @@ private:
     cursor begin_cursor() { return cursor{*this}; }
 
 public:
-    batch_view() = default;
-    batch_view(Rng rng, std::size_t n)
+    rebatch_view() = default;
+    rebatch_view(Rng rng, std::size_t n)
       : rng_{rng}
       , n_{n}
     {
         if (n_ <= 0) {
-            throw std::invalid_argument{"hipipe::stream::batch:"
+            throw std::invalid_argument{"hipipe::stream::rebatch:"
               " The new batch size " + std::to_string(n_) + " is not strictly positive."};
         }
     }
-};  // class batch_view
+};  // class rebatch_view
 
-class batch_fn {
+class rebatch_fn {
 private:
     /// \cond
     friend ranges::view::view_access;
     /// \endcond
 
-    static auto bind(batch_fn batch, std::size_t n)
+    static auto bind(rebatch_fn rebatch, std::size_t n)
     {
-        return ranges::make_pipeable(std::bind(batch, std::placeholders::_1, n));
+        return ranges::make_pipeable(std::bind(rebatch, std::placeholders::_1, n));
     }
 
 public:
     template <typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
-    batch_view<ranges::view::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
+    rebatch_view<ranges::view::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
     {
         return {ranges::view::all(std::forward<Rng>(rng)), n};
     }
-};  // class batch_fn
+};  // class rebatch_fn
 
 
 /// \ingroup Stream
@@ -163,8 +163,8 @@ public:
 ///     HIPIPE_DEFINE_COLUMN(value, int)
 ///     auto rng = view::iota(0, 10)
 ///       | create<value>(2)  // batches the data by two examples
-///       | batch(3);         // changes the batch size to three examples
+///       | rebatch(3);       // changes the batch size to three examples
 /// \endcode
-inline ranges::view::view<batch_fn> batch{};
+inline ranges::view::view<rebatch_fn> rebatch{};
 
 }  // namespace hipipe::stream

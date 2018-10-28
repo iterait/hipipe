@@ -13,7 +13,7 @@
 
 /// \defgroup Stream Stream modifiers and data types.
 
-#include <hipipe/core/stream/batch.hpp>
+#include <hipipe/core/stream/rebatch.hpp>
 #include <hipipe/core/stream/buffer.hpp>
 #include <hipipe/core/stream/column.hpp>
 #include <hipipe/core/stream/create.hpp>
