@@ -37,8 +37,8 @@ auto empty_batch_stream()
 {
     empty_batch_stream_.clear();
     empty_batch_stream_.resize(2);
-    empty_batch_stream_.at(1).insert<Int>();
-    empty_batch_stream_.at(1).insert<Double>();
+    empty_batch_stream_.at(1).insert_or_assign<Int>();
+    empty_batch_stream_.at(1).insert_or_assign<Double>();
     return hpy::stream::to_python(ranges::view::move(empty_batch_stream_));
 }
 
@@ -48,10 +48,10 @@ auto number_stream()
 {
     number_stream_.clear();
     number_stream_.resize(2);
-    number_stream_.at(0).insert<Int>(Int::batch_type{3, 2});
-    number_stream_.at(0).insert<Double>(Double::batch_type{5.});
-    number_stream_.at(1).insert<Int>(Int::batch_type{1, 4});
-    number_stream_.at(1).insert<Double>(Double::batch_type{2.});
+    number_stream_.at(0).insert_or_assign<Int>(Int::batch_type{3, 2});
+    number_stream_.at(0).insert_or_assign<Double>(Double::batch_type{5.});
+    number_stream_.at(1).insert_or_assign<Int>(Int::batch_type{1, 4});
+    number_stream_.at(1).insert_or_assign<Double>(Double::batch_type{2.});
     return hpy::stream::to_python(ranges::view::move(number_stream_));
 }
 

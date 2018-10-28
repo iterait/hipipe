@@ -27,16 +27,16 @@ BOOST_AUTO_TEST_CASE(test_for_each_of_two)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>();
+    batch1.insert_or_assign<Int>();
     batch1.extract<Int>().push_back(1);
     batch1.extract<Int>().push_back(3);
-    batch1.insert<Double>();
+    batch1.insert_or_assign<Double>();
     batch1.extract<Double>().push_back(5.);
     batch1.extract<Double>().push_back(6.);
     data.push_back(std::move(batch1));
-    batch2.insert<Int>();
+    batch2.insert_or_assign<Int>();
     batch2.extract<Int>().push_back(1);
-    batch2.insert<Double>();
+    batch2.insert_or_assign<Double>();
     batch2.extract<Double>().push_back(2.);
     data.push_back(std::move(batch2));
 
@@ -65,11 +65,11 @@ BOOST_AUTO_TEST_CASE(test_for_each_mutable)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>();
+    batch1.insert_or_assign<Int>();
     batch1.extract<Int>().push_back(1);
     batch1.extract<Int>().push_back(3);
     data.push_back(std::move(batch1));
-    batch2.insert<Int>();
+    batch2.insert_or_assign<Int>();
     batch2.extract<Int>().push_back(5);
     batch2.extract<Int>().push_back(7);
     data.push_back(std::move(batch2));
@@ -97,14 +97,14 @@ BOOST_AUTO_TEST_CASE(test_for_each_move_only)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>();
+    batch1.insert_or_assign<Int>();
     batch1.extract<Int>().push_back(3);
-    batch1.insert<Unique>();
+    batch1.insert_or_assign<Unique>();
     batch1.extract<Unique>().push_back(std::make_unique<int>(5));
     data.push_back(std::move(batch1));
-    batch2.insert<Int>();
+    batch2.insert_or_assign<Int>();
     batch2.extract<Int>().push_back(1);
-    batch2.insert<Unique>();
+    batch2.insert_or_assign<Unique>();
     batch2.extract<Unique>().push_back(std::make_unique<int>(2));
     data.push_back(std::move(batch2));
   
@@ -130,14 +130,14 @@ BOOST_AUTO_TEST_CASE(test_for_each_dim0)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>();
+    batch1.insert_or_assign<Int>();
     batch1.extract<Int>().push_back(3);
-    batch1.insert<Unique>();
+    batch1.insert_or_assign<Unique>();
     batch1.extract<Unique>().push_back(std::make_unique<int>(5));
     data.push_back(std::move(batch1));
-    batch2.insert<Int>();
+    batch2.insert_or_assign<Int>();
     batch2.extract<Int>().push_back(1);
-    batch2.insert<Unique>();
+    batch2.insert_or_assign<Unique>();
     batch2.extract<Unique>().push_back(std::make_unique<int>(2));
     data.push_back(std::move(batch2));
   

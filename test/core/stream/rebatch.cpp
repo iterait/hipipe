@@ -29,8 +29,8 @@ auto generate_batched_data(std::vector<int> batch_sizes)
     std::vector<hipipe::stream::batch_t> data;
     for (std::size_t i = 0; i < batch_sizes.size(); ++i) {
         hipipe::stream::batch_t batch;
-        batch.insert<Unique>();
-        batch.insert<Int>();
+        batch.insert_or_assign<Unique>();
+        batch.insert_or_assign<Int>();
         for (int j = 0; j < batch_sizes[i]; ++j) {
             batch.extract<Unique>().push_back(std::make_unique<int>(counter));
             batch.extract<Int>().push_back(counter);

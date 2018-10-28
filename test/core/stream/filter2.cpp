@@ -29,11 +29,11 @@ BOOST_AUTO_TEST_CASE(test_mutable)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>(Int::batch_type{3, 1});
-    batch1.insert<IntVec>(IntVec::batch_type{{1, 5}, {2, 4}});
+    batch1.insert_or_assign<Int>(Int::batch_type{3, 1});
+    batch1.insert_or_assign<IntVec>(IntVec::batch_type{{1, 5}, {2, 4}});
     data.push_back(std::move(batch1));
-    batch2.insert<Int>(Int::batch_type{2, 6});
-    batch2.insert<IntVec>(IntVec::batch_type{{7, 1}, {3, 5}});
+    batch2.insert_or_assign<Int>(Int::batch_type{2, 6});
+    batch2.insert_or_assign<IntVec>(IntVec::batch_type{{7, 1}, {3, 5}});
     data.push_back(std::move(batch2));
 
     std::size_t i = 0;
@@ -68,11 +68,11 @@ BOOST_AUTO_TEST_CASE(test_dim2_partial)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>(Int::batch_type{3, 1});
-    batch1.insert<IntVec>(IntVec::batch_type{{1, 5}, {2, 4}});
+    batch1.insert_or_assign<Int>(Int::batch_type{3, 1});
+    batch1.insert_or_assign<IntVec>(IntVec::batch_type{{1, 5}, {2, 4}});
     data.push_back(std::move(batch1));
-    batch2.insert<Int>(Int::batch_type{2, 6});
-    batch2.insert<IntVec>(IntVec::batch_type{{7, 1}, {3, 5}});
+    batch2.insert_or_assign<Int>(Int::batch_type{2, 6});
+    batch2.insert_or_assign<IntVec>(IntVec::batch_type{{7, 1}, {3, 5}});
     data.push_back(std::move(batch2));
 
     std::size_t i = 0;
@@ -106,15 +106,15 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only)
 
     batch_t batch1, batch2, batch3;
     std::vector<batch_t> data;
-    batch1.insert<UniqueVec>(UniqueVec::example_type{});
+    batch1.insert_or_assign<UniqueVec>(UniqueVec::example_type{});
     batch1.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(5));
     batch1.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(3));
     data.push_back(std::move(batch1));
-    batch2.insert<UniqueVec>(UniqueVec::example_type{});
+    batch2.insert_or_assign<UniqueVec>(UniqueVec::example_type{});
     batch2.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(2));
     batch2.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(4));
     data.push_back(std::move(batch2));
-    batch3.insert<UniqueVec>(UniqueVec::example_type{});
+    batch3.insert_or_assign<UniqueVec>(UniqueVec::example_type{});
     batch3.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(1));
     batch3.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(6));
     data.push_back(std::move(batch3));

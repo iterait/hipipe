@@ -30,11 +30,11 @@ BOOST_AUTO_TEST_CASE(test_sequences_mask)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Sequences>();
+    batch1.insert_or_assign<Sequences>();
     batch1.extract<Sequences>().push_back(Sequences::example_type{1, 2   });
     batch1.extract<Sequences>().push_back(Sequences::example_type{3, 4, 5});
     data.push_back(std::move(batch1));
-    batch2.insert<Sequences>();
+    batch2.insert_or_assign<Sequences>();
     batch2.extract<Sequences>().push_back(Sequences::example_type{       });
     batch2.extract<Sequences>().push_back(Sequences::example_type{6, 7   });
     data.push_back(std::move(batch2));
@@ -72,11 +72,11 @@ BOOST_AUTO_TEST_CASE(test_sequences_2d_mask)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Sequences2d>();
+    batch1.insert_or_assign<Sequences2d>();
     batch1.extract<Sequences2d>().push_back(Sequences2d::example_type{{1.}, {2., 3.}});
     batch1.extract<Sequences2d>().push_back(Sequences2d::example_type{{3., 4.}});
     data.push_back(std::move(batch1));
-    batch2.insert<Sequences2d>();
+    batch2.insert_or_assign<Sequences2d>();
     batch2.extract<Sequences2d>().push_back(Sequences2d::example_type{        });
     batch2.extract<Sequences2d>().push_back(Sequences2d::example_type{{5., 1.}});
     data.push_back(std::move(batch2));

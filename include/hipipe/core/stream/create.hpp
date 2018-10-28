@@ -37,7 +37,7 @@ namespace detail {
                 static_assert(std::is_constructible_v<Columns..., Source&&>,
                   "hipipe::stream::create: "
                   "Cannot convert the given data range to the selected column type.");
-                batch.insert<Columns...>(std::forward<Source>(source));
+                batch.insert_or_assign<Columns...>(std::forward<Source>(source));
             } else {
                 using SourceValue = ranges::range_value_type_t<Source>;
                 static_assert(std::is_constructible_v<
@@ -46,7 +46,7 @@ namespace detail {
                   "Cannot convert the given data range to the selected column types.");
                 std::tuple<Columns...> data = utility::unzip(std::forward<Source>(source));
                 utility::tuple_for_each(data, [&batch](auto& column){
-                    batch.insert<std::decay_t<decltype(column)>>(std::move(column));
+                    batch.insert_or_assign<std::decay_t<decltype(column)>>(std::move(column));
                 });
             }
 

@@ -62,7 +62,7 @@ public:
     /// \code
     ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
     ///     stream::batch b;
-    ///     b.insert<IntCol>(std::vector<int>{0, 1, 2});
+    ///     b.insert_or_assign<IntCol>(std::vector<int>{0, 1, 2});
     ///     b.extract<IntCol>() == std::vector<int>{0, 1, 2};
     /// \endcode
     ///
@@ -93,7 +93,7 @@ public:
     /// \code
     ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
     ///     stream::batch b;
-    ///     b.insert<IntCol>(std::vector<int>{0, 1, 2});
+    ///     b.insert_or_assign<IntCol>(std::vector<int>{0, 1, 2});
     ///     b.at<IntCol>().value() == std::vector<int>{0, 1, 2};
     /// \endcode
     ///
@@ -118,7 +118,6 @@ public:
 
     // column insertion/rewrite //
 
-    /// TODO rename to insert_or_assign
     /// \brief Insert a new column to the batch or overwrite an existing one.
     ///
     /// The parameters of this function are forwarded to the constructor of the given column.
@@ -127,14 +126,14 @@ public:
     /// \code
     ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
     ///     stream::batch b;
-    ///     b.insert<IntCol>(std::vector<int>{0, 1, 2});
+    ///     b.insert_or_assign<IntCol>(std::vector<int>{0, 1, 2});
     ///     b.extract<IntCol>() == std::vector<int>{0, 1, 2};
     /// \endcode
     ///
     /// \tparam Column The column to be inserted.
     /// \param args The parameters that are forwarded to the constructor of the column.
     template<typename Column, typename... Args>
-    void insert(Args&&... args)
+    void insert_or_assign(Args&&... args)
     {
         static_assert(std::is_constructible_v<Column, Args&&...>,
           "Cannot construct the given column from the provided arguments.");

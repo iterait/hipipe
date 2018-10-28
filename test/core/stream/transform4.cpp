@@ -32,11 +32,11 @@ BOOST_AUTO_TEST_CASE(test_conditional_simple)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<dogs>(std::vector<int>{3, 1, 5});
-    batch1.insert<do_trans>(std::vector<int>{true, true, false});
+    batch1.insert_or_assign<dogs>(std::vector<int>{3, 1, 5});
+    batch1.insert_or_assign<do_trans>(std::vector<int>{true, true, false});
     data.push_back(std::move(batch1));
-    batch2.insert<dogs>(std::vector<int>{7, 2, 13});
-    batch2.insert<do_trans>(std::vector<int>{false, true, false});
+    batch2.insert_or_assign<dogs>(std::vector<int>{7, 2, 13});
+    batch2.insert_or_assign<do_trans>(std::vector<int>{false, true, false});
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
@@ -65,9 +65,9 @@ BOOST_AUTO_TEST_CASE(test_conditional_with_random_fill)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<dogs>(expect_dogs.at(0));
+    batch1.insert_or_assign<dogs>(expect_dogs.at(0));
     data.push_back(std::move(batch1));
-    batch2.insert<dogs>(expect_dogs.at(1));
+    batch2.insert_or_assign<dogs>(expect_dogs.at(1));
     data.push_back(std::move(batch2));
 
     std::mt19937 prng{1000003};
@@ -108,9 +108,9 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_simple)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<dogs>(std::vector<int>{3, 1, 5});
+    batch1.insert_or_assign<dogs>(std::vector<int>{3, 1, 5});
     data.push_back(std::move(batch1));
-    batch2.insert<dogs>(std::vector<int>{7, 2, 13});
+    batch2.insert_or_assign<dogs>(std::vector<int>{7, 2, 13});
     data.push_back(std::move(batch2));
 
     std::mt19937 prng{1000003};

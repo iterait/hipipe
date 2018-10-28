@@ -27,11 +27,11 @@ BOOST_AUTO_TEST_CASE(test_partial_transform)
     // Two batches of two columns of a single example.
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>(3);
-    batch1.insert<Unique>(std::make_unique<int>(5));
+    batch1.insert_or_assign<Int>(3);
+    batch1.insert_or_assign<Unique>(std::make_unique<int>(5));
     data.push_back(std::move(batch1));
-    batch2.insert<Int>(1);
-    batch2.insert<Unique>(std::make_unique<int>(2));
+    batch2.insert_or_assign<Int>(1);
+    batch2.insert_or_assign<Unique>(std::make_unique<int>(2));
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
@@ -87,11 +87,11 @@ BOOST_AUTO_TEST_CASE(test_to_itself)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>(Int::batch_type{2, 3});
-    batch1.insert<Double>(Double::batch_type{4., 5.});
+    batch1.insert_or_assign<Int>(Int::batch_type{2, 3});
+    batch1.insert_or_assign<Double>(Double::batch_type{4., 5.});
     data.push_back(std::move(batch1));
-    batch2.insert<Int>(1);
-    batch2.insert<Double>(2.);
+    batch2.insert_or_assign<Int>(1);
+    batch2.insert_or_assign<Double>(2.);
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
@@ -127,9 +127,9 @@ BOOST_AUTO_TEST_CASE(test_move_only)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Unique>(std::make_unique<int>(5));
+    batch1.insert_or_assign<Unique>(std::make_unique<int>(5));
     data.push_back(std::move(batch1));
-    batch2.insert<Unique>(std::make_unique<int>(2));
+    batch2.insert_or_assign<Unique>(std::make_unique<int>(2));
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
@@ -156,9 +156,9 @@ BOOST_AUTO_TEST_CASE(test_mutable)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>(Int::batch_type{1, 5, 3});
+    batch1.insert_or_assign<Int>(Int::batch_type{1, 5, 3});
     data.push_back(std::move(batch1));
-    batch2.insert<Int>(Int::batch_type{3, 5});
+    batch2.insert_or_assign<Int>(Int::batch_type{3, 5});
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
@@ -182,11 +182,11 @@ BOOST_AUTO_TEST_CASE(test_two_to_one)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>(Int::batch_type{3, 7});
-    batch1.insert<Double>(Double::batch_type{5., 1.});
+    batch1.insert_or_assign<Int>(Int::batch_type{3, 7});
+    batch1.insert_or_assign<Double>(Double::batch_type{5., 1.});
     data.push_back(std::move(batch1));
-    batch2.insert<Int>(Int::batch_type{1, 2});
-    batch2.insert<Double>(Double::batch_type{3., 7.});
+    batch2.insert_or_assign<Int>(Int::batch_type{1, 2});
+    batch2.insert_or_assign<Double>(Double::batch_type{3., 7.});
     data.push_back(std::move(batch2));
   
     std::vector<batch_t> stream = data
@@ -212,9 +212,9 @@ BOOST_AUTO_TEST_CASE(test_one_to_two)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>(Int::batch_type{3, 7});
+    batch1.insert_or_assign<Int>(Int::batch_type{3, 7});
     data.push_back(std::move(batch1));
-    batch2.insert<Int>(Int::batch_type{1, 2});
+    batch2.insert_or_assign<Int>(Int::batch_type{1, 2});
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
@@ -241,11 +241,11 @@ BOOST_AUTO_TEST_CASE(test_dim0)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>(Int::batch_type{3, 7});
-    batch1.insert<Double>(Double::batch_type{2.});
+    batch1.insert_or_assign<Int>(Int::batch_type{3, 7});
+    batch1.insert_or_assign<Double>(Double::batch_type{2.});
     data.push_back(std::move(batch1));
-    batch2.insert<Int>(Int::batch_type{1, 2});
-    batch2.insert<Double>(Double::batch_type{6.});
+    batch2.insert_or_assign<Int>(Int::batch_type{1, 2});
+    batch2.insert_or_assign<Double>(Double::batch_type{6.});
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data

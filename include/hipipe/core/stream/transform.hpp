@@ -55,7 +55,7 @@ namespace detail {
             std::tuple<ToTypes...> result{std::invoke(fun, std::move(slice_view))};
             // replace the corresponding fields in the source
             utility::tuple_for_each(result, [&source](auto& column){
-                source.insert<std::decay_t<decltype(column)>>(std::move(column));
+                source.insert_or_assign<std::decay_t<decltype(column)>>(std::move(column));
             });
             return source;
         }

@@ -30,11 +30,11 @@ BOOST_AUTO_TEST_CASE(test_simple)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<IntVec2d>();
+    batch1.insert_or_assign<IntVec2d>();
     batch1.extract<IntVec2d>().push_back(IntVec2d::example_type{{-1}, {-1}, {}});
     batch1.extract<IntVec2d>().push_back(IntVec2d::example_type{{-1}, {-1},   });
     data.push_back(std::move(batch1));
-    batch2.insert<IntVec2d>();
+    batch2.insert_or_assign<IntVec2d>();
     batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{{-1}, {-1}    });
     batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{              });
     batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{{-1}, {-1}    });

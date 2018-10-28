@@ -153,16 +153,16 @@ BOOST_AUTO_TEST_CASE(test_buffer_transformed_stream)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert<Int>();
+    batch1.insert_or_assign<Int>();
     batch1.extract<Int>().push_back(3);
     batch1.extract<Int>().push_back(7);
-    batch1.insert<Unique>();
+    batch1.insert_or_assign<Unique>();
     batch1.extract<Unique>().push_back(std::make_unique<int>(5));
     batch1.extract<Unique>().push_back(std::make_unique<int>(1));
     data.push_back(std::move(batch1));
-    batch2.insert<Int>();
+    batch2.insert_or_assign<Int>();
     batch2.extract<Int>().push_back(1);
-    batch2.insert<Unique>();
+    batch2.insert_or_assign<Unique>();
     batch2.extract<Unique>().push_back(std::make_unique<int>(2));
     data.push_back(std::move(batch2));
 
