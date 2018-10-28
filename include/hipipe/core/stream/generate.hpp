@@ -81,12 +81,15 @@ template<typename FromColumn, typename ToColumn, typename Gen,
          int Dim = utility::ndims<typename ToColumn::batch_type>::value
                  - utility::ndims<std::result_of_t<Gen()>>::value>
 auto generate(from_t<FromColumn> size_from,
-                     to_t<ToColumn> fill_to,
-                     Gen gen,
-                     long gendims = std::numeric_limits<long>::max(),
-                     dim_t<Dim> d = dim_t<Dim>{})
+              to_t<ToColumn> fill_to,
+              Gen gen,
+              long gendims = std::numeric_limits<long>::max(),
+              dim_t<Dim> d = dim_t<Dim>{})
 {
-    detail::wrap_generate_fun_for_transform<FromColumn, ToColumn, Gen, Dim>
+    // a bit of function type erasure to speed up compilation
+    using GenT = std::function<
+      utility::ndim_type_t<typename ToColumn::batch_type, Dim>()>;
+    detail::wrap_generate_fun_for_transform<FromColumn, ToColumn, GenT, Dim>
       trans_fun{std::move(gen), gendims};
     return stream::transform(from<FromColumn>, to<ToColumn>, std::move(trans_fun), dim<0>);
 }

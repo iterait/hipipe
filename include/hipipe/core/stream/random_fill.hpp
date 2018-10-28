@@ -50,14 +50,17 @@ template<typename FromColumn, typename ToColumn, typename Prng = std::mt19937,
          int Dim = utility::ndims<typename ToColumn::batch_type>::value
                  - utility::ndims<std::result_of_t<Dist(Prng&)>>::value>
 auto random_fill(from_t<FromColumn> size_from,
-                        to_t<ToColumn> fill_to,
-                        long rnddims = std::numeric_limits<long>::max(),
-                        Dist dist = Dist{0, 1},
-                        Prng& prng = hipipe::utility::random_generator,
-                        dim_t<Dim> d = dim_t<Dim>{})
+                 to_t<ToColumn> fill_to,
+                 long rnddims = std::numeric_limits<long>::max(),
+                 Dist dist = Dist{0, 1},
+                 Prng& prng = hipipe::utility::random_generator,
+                 dim_t<Dim> d = dim_t<Dim>{})
 {
+    // a bit of function type erasure to speed up compilation
+    using GenT = std::function<
+      utility::ndim_type_t<typename ToColumn::batch_type, Dim>()>;
     // distribution is always copied to avoid race conditions
-    auto fun = [dist, &prng]() { return std::invoke(Dist{dist}, prng); };
+    GenT fun = [dist, &prng]() { return std::invoke(Dist{dist}, prng); };
     return stream::generate(size_from, fill_to, std::move(fun), rnddims, d);
 }
 
