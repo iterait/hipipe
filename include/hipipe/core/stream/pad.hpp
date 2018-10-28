@@ -22,11 +22,11 @@ namespace detail {
     struct wrap_pad_fun_for_transform {
         ValT value;
 
-        std::tuple<typename FromColumn::batch_type, typename MaskColumn::batch_type>
-        operator()(typename FromColumn::batch_type& source)
+        std::tuple<typename FromColumn::data_type, typename MaskColumn::data_type>
+        operator()(typename FromColumn::data_type& source)
         {
-            using SourceVector = typename FromColumn::batch_type;
-            using MaskVector = typename MaskColumn::batch_type;
+            using SourceVector = typename FromColumn::data_type;
+            using MaskVector = typename MaskColumn::data_type;
             constexpr long SourceDims = utility::ndims<SourceVector>::value;
             constexpr long MaskDims = utility::ndims<MaskVector>::value;
             static_assert(MaskDims <= SourceDims, "stream::pad requires"
@@ -85,8 +85,8 @@ template<
   // in the dimension of the mask column.
   typename ValT =
     typename utility::ndim_type_t<
-      typename FromColumn::batch_type, 
-      utility::ndims<typename MaskColumn::batch_type>::value>>
+      typename FromColumn::data_type, 
+      utility::ndims<typename MaskColumn::data_type>::value>>
 auto pad(from_t<FromColumn> f, mask_t<MaskColumn> m, ValT value = ValT{})
 {
     detail::wrap_pad_fun_for_transform<FromColumn, MaskColumn, ValT>

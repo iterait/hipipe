@@ -41,7 +41,7 @@ namespace detail {
         batch_t operator()(batch_t source)
         {
             // build the view of the selected source columns for the transformer
-            std::tuple<typename FromTypes::batch_type&...> slice_view{
+            std::tuple<typename FromTypes::data_type&...> slice_view{
                 source.extract<FromTypes>()...
             };
             // process the transformer's result and convert it to the requested types
@@ -49,11 +49,11 @@ namespace detail {
               "hipipe::stream::partial_transform: "
               "Cannot apply the given function to the given `from<>` columns.");
             static_assert(std::is_invocable_r_v<
-              std::tuple<typename ToTypes::batch_type...>, Fun&, decltype(slice_view)&&>,
+              std::tuple<typename ToTypes::data_type...>, Fun&, decltype(slice_view)&&>,
               "hipipe::stream::partial_transform: "
               "The function return type does not correspond to the tuple of the "
               "selected `to<>` columns.");
-            std::tuple<typename ToTypes::batch_type...> result =
+            std::tuple<typename ToTypes::data_type...> result =
               std::invoke(fun, std::move(slice_view));
             // convert the function results to the corresponding column(s)
             utility::times_with_index<sizeof...(ToTypes)>([&source, &result](auto i) {
@@ -187,20 +187,20 @@ auto transform(
   dim_t<Dim> d = dim_t<1>{})
 {
     static_assert(
-      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
-      ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...),
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::data_type>::value >= Dim) && ...),
       "hipipe::stream::transform: The dimension in which to apply the operation needs"
       " to be at most the lowest dimension of all the from<> and to<> columns.");
 
     // a bit of function type erasure to speed up compilation
     using FunT = std::function<
-      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>
-      (utility::ndim_type_t<typename FromColumns::batch_type, Dim>&...)>;
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::data_type, Dim>&...)>;
     // wrap the function to be applied in the appropriate dimension
     detail::wrap_fun_for_dim<
       FunT, Dim,
-      from_t<typename FromColumns::batch_type...>,
-      to_t<typename ToColumns::batch_type...>>
+      from_t<typename FromColumns::data_type...>,
+      to_t<typename ToColumns::data_type...>>
         fun_wrapper{std::move(fun)};
 
     return stream::partial_transform(f, t, std::move(fun_wrapper));
@@ -322,23 +322,23 @@ auto transform(
     using ToIdxs = utility::make_offset_index_sequence<n_from, n_to>;
 
     static_assert(
-      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
-      ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...) &&
-      utility::ndims<typename CondColumn::batch_type>::value >= Dim,
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::data_type>::value >= Dim) && ...) &&
+      utility::ndims<typename CondColumn::data_type>::value >= Dim,
       "hipipe::stream::conditional_transform: The dimension in which to apply the operation needs"
       " to be at most the lowest dimension of all the from<>, to<> and cond<> columns.");
 
     // a bit of function type erasure to speed up compilation
     using FunT = std::function<
-      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>
-      (utility::ndim_type_t<typename FromColumns::batch_type, Dim>&...)>;
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::data_type, Dim>&...)>;
     // wrap the function to be applied in the appropriate dimension using the condition column
     detail::wrap_fun_with_cond<
       FunT, FromIdxs, ToIdxs,
-      from_t<utility::ndim_type_t<typename CondColumn::batch_type, Dim>,
-             utility::ndim_type_t<typename FromColumns::batch_type, Dim>...,
-             utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>,
-      to_t<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>>
+      from_t<utility::ndim_type_t<typename CondColumn::data_type, Dim>,
+             utility::ndim_type_t<typename FromColumns::data_type, Dim>...,
+             utility::ndim_type_t<typename ToColumns::data_type, Dim>...>,
+      to_t<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>>
       cond_fun{std::move(fun)};
 
     // transform from both, FromColumns and ToColumns into ToColumns
@@ -452,21 +452,21 @@ auto transform(
     using ToIdxs = utility::make_offset_index_sequence<n_from, n_to>;
 
     static_assert(
-      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
-      ((utility::ndims<typename ToColumns::batch_type>::value >= Dim) && ...),
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::data_type>::value >= Dim) && ...),
       "hipipe::stream::probabilistic_transform: The dimension in which to apply the operation "
       " needs to be at most the lowest dimension of all the from<> and to<> columns.");
 
     // a bit of function type erasure to speed up compilation
     using FunT = std::function<
-      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>
-      (utility::ndim_type_t<typename FromColumns::batch_type, Dim>&...)>;
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::data_type, Dim>&...)>;
     // wrap the function to be applied in the appropriate dimension with the given probabiliy
     detail::wrap_fun_with_prob<
       FunT, Prng, FromIdxs, ToIdxs,
-      from_t<utility::ndim_type_t<typename FromColumns::batch_type, Dim>...,
-             utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>,
-      to_t<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>>
+      from_t<utility::ndim_type_t<typename FromColumns::data_type, Dim>...,
+             utility::ndim_type_t<typename ToColumns::data_type, Dim>...>,
+      to_t<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>>
       prob_fun{std::move(fun), prng, prob};
 
     // transform from both, FromColumns and ToColumns into ToColumns

@@ -69,7 +69,7 @@ public:
     /// \tparam Column The column whose data should be retrieved.
     /// \throws std::runtime_error If the batch does not contain the given column.
     template<typename Column>
-    typename Column::batch_type& extract()
+    typename Column::data_type& extract()
     {
         throw_check_contains<Column>();
         return columns_.at(std::type_index{typeid(Column)})->extract<Column>();
@@ -79,7 +79,7 @@ public:
     ///
     /// This is the same as previous, but returns a const reference.
     template<typename Column>
-    const typename Column::batch_type& extract() const
+    const typename Column::data_type& extract() const
     {
         throw_check_contains<Column>();
         return columns_.at(std::type_index{typeid(Column)})->extract<Column>();

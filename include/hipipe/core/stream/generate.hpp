@@ -22,10 +22,10 @@ namespace detail {
         Gen gen;
         long gendims;
 
-        typename ToColumn::batch_type operator()(typename FromColumn::batch_type& source)
+        typename ToColumn::data_type operator()(typename FromColumn::data_type& source)
         {
-            using SourceVector = typename FromColumn::batch_type;
-            using TargetVector = typename ToColumn::batch_type;
+            using SourceVector = typename FromColumn::data_type;
+            using TargetVector = typename ToColumn::data_type;
             constexpr long SourceDims = utility::ndims<SourceVector>::value;
             constexpr long TargetDims = utility::ndims<TargetVector>::value;
             static_assert(Dim <= SourceDims, "hipipe::stream::generate requires"
@@ -75,10 +75,10 @@ namespace detail {
 /// \param gendims The number of generated dimensions. See \ref utility::generate().
 /// \param d This is the dimension in which will the generator be applied.
 ///          E.g., if set to 1, the generator result is considered to be a single example.
-///          The default is ndims<ToColumn::batch_type> - ndims<gen()>. This value
+///          The default is ndims<ToColumn::data_type> - ndims<gen()>. This value
 ///          has to be positive.
 template<typename FromColumn, typename ToColumn, typename Gen,
-         int Dim = utility::ndims<typename ToColumn::batch_type>::value
+         int Dim = utility::ndims<typename ToColumn::data_type>::value
                  - utility::ndims<std::result_of_t<Gen()>>::value>
 auto generate(from_t<FromColumn> size_from,
               to_t<ToColumn> fill_to,
@@ -88,7 +88,7 @@ auto generate(from_t<FromColumn> size_from,
 {
     // a bit of function type erasure to speed up compilation
     using GenT = std::function<
-      utility::ndim_type_t<typename ToColumn::batch_type, Dim>()>;
+      utility::ndim_type_t<typename ToColumn::data_type, Dim>()>;
     detail::wrap_generate_fun_for_transform<FromColumn, ToColumn, GenT, Dim>
       trans_fun{std::move(gen), gendims};
     return stream::transform(from<FromColumn>, to<ToColumn>, std::move(trans_fun), dim<0>);

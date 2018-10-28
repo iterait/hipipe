@@ -30,14 +30,14 @@ BOOST_AUTO_TEST_CASE(test_dim0)
 
     batch_t batch1, batch2, batch3;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<Int>(Int::batch_type{3, 1});
-    batch1.insert_or_assign<Double>(Double::batch_type{5., 2.});
+    batch1.insert_or_assign<Int>(Int::data_type{3, 1});
+    batch1.insert_or_assign<Double>(Double::data_type{5., 2.});
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<Int>(Int::batch_type{7, 8});
-    batch2.insert_or_assign<Double>(Double::batch_type{3., 1.});
+    batch2.insert_or_assign<Int>(Int::data_type{7, 8});
+    batch2.insert_or_assign<Double>(Double::data_type{3., 1.});
     data.push_back(std::move(batch2));
-    batch3.insert_or_assign<Int>(Int::batch_type{2, 6});
-    batch3.insert_or_assign<Double>(Double::batch_type{4., 5.});
+    batch3.insert_or_assign<Int>(Int::data_type{2, 6});
+    batch3.insert_or_assign<Double>(Double::data_type{4., 5.});
     data.push_back(std::move(batch3));
 
     std::size_t i = 0;
@@ -113,11 +113,11 @@ BOOST_AUTO_TEST_CASE(test_dim1)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<Int>(Int::batch_type{3, 1});
-    batch1.insert_or_assign<Double>(Double::batch_type{5., 2.});
+    batch1.insert_or_assign<Int>(Int::data_type{3, 1});
+    batch1.insert_or_assign<Double>(Double::data_type{5., 2.});
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<Int>(Int::batch_type{2, 6});
-    batch2.insert_or_assign<Double>(Double::batch_type{4., 5.});
+    batch2.insert_or_assign<Int>(Int::data_type{2, 6});
+    batch2.insert_or_assign<Double>(Double::data_type{4., 5.});
     data.push_back(std::move(batch2));
 
     std::size_t i = 0;
@@ -152,11 +152,11 @@ BOOST_AUTO_TEST_CASE(test_dim1_partial)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<Int>(Int::batch_type{3, 1});
-    batch1.insert_or_assign<Double>(Double::batch_type{5., 2.});
+    batch1.insert_or_assign<Int>(Int::data_type{3, 1});
+    batch1.insert_or_assign<Double>(Double::data_type{5., 2.});
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<Int>(Int::batch_type{2, 6});
-    batch2.insert_or_assign<Double>(Double::batch_type{4., 5.});
+    batch2.insert_or_assign<Int>(Int::data_type{2, 6});
+    batch2.insert_or_assign<Double>(Double::data_type{4., 5.});
     data.push_back(std::move(batch2));
 
     std::size_t i = 0;
@@ -251,11 +251,11 @@ BOOST_AUTO_TEST_CASE(test_dim2)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<IntVec1>(IntVec1::batch_type{{3, 2}, {1, 5}});
-    batch1.insert_or_assign<IntVec2>(IntVec2::batch_type{{1, 5}, {2, 4}});
+    batch1.insert_or_assign<IntVec1>(IntVec1::data_type{{3, 2}, {1, 5}});
+    batch1.insert_or_assign<IntVec2>(IntVec2::data_type{{1, 5}, {2, 4}});
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<IntVec1>(IntVec1::batch_type{{2, 4}, {6, 4}});
-    batch2.insert_or_assign<IntVec2>(IntVec2::batch_type{{7, 1}, {3, 5}});
+    batch2.insert_or_assign<IntVec1>(IntVec1::data_type{{2, 4}, {6, 4}});
+    batch2.insert_or_assign<IntVec2>(IntVec2::data_type{{7, 1}, {3, 5}});
     data.push_back(std::move(batch2));
 
     std::size_t i = 0;

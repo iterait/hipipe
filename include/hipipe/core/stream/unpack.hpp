@@ -30,19 +30,19 @@ namespace detail {
         static auto unpack_columns(Rng&& rng)
         {
             return ranges::view::transform(std::forward<Rng>(rng), [](batch_t source)
-                -> std::tuple<typename FromColumns::batch_type...> {
+                -> std::tuple<typename FromColumns::data_type...> {
                     return {std::move(source.extract<FromColumns>())...};
             });
         }
 
         template<typename Rng>
         static
-        std::tuple<std::vector<utility::ndim_type_t<typename FromColumns::batch_type, Dim>>...>
+        std::tuple<std::vector<utility::ndim_type_t<typename FromColumns::data_type, Dim>>...>
         impl(Rng&& range_of_batches)
         {
             static_assert(std::is_same_v<std::decay_t<ranges::range_value_type_t<Rng>>, batch_t>,
               "hipipe::stream::unpack requires a range of batches as input.");
-            static_assert(((Dim <= utility::ndims<typename FromColumns::batch_type>::value) && ...),
+            static_assert(((Dim <= utility::ndims<typename FromColumns::data_type>::value) && ...),
               "hipipe::stream::unpack requires the requested dimension to be less or equal to the"
               " dimension of all the unpacked columns.");
             auto raw_range_of_tuples = unpack_columns(std::forward<Rng>(range_of_batches));
@@ -61,7 +61,7 @@ namespace detail {
     {
         template<typename Rng>
         static
-        std::vector<utility::ndim_type_t<typename FromColumn::batch_type, Dim>>
+        std::vector<utility::ndim_type_t<typename FromColumn::data_type, Dim>>
         impl(Rng&& range_of_tuples)
         {
             return std::get<0>(
@@ -106,7 +106,7 @@ namespace detail {
 template<typename Rng, typename... FromColumns, int Dim = 1>
 auto
 // The return type is actually the following, but GCC won't handle it.
-// utility::maybe_tuple<std::vector<utility::ndim_type_t<typename FromColumns::batch_type, Dim>>...>
+// utility::maybe_tuple<std::vector<utility::ndim_type_t<typename FromColumns::data_type, Dim>>...>
 unpack(Rng&& rng, from_t<FromColumns...> f, dim_t<Dim> d = dim_t<1>{})
 {
     return detail::unpack_impl<Dim, (sizeof...(FromColumns)==1), FromColumns...>::impl(

@@ -66,14 +66,14 @@ namespace detail {
 
         bool operator()(const batch_t& source)
         {
-            std::tuple<const typename ByColumns::batch_type&...> slice_view{
+            std::tuple<const typename ByColumns::data_type&...> slice_view{
                 source.extract<ByColumns>()...
             };
             static_assert(std::is_invocable_r_v<
-              bool, Fun&, const typename ByColumns::batch_type&...>,
+              bool, Fun&, const typename ByColumns::data_type&...>,
               "hipipe::stream::filter: "
               "The function has to accept the selected `by<>` columns (specifically "
-              "const ByColumns::batch_type&) and return a bool.");
+              "const ByColumns::data_type&) and return a bool.");
             return std::apply(fun, std::move(slice_view));
         }
     };
@@ -90,13 +90,13 @@ namespace detail {
             static_assert(sizeof...(ByColumns) <= sizeof...(FromColumns),
               "Cannot have more ByColumns than FromColumns.");
             static_assert(
-              ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
-              ((utility::ndims<typename ByColumns::batch_type>::value >= Dim) && ...),
+              ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+              ((utility::ndims<typename ByColumns::data_type>::value >= Dim) && ...),
               "hipipe::stream::filter: The dimension in which to apply the operation needs"
               " to be at most the lowest dimension of all the from<> and by<> columns.");
 
             detail::wrap_filter_fun_for_transform<
-              Fun, from_t<utility::ndim_type_t<typename FromColumns::batch_type, Dim-1>...>,
+              Fun, from_t<utility::ndim_type_t<typename FromColumns::data_type, Dim-1>...>,
               std::index_sequence<utility::variadic_find<ByColumns, FromColumns...>::value...>>
                 fun_wrapper{std::move(fun)};
 
@@ -144,13 +144,13 @@ auto filter(from_t<FromColumns...> f,
             dim_t<Dim> d = dim_t<1>{})
 {
     static_assert(
-      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...) &&
-      ((utility::ndims<typename ByColumns::batch_type>::value >= Dim) && ...),
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ByColumns::data_type>::value >= Dim) && ...),
       "hipipe::stream::filter: The dimension in which to apply the operation "
       " needs to be at most the lowest dimension of all the from<> and by<> columns.");
     // a bit of function type erasure to speed up compilation
     using FunT = std::function<
-      bool(const utility::ndim_type_t<typename ByColumns::batch_type, Dim>&...)>;
+      bool(const utility::ndim_type_t<typename ByColumns::data_type, Dim>&...)>;
     return detail::filter_impl<Dim>::impl(f, b, FunT{std::move(fun)});
 }
 

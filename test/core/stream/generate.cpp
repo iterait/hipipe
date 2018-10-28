@@ -51,17 +51,17 @@ BOOST_AUTO_TEST_CASE(test_simple)
         }, 1);
 
     for (std::size_t i = 0; i < stream.size(); ++i) {
-        Generated::batch_type generated     = stream.at(i).extract<Generated>();
-        Generated3d::batch_type generated3d = stream.at(i).extract<Generated3d>();
+        Generated::data_type generated     = stream.at(i).extract<Generated>();
+        Generated3d::data_type generated3d = stream.at(i).extract<Generated3d>();
         switch (i) {
-        case 0: BOOST_TEST(generated == (Generated::batch_type
+        case 0: BOOST_TEST(generated == (Generated::data_type
                            {{0, 0, 0}, {1, 1}} ));
-                BOOST_TEST(generated3d == (Generated3d::batch_type
+                BOOST_TEST(generated3d == (Generated3d::data_type
                            {{{{0}}, {{0}}, {}}, {{{1}}, {{1}}}} ));
                 break;
-        case 1: BOOST_TEST(generated == (Generated::batch_type
+        case 1: BOOST_TEST(generated == (Generated::data_type
                            {{2, 2}, {}, {4, 4}, {}} ));
-                BOOST_TEST(generated3d == (Generated3d::batch_type
+                BOOST_TEST(generated3d == (Generated3d::data_type
                            {{{{2}}, {{2}}}, {}, {{{4}}, {{4}}}, {}} ));
                 break;
         default: BOOST_FAIL("Only two batches should be provided");

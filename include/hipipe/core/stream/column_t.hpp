@@ -68,7 +68,7 @@ public:
     /// \tparam Column The column that is represented by this abstract column.
     /// \throws std::runtime_error If a column not corresponding to the stored one is requested.
     template<typename Column>
-    typename Column::batch_type& extract()
+    typename Column::data_type& extract()
     {
         throw_check_contains<Column>();
         return dynamic_cast<Column&>(*this).data();
@@ -78,7 +78,7 @@ public:
     ///
     /// The same as previous, but returns a const reference.
     template<typename Column>
-    const typename Column::batch_type& extract() const
+    const typename Column::data_type& extract() const
     {
         throw_check_contains<Column>();
         return dynamic_cast<const Column&>(*this).data();
@@ -131,12 +131,12 @@ public:
     /// The type of a single example.
     using example_type = ExampleType;
     /// The type of multiple examples. This is what the column actually stores.
-    using batch_type = std::vector<example_type>;
+    using data_type = std::vector<example_type>;
 
 private:
 
     /// The stored data.
-    batch_type data_;
+    data_type data_;
 
 public:
 
@@ -188,7 +188,7 @@ public:
               + "` with " + std::to_string(size()) + " examples."};
 
         }
-        batch_type taken_examples(n);
+        data_type taken_examples(n);
         std::move(data_.begin(), data_.begin() + n, taken_examples.begin());
         data_.erase(data_.begin(), data_.begin() + n);
         return std::make_unique<ColumnName>(std::move(taken_examples));
@@ -222,10 +222,10 @@ public:
     // data accessors //
 
     /// \brief Get a reference to the stored vector of examples.
-    batch_type& data() { return data_; }
+    data_type& data() { return data_; }
 
     /// \brief Get a const reference to the stored vector of examples.
-    const batch_type& data() const { return data_; }
+    const data_type& data() const { return data_; }
 
     // python converter //
 

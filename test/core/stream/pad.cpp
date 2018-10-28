@@ -44,8 +44,8 @@ BOOST_AUTO_TEST_CASE(test_sequences_mask)
       | hipipe::stream::pad(from<Sequences>, mask<Mask>, -1);
 
     for (std::size_t i = 0; i < stream.size(); ++i) {
-        Sequences::batch_type seqs = stream.at(i).extract<Sequences>();
-        Mask::batch_type     mask = stream.at(i).extract<Mask>();
+        Sequences::data_type seqs = stream.at(i).extract<Sequences>();
+        Mask::data_type     mask = stream.at(i).extract<Mask>();
         switch (i) {
         case 0: BOOST_TEST(seqs ==
                   (std::vector<std::vector<int>>{{1, 2, -1}, {3, 4, 5}}));
@@ -86,8 +86,8 @@ BOOST_AUTO_TEST_CASE(test_sequences_2d_mask)
       | hipipe::stream::pad(from<Sequences2d>, mask<Mask>, {-1., -1.});
 
     for (std::size_t i = 0; i < stream.size(); ++i) {
-        Sequences2d::batch_type seqs = stream.at(i).extract<Sequences2d>();
-        Mask::batch_type        mask = stream.at(i).extract<Mask>();
+        Sequences2d::data_type seqs = stream.at(i).extract<Sequences2d>();
+        Mask::data_type        mask = stream.at(i).extract<Mask>();
         switch (i) {
         case 0: BOOST_TEST(seqs ==
                   (std::vector<std::list<std::vector<double>>>

@@ -63,15 +63,15 @@ template<typename... FromColumns, typename Fun, int Dim = 1>
 auto for_each(from_t<FromColumns...> f, Fun fun, dim_t<Dim> d = dim_t<1>{})
 {
     static_assert(
-      ((utility::ndims<typename FromColumns::batch_type>::value >= Dim) && ...),
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...),
       "hipipe::stream::for_each: The dimension in which to apply the operation "
       " needs to be at most the lowest dimension of all the from<> columns.");
     // a bit of function type erasure to speed up compilation
     using FunT = std::function<
-      void(utility::ndim_type_t<typename FromColumns::batch_type, Dim>&...)>;
+      void(utility::ndim_type_t<typename FromColumns::data_type, Dim>&...)>;
     // wrap the function to be compatible with stream::transform
     detail::wrap_void_fun_for_transform<
-      FunT, utility::ndim_type_t<typename FromColumns::batch_type, Dim>...>
+      FunT, utility::ndim_type_t<typename FromColumns::data_type, Dim>...>
         fun_wrapper{std::move(fun)};
     // apply the dummy transformation
     return stream::transform(f, to<FromColumns...>, std::move(fun_wrapper), d);

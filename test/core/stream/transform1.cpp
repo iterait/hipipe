@@ -40,29 +40,29 @@ BOOST_AUTO_TEST_CASE(test_partial_transform)
       | ranges::view::move
       // Increment unique_ptr values by one.
       | hipipe::stream::partial_transform(from<Unique>, to<Unique>,
-          [](std::tuple<Unique::batch_type&> data)
-            -> std::tuple<Unique::batch_type> {
+          [](std::tuple<Unique::data_type&> data)
+            -> std::tuple<Unique::data_type> {
               BOOST_TEST(std::get<0>(data).size() == 1);
-              Unique::batch_type new_data;
+              Unique::data_type new_data;
               new_data.push_back(std::make_unique<int>(*std::get<0>(data).at(0) + 1));
               return std::make_tuple(std::move(new_data));
         })
       // Put sum of pointer values and ints into ints.
       | hipipe::stream::partial_transform(from<Unique, Int>, to<Int>,
-          [](std::tuple<Unique::batch_type&, Int::batch_type> data)
-            -> std::tuple<Int::batch_type> {
+          [](std::tuple<Unique::data_type&, Int::data_type> data)
+            -> std::tuple<Int::data_type> {
               BOOST_TEST(std::get<0>(data).size() == 1);
-              Int::batch_type new_data;
+              Int::data_type new_data;
               new_data.push_back(*std::get<0>(data).at(0) + std::get<1>(data).at(0));
               return std::make_tuple(std::move(new_data));
         })
       // Swap pointer values and ints.
       | hipipe::stream::partial_transform(from<Unique, Int>, to<Int, Unique>,
-          [](std::tuple<Unique::batch_type&, Int::batch_type> data)
-            -> std::tuple<Int::batch_type, Unique::batch_type> {
-              Unique::batch_type new_unique_data;
+          [](std::tuple<Unique::data_type&, Int::data_type> data)
+            -> std::tuple<Int::data_type, Unique::data_type> {
+              Unique::data_type new_unique_data;
               new_unique_data.push_back(std::make_unique<int>(std::get<1>(data).at(0)));
-              Int::batch_type new_int_data;
+              Int::data_type new_int_data;
               new_int_data.push_back(*std::get<0>(data).at(0));
               return std::make_tuple(std::move(new_int_data), std::move(new_unique_data));
         })
@@ -89,8 +89,8 @@ BOOST_AUTO_TEST_CASE(test_to_itself)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<Int>(Int::batch_type{2, 3});
-    batch1.insert_or_assign<Double>(Double::batch_type{4., 5.});
+    batch1.insert_or_assign<Int>(Int::data_type{2, 3});
+    batch1.insert_or_assign<Double>(Double::data_type{4., 5.});
     data.push_back(std::move(batch1));
     batch2.insert_or_assign<Int>(1);
     batch2.insert_or_assign<Double>(2.);
@@ -160,9 +160,9 @@ BOOST_AUTO_TEST_CASE(test_mutable)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<Int>(Int::batch_type{1, 5, 3});
+    batch1.insert_or_assign<Int>(Int::data_type{1, 5, 3});
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<Int>(Int::batch_type{3, 5});
+    batch2.insert_or_assign<Int>(Int::data_type{3, 5});
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
@@ -186,11 +186,11 @@ BOOST_AUTO_TEST_CASE(test_two_to_one)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<Int>(Int::batch_type{3, 7});
-    batch1.insert_or_assign<Double>(Double::batch_type{5., 1.});
+    batch1.insert_or_assign<Int>(Int::data_type{3, 7});
+    batch1.insert_or_assign<Double>(Double::data_type{5., 1.});
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<Int>(Int::batch_type{1, 2});
-    batch2.insert_or_assign<Double>(Double::batch_type{3., 7.});
+    batch2.insert_or_assign<Int>(Int::data_type{1, 2});
+    batch2.insert_or_assign<Double>(Double::data_type{3., 7.});
     data.push_back(std::move(batch2));
   
     std::vector<batch_t> stream = data
@@ -216,9 +216,9 @@ BOOST_AUTO_TEST_CASE(test_one_to_two)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<Int>(Int::batch_type{3, 7});
+    batch1.insert_or_assign<Int>(Int::data_type{3, 7});
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<Int>(Int::batch_type{1, 2});
+    batch2.insert_or_assign<Int>(Int::data_type{1, 2});
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
@@ -245,16 +245,16 @@ BOOST_AUTO_TEST_CASE(test_dim0)
 
     batch_t batch1, batch2;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<Int>(Int::batch_type{3, 7});
-    batch1.insert_or_assign<Double>(Double::batch_type{2.});
+    batch1.insert_or_assign<Int>(Int::data_type{3, 7});
+    batch1.insert_or_assign<Double>(Double::data_type{2.});
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<Int>(Int::batch_type{1, 2});
-    batch2.insert_or_assign<Double>(Double::batch_type{6.});
+    batch2.insert_or_assign<Int>(Int::data_type{1, 2});
+    batch2.insert_or_assign<Double>(Double::data_type{6.});
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
       | ranges::view::move
-      | transform(from<Int>, to<Int>, [](const Int::batch_type& int_batch) {
+      | transform(from<Int>, to<Int>, [](const Int::data_type& int_batch) {
             std::vector<int> new_batch = int_batch;
             new_batch.push_back(4);
             return new_batch;
