@@ -13,7 +13,6 @@
 #define HIPIPE_CORE_THREAD_HPP
 
 #include <boost/asio.hpp>
-#include <boost/hana.hpp>
 #include <boost/thread/thread.hpp>
 
 #include <cmath>
@@ -74,10 +73,9 @@ public:
         // So we build a shared_ptr of the task and post a lambda
         // dereferencing and running the task stored in the pointer.
         auto shared_task = std::make_shared<std::packaged_task<Ret(Args...)>>(std::move(task));
-        auto shared_args = std::make_shared<boost::hana::tuple<Args...>>(std::move(args)...);
+        auto shared_args = std::make_shared<std::tuple<Args...>>(std::move(args)...);
         auto asio_task = [task = std::move(shared_task), args = std::move(shared_args)]() {
-            // TODO is std::apply ok already?
-            return boost::hana::unpack(std::move(*args), std::move(*task));
+            return std::apply(std::move(*task), std::move(*args));
         };
         service_.post(std::move(asio_task));
         return future;

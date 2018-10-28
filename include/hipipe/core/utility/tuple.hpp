@@ -12,8 +12,6 @@
 #ifndef HIPIPE_CORE_TUPLE_UTILS_HPP
 #define HIPIPE_CORE_TUPLE_UTILS_HPP
 
-#include <boost/hana.hpp>
-#include <boost/hana/ext/std/tuple.hpp>
 #include <range/v3/core.hpp>
 #include <range/v3/size.hpp>
 #include <range/v3/to_container.hpp>
@@ -312,32 +310,6 @@ template<typename... Ts>
 std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tuple)
 {
     return utility::tuple_print(out, tuple, std::make_index_sequence<sizeof...(Ts)>{});
-}
-
-// tuple_remove //
-
-/// \ingroup Tuple
-/// \brief Remove types from a tuple.
-///
-/// Note: All the reference types are decayed during this operation.
-///
-/// Example:
-/// \code
-///     auto t1 = std::make_tuple(0, '1');
-///     auto t2 = tuple_remove<int>(t1);
-///     static_assert(std::is_same<std::tuple<char>, decltype(t2)>{});
-///     assert(t2 == std::make_tuple('1'));
-///     auto t3 = tuple_remove<int, char>(std::make_tuple(0, 'a', 3L, 'b'));
-///     static_assert(std::is_same<std::tuple<long>, decltype(t3)>{});
-///     assert(t3 == std::make_tuple(3L));
-/// \endcode
-template<typename... Rem, typename Tuple>
-constexpr auto tuple_remove(Tuple tuple)
-{
-    constexpr auto to_remove = boost::hana::make_set(boost::hana::type_c<std::decay_t<Rem>>...);
-    return boost::hana::remove_if(std::move(tuple), [&to_remove](const auto& a) {
-        return boost::hana::contains(to_remove, boost::hana::type_c<std::decay_t<decltype(a)>>);
-    });
 }
 
 // unzip //

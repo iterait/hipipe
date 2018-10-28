@@ -309,67 +309,6 @@ BOOST_AUTO_TEST_CASE(test_tuple_for_each_mutable)
     BOOST_TEST(t2 == std::make_tuple(0, 1.));
 }
 
-BOOST_AUTO_TEST_CASE(test_tuple_remove)
-{
-    // tuple_remove
-    auto t1 = std::make_tuple(5, 10L, 'a');
-    auto t2 = tuple_remove<long>(t1);
-    static_assert(std::is_same<std::tuple<int, char>, decltype(t2)>{});
-    BOOST_TEST(t2 == std::make_tuple(5, 'a'));
-}
-
-BOOST_AUTO_TEST_CASE(test_tuple_remove_not_contained)
-{
-    // tuple_remove not contained
-    auto t1 = std::make_tuple(2L, 5L, true);
-    auto t2 = tuple_remove<int>(std::move(t1));
-    static_assert(std::is_same<std::tuple<long, long, bool>, decltype(t2)>{});
-    BOOST_TEST(t2 == std::make_tuple(2L, 5L, true));
-}
-
-BOOST_AUTO_TEST_CASE(test_tuple_remove_choose_one_remove_multi)
-{
-    // tuple_remove multiple fields of the same type
-    auto t1 = std::make_tuple(2L, 5L, true);
-    auto t2 = tuple_remove<long>(std::move(t1));
-    static_assert(std::is_same<std::tuple<bool>, decltype(t2)>{});
-    BOOST_CHECK(t2 == std::make_tuple(true));
-}
-
-BOOST_AUTO_TEST_CASE(test_tuple_remove_choose_multi_remove_multi)
-{
-    // tuple_remove multiple fields of multiple types
-    auto t1 = std::make_tuple(2L, 5L, true, 'a', 3);
-    auto t2 = tuple_remove<long, char, bool>(t1);
-    static_assert(std::is_same<std::tuple<int>, decltype(t2)>{});
-    BOOST_CHECK(t2 == std::make_tuple(3));
-}
-
-BOOST_AUTO_TEST_CASE(test_tuple_remove_references)
-{
-    // tuple_remove references
-    long l1 = 5;
-    long l2 = 10L;
-    bool b = true;
-    auto t1 = std::make_tuple(std::ref(l1), std::ref(l2), std::ref(b));
-    auto t2 = tuple_remove<long>(std::move(t1));
-    // references are converted to values
-    static_assert(std::is_same<std::tuple<bool>, decltype(t2)>{});
-    BOOST_CHECK(t2 == std::make_tuple(true));
-}
-
-BOOST_AUTO_TEST_CASE(test_tuple_remove_move_only)
-{
-    // tuple_remove move-only
-    auto t1 = std::make_tuple(std::unique_ptr<int>{},
-                              std::unique_ptr<bool>{},
-                              std::unique_ptr<double>{});
-    auto t2 = tuple_remove<std::unique_ptr<bool>>(std::move(t1));
-    static_assert(std::is_same<std::tuple<std::unique_ptr<int>,
-                                          std::unique_ptr<double>>,
-                               decltype(t2)>{});
-}
-
 BOOST_AUTO_TEST_CASE(test_unzip)
 {
     // unzip
