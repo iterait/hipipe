@@ -20,7 +20,6 @@
 
 BOOST_AUTO_TEST_CASE(test_dim2_move_only)
 {
-    // TODO put all those to a single namespace that can be used at once.
     using hipipe::stream::batch_t;
     using hipipe::stream::from;
     using hipipe::stream::to;
