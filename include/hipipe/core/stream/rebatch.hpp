@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <hipipe/core/stream/column.hpp>
+#include <hipipe/core/stream/stream_t.hpp>
 
 #include <range/v3/core.hpp>
 #include <range/v3/view/all.hpp>

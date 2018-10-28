@@ -8,7 +8,7 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <hipipe/core/stream/column.hpp>
+#include <hipipe/core/stream/stream_t.hpp>
 #include <hipipe/core/python/initialize.hpp>
 #include <hipipe/core/python/utility/ndim_vector_converter.hpp>
 

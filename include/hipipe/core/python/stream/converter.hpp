@@ -12,7 +12,7 @@
 #include <hipipe/build_config.hpp>
 #ifdef HIPIPE_BUILD_PYTHON
 
-#include <hipipe/core/stream/column.hpp>
+#include <hipipe/core/stream/stream_t.hpp>
 #include <hipipe/core/python/range.hpp>
 
 #include <range/v3/view/transform.hpp>

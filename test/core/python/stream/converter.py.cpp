@@ -8,7 +8,6 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <hipipe/core/stream/column.hpp>
 #include <hipipe/core/python/initialize.hpp>
 #include <hipipe/core/python/stream/converter.hpp>
 

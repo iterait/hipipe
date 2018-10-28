@@ -11,7 +11,7 @@
 
 #include "../common.hpp"
 
-#include <hipipe/core/stream/column.hpp>
+#include <hipipe/core/stream/stream_t.hpp>
 
 #include <range/v3/algorithm/count.hpp>
 #include <range/v3/view/move.hpp>

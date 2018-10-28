@@ -11,7 +11,7 @@
 #pragma once
 
 #include <hipipe/build_config.hpp>
-#include <hipipe/core/stream/column.hpp>
+#include <hipipe/core/stream/stream_t.hpp>
 #include <hipipe/core/stream/template_arguments.hpp>
 #include <hipipe/core/utility/ndim.hpp>
 #include <hipipe/core/utility/random.hpp>
