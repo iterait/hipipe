@@ -1,19 +1,20 @@
-function(build_pyboost_test_module MODULE_NAME SOURCE_FILE)
+function(build_pyboost_test_module TARGET_PREFIX MODULE_NAME SOURCE_FILE)
 
   add_library(
-    "${MODULE_NAME}" SHARED
+    "${TARGET_PREFIX}.${MODULE_NAME}" SHARED
     "${SOURCE_FILE}"
   )
 
   set_target_properties(
-    "${MODULE_NAME}" PROPERTIES
+    "${TARGET_PREFIX}.${MODULE_NAME}" PROPERTIES
     PREFIX ""
+    OUTPUT_NAME "${MODULE_NAME}"
     DEBUG_POSTFIX ""
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   )
   
   target_link_libraries(
-    "${MODULE_NAME}"
+    "${TARGET_PREFIX}.${MODULE_NAME}"
     PRIVATE hipipe_core
   )
 

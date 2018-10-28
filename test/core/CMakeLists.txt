@@ -1,3 +1,7 @@
+if(HIPIPE_BUILD_PYTHON)
+  add_subdirectory("python")
+endif()
+
 add_subdirectory("stream")
 
 add_subdirectory("utility")
