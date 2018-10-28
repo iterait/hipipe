@@ -49,13 +49,16 @@ namespace detail {
               "hipipe::stream::partial_transform: "
               "Cannot apply the given function to the given `from<>` columns.");
             static_assert(std::is_invocable_r_v<
-              std::tuple<ToTypes...>, Fun&, decltype(slice_view)&&>,
+              std::tuple<typename ToTypes::batch_type...>, Fun&, decltype(slice_view)&&>,
               "hipipe::stream::partial_transform: "
-              "The function return type does not correspond to the selected `to<>` columns.");
-            std::tuple<ToTypes...> result{std::invoke(fun, std::move(slice_view))};
-            // replace the corresponding fields in the source
-            utility::tuple_for_each(result, [&source](auto& column){
-                source.insert_or_assign<std::decay_t<decltype(column)>>(std::move(column));
+              "The function return type does not correspond to the tuple of the "
+              "selected `to<>` columns.");
+            std::tuple<typename ToTypes::batch_type...> result =
+              std::invoke(fun, std::move(slice_view));
+            // convert the function results to the corresponding column(s)
+            utility::times_with_index<sizeof...(ToTypes)>([&source, &result](auto i) {
+                using Column = std::tuple_element_t<i, std::tuple<ToTypes...>>;
+                source.insert_or_assign<Column>(std::move(std::get<i>(result)));
             });
             return source;
         }

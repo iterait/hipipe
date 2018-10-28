@@ -106,15 +106,18 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only)
 
     batch_t batch1, batch2, batch3;
     std::vector<batch_t> data;
-    batch1.insert_or_assign<UniqueVec>(UniqueVec::example_type{});
+    batch1.insert_or_assign<UniqueVec>();
+    batch1.extract<UniqueVec>().resize(1);
     batch1.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(5));
     batch1.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(3));
     data.push_back(std::move(batch1));
-    batch2.insert_or_assign<UniqueVec>(UniqueVec::example_type{});
+    batch2.insert_or_assign<UniqueVec>();
+    batch2.extract<UniqueVec>().resize(1);
     batch2.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(2));
     batch2.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(4));
     data.push_back(std::move(batch2));
-    batch3.insert_or_assign<UniqueVec>(UniqueVec::example_type{});
+    batch3.insert_or_assign<UniqueVec>();
+    batch3.extract<UniqueVec>().resize(1);
     batch3.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(1));
     batch3.extract<UniqueVec>().at(0).push_back(std::make_unique<int>(6));
     data.push_back(std::move(batch3));

@@ -51,7 +51,6 @@ private:
         }
     }
 
-
 public:
     // typed data extractor //
 
@@ -144,28 +143,16 @@ public:
     // constructors //
 
     column_base() = default;
+    column_base(column_base&&) = default;
 
-    // TODO just perfect forward those directly
-    column_base(example_type&& rhs)
-    {
-        data_.emplace_back(std::move(rhs));
-    }
-
-    column_base(const example_type& rhs)
-      : data_{rhs}
-    {}
-
-    column_base(std::initializer_list<example_type> rhs)
-      : data_{std::move(rhs)}
-    {}
-
-    column_base(std::vector<example_type>&& rhs)
-      : data_{std::move(rhs)}
-    {}
-
-    column_base(const std::vector<example_type>& rhs)
-      : data_{rhs}
-    {}
+    /// \brief The constructor.
+    ///
+    /// The constructor forwards its arguments to the constructor
+    /// of the data_type.
+    template <typename... Args>
+    column_base(Args&&... args)
+      : data_{std::forward<Args>(args)...}
+    { }
 
     // batching utilities //
 
