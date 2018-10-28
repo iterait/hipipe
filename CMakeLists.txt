@@ -9,12 +9,12 @@ set(PROJECT_DESCRIPTION "C++17 data pipeline with Python bindings.")
 # Options
 # -------
 
-option(BUILD_TEST "Build test binaries" ON)
-option(BUILD_DOC "Build documentation" OFF)
-option(BUILD_PYTHON "Build C++ <-> Python converters" ON)
-option(BUILD_PYTHON_OPENCV "Build C++ <-> Python OpenCV converters (requires BUILD_PYTHON)" ON)
-option(BUILD_TENSORFLOW "Build TensorFlow functionality" OFF)
-option(BUILTIN_RANGEV3 "Use built-in Range-v3 library" ON)
+option(HIPIPE_BUILD_TEST "Build test binaries" ON)
+option(HIPIPE_BUILD_DOC "Build documentation" OFF)
+option(HIPIPE_BUILD_PYTHON "Build C++ <-> Python converters" ON)
+option(HIPIPE_BUILD_PYTHON_OPENCV "Build C++ <-> Python OpenCV converters (requires HIPIPE_BUILD_PYTHON)" ON)
+option(HIPIPE_BUILD_TENSORFLOW "Build TensorFlow functionality" OFF)
+option(HIPIPE_BUILTIN_RANGEV3 "Use built-in Range-v3 library" ON)
 
 # -------------
 # CMake Options
@@ -61,23 +61,23 @@ endif()
 # Find Common Libraries
 # ---------------------
 
-if(BUILD_PYTHON)
+if(HIPIPE_BUILD_PYTHON)
   find_package(PythonInterp 3 REQUIRED)
   find_package(PythonLibs 3 REQUIRED)
   find_package(PythonNumPy REQUIRED)
   find_package(BoostPython3 REQUIRED)
 
-  if(BUILD_PYTHON_OPENCV)
+  if(HIPIPE_BUILD_PYTHON_OPENCV)
     find_package(OpenCV COMPONENTS core REQUIRED)
   endif()
 endif()
 
-if(BUILD_DOC)
+if(HIPIPE_BUILD_DOC)
   find_package(Git REQUIRED)
   find_package(Doxygen REQUIRED)
 endif()
 
-if(BUILD_TEST)
+if(HIPIPE_BUILD_TEST)
   find_package(Boost 1.61 COMPONENTS system thread unit_test_framework REQUIRED)
 else()
   find_package(Boost 1.61 COMPONENTS system thread REQUIRED)
@@ -119,7 +119,7 @@ target_include_directories(
 # Use Range-v3 from a submodule
 # -----------------------------
 
-if(BUILTIN_RANGEV3)
+if(HIPIPE_BUILTIN_RANGEV3)
   target_include_directories(
     hipipe_core
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/range-v3/include>
@@ -131,7 +131,7 @@ endif()
 # Build hipipe::core with Python support
 # --------------------------------------
 
-if(BUILD_PYTHON)
+if(HIPIPE_BUILD_PYTHON)
   target_include_directories(
     hipipe_core
     PUBLIC ${PYTHON_INCLUDE_DIRS}
@@ -148,7 +148,7 @@ if(BUILD_PYTHON)
   # Build hipipe::core with Python and OpenCV support
   # -------------------------------------------------
 
-  if(BUILD_PYTHON_OPENCV)
+  if(HIPIPE_BUILD_PYTHON_OPENCV)
     target_include_directories(
       hipipe_core
       PUBLIC ${OpenCV_INCLUDE_DIRS}
@@ -165,7 +165,7 @@ endif()
 # Build hipipe::tensorflow
 # -------------------------
 
-if(BUILD_TENSORFLOW)
+if(HIPIPE_BUILD_TENSORFLOW)
   file(GLOB_RECURSE
     hipipe_tensorflow_sources
     "${CMAKE_CURRENT_SOURCE_DIR}/src/tensorflow/*.cpp"
@@ -220,10 +220,10 @@ endif()
 # Tests
 # -----
 
-if(BUILD_TEST)
+if(HIPIPE_BUILD_TEST)
   enable_testing()
   include("AddBoostTest")
-  if(BUILD_PYTHON)
+  if(HIPIPE_BUILD_PYTHON)
       include("AddPythonTest")
       include("BuildPyBoostTestModule")
   endif()
@@ -234,7 +234,7 @@ endif()
 # Documentation
 # -------------
 
-if(BUILD_DOC)
+if(HIPIPE_BUILD_DOC)
   add_subdirectory(doc)
 endif()
 
@@ -243,7 +243,7 @@ endif()
 # -------
 
 # install built-in range-v3 library
-if(BUILTIN_RANGEV3)
+if(HIPIPE_BUILTIN_RANGEV3)
   install(
     DIRECTORY third_party/range-v3/include/
     DESTINATION include/hipipe/third_party/range-v3
@@ -273,7 +273,7 @@ install(
 )
 
 # install hipipe::tensorflow library
-if(BUILD_TENSORFLOW)
+if(HIPIPE_BUILD_TENSORFLOW)
   install(
     DIRECTORY include/hipipe/tensorflow/
     DESTINATION include/hipipe/tensorflow
@@ -335,7 +335,7 @@ export(
 )
 
 # install the tensorflow targets file
-if(BUILD_TENSORFLOW)
+if(HIPIPE_BUILD_TENSORFLOW)
   install(
     EXPORT HiPipeTensorflowTargets
     FILE HiPipeTensorflowTargets.cmake
