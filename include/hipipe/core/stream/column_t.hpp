@@ -53,7 +53,7 @@ private:
 
 
 public:
-    // typed value extractor //
+    // typed data extractor //
 
     /// Extract a reference to the stored data.
     ///
@@ -61,7 +61,7 @@ public:
     /// \code
     ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
     ///     std::unique_ptr<IntCol> col = std::make_unique<IntCol>();
-    ///     col.value().assign({1, 2, 3});
+    ///     col.data().assign({1, 2, 3});
     ///     std::unique_ptr<abstract_column> ab_col = std::move(col);
     ///     ab_col->extract<IntCol>() == std::vector<int>({1, 2, 3});
     /// \endcode
@@ -72,7 +72,7 @@ public:
     typename Column::batch_type& extract()
     {
         throw_check_contains<Column>();
-        return dynamic_cast<Column&>(*this).value();
+        return dynamic_cast<Column&>(*this).data();
     }
 
     /// Extract a const reference to the stored data.
@@ -82,7 +82,7 @@ public:
     const typename Column::batch_type& extract() const
     {
         throw_check_contains<Column>();
-        return dynamic_cast<const Column&>(*this).value();
+        return dynamic_cast<const Column&>(*this).data();
     }
 
     // name accessor //
@@ -137,7 +137,7 @@ public:
 private:
 
     /// The stored data.
-    batch_type value_;
+    batch_type data_;
 
 public:
 
@@ -148,23 +148,23 @@ public:
     // TODO just perfect forward those directly
     column_base(example_type&& rhs)
     {
-        value_.emplace_back(std::move(rhs));
+        data_.emplace_back(std::move(rhs));
     }
 
     column_base(const example_type& rhs)
-      : value_{rhs}
+      : data_{rhs}
     {}
 
     column_base(std::initializer_list<example_type> rhs)
-      : value_{std::move(rhs)}
+      : data_{std::move(rhs)}
     {}
 
     column_base(std::vector<example_type>&& rhs)
-      : value_{std::move(rhs)}
+      : data_{std::move(rhs)}
     {}
 
     column_base(const std::vector<example_type>& rhs)
-      : value_{rhs}
+      : data_{rhs}
     {}
 
     // batching utilities //
@@ -172,8 +172,7 @@ public:
     /// Get the number of examples in this column.
     std::size_t size() const override
     {
-        // TODO rename value to e.g. data
-        return value_.size();
+        return data_.size();
     }
 
     /// \brief Steal the given number of examples from this column
@@ -183,7 +182,7 @@ public:
     /// \code
     ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
     ///     IntCol col1;
-    ///     col1.value().assign({1, 2, 3, 4, 5});
+    ///     col1.data().assign({1, 2, 3, 4, 5});
     ///     std::unique_ptr<abstract_column> col2 = col1.take(3);
     ///     /// col1 contains {4, 5}
     ///     /// col2 contains {1, 2, 3}
@@ -196,15 +195,15 @@ public:
     /// \throws std::runtime_error If attempting to take more than there is.
     std::unique_ptr<abstract_column> take(std::size_t n) override
     {
-        if (n > value_.size()) {
+        if (n > data_.size()) {
             throw std::runtime_error{"hipipe: Attempting to take "
-              + std::to_string(n) + " values out of column `" + name()
-              + "` with " + std::to_string(size()) + " values."};
+              + std::to_string(n) + " examples out of column `" + name()
+              + "` with " + std::to_string(size()) + " examples."};
 
         }
         batch_type taken_examples(n);
-        std::move(value_.begin(), value_.begin() + n, taken_examples.begin());
-        value_.erase(value_.begin(), value_.begin() + n);
+        std::move(data_.begin(), data_.begin() + n, taken_examples.begin());
+        data_.erase(data_.begin(), data_.begin() + n);
         return std::make_unique<ColumnName>(std::move(taken_examples));
     }
 
@@ -214,9 +213,9 @@ public:
     /// \code
     ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
     ///     auto col1 = std::make_unique<IntCol>();
-    ///     col1->value().assign({1, 2, 3});
+    ///     col1->data().assign({1, 2, 3});
     ///     auto col2 = std::make_unique<IntCol>();
-    ///     col2->value().assign({4, 5, 6});
+    ///     col2->data().assign({4, 5, 6});
     ///     col1->push_back(std::move(col2));
     ///     // col1 contains {1, 2, 3, 4, 5, 6}
     ///     // col2 should not be used anymore 
@@ -227,23 +226,23 @@ public:
     void push_back(std::unique_ptr<abstract_column> rhs) override
     {
         ColumnName& typed_rhs = dynamic_cast<ColumnName&>(*rhs);
-        value_.reserve(value_.size() + typed_rhs.value_.size());
-        for (example_type& example : typed_rhs.value_) {
-            value_.push_back(std::move(example));
+        data_.reserve(data_.size() + typed_rhs.data_.size());
+        for (example_type& example : typed_rhs.data_) {
+            data_.push_back(std::move(example));
         }
     }
 
-    // value accessors //
+    // data accessors //
 
     /// \brief Get a reference to the stored vector of examples.
-    batch_type& value() { return value_; }
+    batch_type& data() { return data_; }
 
     /// \brief Get a const reference to the stored vector of examples.
-    const batch_type& value() const { return value_; }
+    const batch_type& data() const { return data_; }
 
     // python converter //
 
-    /// \brief Convert the column value to a python object.
+    /// \brief Convert the column data to a python object.
     ///
     /// This basically converts the data (i.e., the vector of examples) to Python
     /// object using \ref python::utility::to_python(std::vector<T>).
@@ -253,7 +252,7 @@ public:
     #ifdef HIPIPE_BUILD_PYTHON
     boost::python::object to_python() override
     {
-        return hipipe::python::utility::to_python(std::move(value_));
+        return hipipe::python::utility::to_python(std::move(data_));
     }
     #endif
 };
