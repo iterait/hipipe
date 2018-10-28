@@ -25,7 +25,7 @@ namespace detail {
     // checked for existence.
     std::experimental::filesystem::path generate_temp_path(std::string pattern)
     {
-        constexpr const char* hexchars = "0123456789abcdef";
+        const char* hexchars = "0123456789abcdef";
         static thread_local std::mt19937 gen{std::random_device{}()};
         std::uniform_int_distribution<> dis{0, 15};
         for (char& ch: pattern) {

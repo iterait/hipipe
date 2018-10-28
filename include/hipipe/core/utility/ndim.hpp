@@ -622,9 +622,9 @@ namespace detail {
 ///               Elements after this dimension are considered to be units (even if
 ///               they are ranges). If omitted, it defaults to ndims<Rng> - ndims<gen()>.
 template<long NDims, typename Rng, typename Gen>
-constexpr void generate(Rng&& rng,
-                        Gen&& gen,
-                        long gendims = std::numeric_limits<long>::max())
+void generate(Rng&& rng,
+              Gen&& gen,
+              long gendims = std::numeric_limits<long>::max())
 {
     static_assert(NDims > 0);
     detail::generate_impl<1, NDims>::impl(rng, gen, gendims);
@@ -632,9 +632,9 @@ constexpr void generate(Rng&& rng,
 
 /// A specialization which automatically deduces the number of dimensions.
 template<typename Rng, typename Gen>
-constexpr void generate(Rng&& rng,
-                        Gen&& gen,
-                        long gendims = std::numeric_limits<long>::max())
+void generate(Rng&& rng,
+              Gen&& gen,
+              long gendims = std::numeric_limits<long>::max())
 {
     using GenT = std::result_of_t<Gen()>;
     detail::generate_impl<1, ndims<Rng>{}-ndims<GenT>{}>::impl(rng, gen, gendims);
@@ -676,10 +676,10 @@ template<long NDims,
          typename Rng,
          typename Prng = std::mt19937&,
          typename Dist = std::uniform_real_distribution<double>>
-constexpr void random_fill(Rng&& rng,
-                           Dist&& dist = Dist{0, 1},
-                           Prng&& prng = utility::random_generator,
-                           long gendims = std::numeric_limits<long>::max())
+void random_fill(Rng&& rng,
+                 Dist&& dist = Dist{0, 1},
+                 Prng&& prng = utility::random_generator,
+                 long gendims = std::numeric_limits<long>::max())
 {
     auto gen = [&dist, &prng]() { return std::invoke(dist, prng); };
     utility::generate<NDims>(std::forward<Rng>(rng), std::move(gen), gendims);
@@ -689,10 +689,10 @@ constexpr void random_fill(Rng&& rng,
 template<typename Rng,
          typename Prng = std::mt19937&,
          typename Dist = std::uniform_real_distribution<double>>
-constexpr void random_fill(Rng&& rng,
-                           Dist&& dist = Dist{0, 1},
-                           Prng&& prng = utility::random_generator,
-                           long gendims = std::numeric_limits<long>::max())
+void random_fill(Rng&& rng,
+                 Dist&& dist = Dist{0, 1},
+                 Prng&& prng = utility::random_generator,
+                 long gendims = std::numeric_limits<long>::max())
 {
     auto gen = [&dist, &prng]() { return std::invoke(dist, prng); };
     utility::generate(std::forward<Rng>(rng), std::move(gen), gendims);
@@ -702,12 +702,12 @@ namespace detail {
 
     struct same_size_impl {
         template<typename Rng, typename... Rngs>
-        constexpr bool operator()(Rng&& rng, Rngs&&... rngs) const
+        bool operator()(Rng&& rng, Rngs&&... rngs) const
         {
             return (... && (ranges::size(rng) == ranges::size(rngs)));
         }
 
-        constexpr bool operator()() const
+        bool operator()() const
         {
             return true;
         }
@@ -729,7 +729,7 @@ namespace detail {
 ///
 /// \param rngs A tuple of ranges.
 template<typename Tuple>
-constexpr bool same_size(Tuple&& rngs)
+bool same_size(Tuple&& rngs)
 {
     return std::apply(detail::same_size_impl{}, rngs);
 }
