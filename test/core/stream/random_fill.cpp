@@ -11,7 +11,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE stream_random_fill_test
 
-#include "../common.hpp"
+#include "common.hpp"
 
 #include <hipipe/core/stream/random_fill.hpp>
 #include <hipipe/core/utility/ndim.hpp>

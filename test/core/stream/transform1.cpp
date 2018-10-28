@@ -13,7 +13,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE transform1_test
 
-#include "../common.hpp"
+#include "common.hpp"
 
 #include <hipipe/core/stream/transform.hpp>
 

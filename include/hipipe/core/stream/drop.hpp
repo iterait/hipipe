@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <hipipe/core/stream/column.hpp>
 #include <hipipe/core/utility/tuple.hpp>
 
 #include <range/v3/view/transform.hpp>

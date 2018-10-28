@@ -11,7 +11,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE batch_view_test
 
-#include "../common.hpp"
+#include "common.hpp"
 
 #include <hipipe/core/stream/rebatch.hpp>
 

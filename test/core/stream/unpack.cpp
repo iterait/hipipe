@@ -11,7 +11,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE unpack_test
 
-#include "../common.hpp"
+#include "common.hpp"
 
 #include <hipipe/core/stream/unpack.hpp>
 
