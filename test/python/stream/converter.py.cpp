@@ -9,8 +9,8 @@
  ****************************************************************************/
 
 #include <hipipe/core/stream/column.hpp>
-#include <hipipe/python/initialize.hpp>
-#include <hipipe/python/stream/converter.hpp>
+#include <hipipe/core/python/initialize.hpp>
+#include <hipipe/core/python/stream/converter.hpp>
 
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/move.hpp>

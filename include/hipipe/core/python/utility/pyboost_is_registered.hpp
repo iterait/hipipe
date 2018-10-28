@@ -8,8 +8,9 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_PYTHON_UTILITY_PYBOOST_IS_REGISTERED_HPP
-#define HIPIPE_PYTHON_UTILITY_PYBOOST_IS_REGISTERED_HPP
+#pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
 #include <boost/python.hpp>
 
@@ -29,4 +30,5 @@ bool is_registered()
 }
 
 }  // end namespace hipipe::python::utility
-#endif
+
+#endif  // HIPIPE_BUILD_PYTHON

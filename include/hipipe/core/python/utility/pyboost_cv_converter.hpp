@@ -7,11 +7,11 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_PYTHON_UTILITY_PYBOOST_CV_CONVERTER_HPP
-#define HIPIPE_PYTHON_UTILITY_PYBOOST_CV_CONVERTER_HPP
+#pragma once
+#if defined HIPIPE_BUILD_PYTHON && defined HIPIPE_BUILD_PYTHON_OPENCV
 
 // this header has to be included before the numpy header
-#include <hipipe/python/initialize.hpp>
+#include <hipipe/core/python/initialize.hpp>
 
 #include <Python.h>
 #include <boost/python.hpp>
@@ -46,4 +46,5 @@ struct matFromNDArrayBoostConverter {
 };
 
 }  // namespace hipipe::python::utility
-#endif
+
+#endif  // defined HIPIPE_BUILD_PYTHON && defined HIPIPE_BUILD_PYTHON_OPENCV

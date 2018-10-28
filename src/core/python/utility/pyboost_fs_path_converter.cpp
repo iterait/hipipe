@@ -8,7 +8,10 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <hipipe/python/utility/pyboost_fs_path_converter.hpp>
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
+
+#include <hipipe/core/python/utility/pyboost_fs_path_converter.hpp>
 
 #include <boost/python.hpp>
 
@@ -49,3 +52,5 @@ void fs_path_from_python_str::construct(
 }
 
 } // namespace hipipe::python::utility
+
+#endif  // HIPIPE_BUILD_PYTHON

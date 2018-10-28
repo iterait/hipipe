@@ -8,8 +8,9 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_PYTHON_UTILITY_PYBOOST_FS_PATH_CONVERTER_HPP
-#define HIPIPE_PYTHON_UTILITY_PYBOOST_FS_PATH_CONVERTER_HPP
+#pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
 #include <boost/python.hpp>
 
@@ -31,4 +32,5 @@ struct fs_path_from_python_str {
 };
 
 }  // namespace hipipe::python::utility
-#endif
+
+#endif  // HIPIPE_BUILD_PYTHON

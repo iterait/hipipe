@@ -8,8 +8,8 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <hipipe/python/initialize.hpp>
-#include <hipipe/python/range.hpp>
+#include <hipipe/core/python/initialize.hpp>
+#include <hipipe/core/python/range.hpp>
 
 #include <range/v3/view/all.hpp>
 

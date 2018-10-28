@@ -12,9 +12,9 @@
 #ifndef HIPIPE_PYTHON_HPP
 #define HIPIPE_PYTHON_HPP
 
-#include <hipipe/python/initialize.hpp>
-#include <hipipe/python/range.hpp>
-#include <hipipe/python/stream.hpp>
-#include <hipipe/python/utility.hpp>
+#include <hipipe/core/python/initialize.hpp>
+#include <hipipe/core/python/range.hpp>
+#include <hipipe/core/python/stream.hpp>
+#include <hipipe/core/python/utility.hpp>
 
 #endif

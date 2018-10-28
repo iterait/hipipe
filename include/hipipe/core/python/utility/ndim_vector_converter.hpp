@@ -9,9 +9,11 @@
  ****************************************************************************/
 
 #pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
-#include <hipipe/python/range.hpp>
-#include <hipipe/python/utility/pyboost_ndarray_converter.hpp>
+#include <hipipe/core/python/range.hpp>
+#include <hipipe/core/python/utility/vector_converter.hpp>
 
 #include <boost/python.hpp>
 
@@ -73,3 +75,5 @@ boost::python::object to_python(std::vector<T> v)
 }
 
 }  // namespace hipipe::python::utility
+
+#endif  // HIPIPE_BUILD_PYTHON

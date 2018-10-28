@@ -8,9 +8,14 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_PYTHON_STREAM_HPP
-#define HIPIPE_PYTHON_STREAM_HPP
+#pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
-#include <hipipe/python/stream/converter.hpp>
+#include <hipipe/core/python/utility/ndim_vector_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_cv_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_fs_path_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_is_registered.hpp>
+#include <hipipe/core/python/utility/vector_converter.hpp>
 
-#endif
+#endif  // HIPIPE_BUILD_PYTHON

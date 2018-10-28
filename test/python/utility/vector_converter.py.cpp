@@ -8,8 +8,8 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <hipipe/python/initialize.hpp>
-#include <hipipe/python/utility/pyboost_ndarray_converter.hpp>
+#include <hipipe/core/python/initialize.hpp>
+#include <hipipe/core/python/utility/vector_converter.hpp>
 
 #include <limits>
 #include <memory>
@@ -111,7 +111,7 @@ struct test_data {
     }
 };
 
-BOOST_PYTHON_MODULE(pyboost_ndarray_converter_py_cpp)
+BOOST_PYTHON_MODULE(vector_converter_py_cpp)
 {
     hipipe::python::initialize();
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import pyboost_vector_converter_py_cpp as pycpp
+import ndim_vector_converter_py_cpp as pycpp
 
 
 def main():

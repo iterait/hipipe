@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import pyboost_ndarray_converter_py_cpp as pycpp
+import vector_converter_py_cpp as pycpp
 
 
 def main():

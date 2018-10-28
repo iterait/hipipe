@@ -9,8 +9,19 @@
  ****************************************************************************/
 
 #pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
-#include <hipipe/python/utility/pyboost_cv_converter.hpp>
-#include <hipipe/python/utility/pyboost_fs_path_converter.hpp>
-#include <hipipe/python/utility/pyboost_is_registered.hpp>
-#include <hipipe/python/utility/pyboost_vector_converter.hpp>
+#define NO_IMPORT_ARRAY
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define PY_ARRAY_UNIQUE_SYMBOL HIPIPE_PYTHON_ARRAY_SYMBOL
+
+namespace hipipe::python {
+
+/// \ingroup Python
+/// \brief Initialize Python module, register OpenCV converters, exceptions, etc.
+void initialize();
+
+}  // namespace hipipe::python
+
+#endif  // HIPIPE_BUILD_PYTHON

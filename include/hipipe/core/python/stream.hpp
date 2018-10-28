@@ -8,17 +8,10 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_HPP
-#define HIPIPE_CORE_HPP
+#pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
-#include <hipipe/core/base64.hpp>
-#include <hipipe/core/csv.hpp>
-#include <hipipe/core/dataframe.hpp>
-#include <hipipe/core/groups.hpp>
-#include <hipipe/core/index_mapper.hpp>
-#include <hipipe/core/python.hpp>
-#include <hipipe/core/stream.hpp>
-#include <hipipe/core/thread.hpp>
-#include <hipipe/core/utility.hpp>
+#include <hipipe/core/python/stream/converter.hpp>
 
-#endif
+#endif  // HIPIPE_BUILD_PYTHON

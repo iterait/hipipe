@@ -9,8 +9,10 @@
  ****************************************************************************/
 
 #include <hipipe/build_config.hpp>
-#include <hipipe/python/initialize.hpp>
-#include <hipipe/python/range.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
+
+#include <hipipe/core/python/initialize.hpp>
+#include <hipipe/core/python/range.hpp>
 
 // the header file hipipe/python/initialize.hpp sets NO_IMPORT_ARRAY
 // but we actually really import_array here (this is the only place), so unset it.
@@ -21,9 +23,9 @@
 #include <numpy/ndarrayobject.h>
 
 #ifdef HIPIPE_BUILD_PYTHON_OPENCV
-#include <hipipe/python/utility/pyboost_cv_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_cv_converter.hpp>
 #endif
-#include <hipipe/python/utility/pyboost_fs_path_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_fs_path_converter.hpp>
 
 namespace hipipe::python {
 
@@ -57,3 +59,5 @@ void initialize()
 }
 
 }  // namespace hipipe::python
+
+#endif  // HIPIPE_BUILD_PYTHON

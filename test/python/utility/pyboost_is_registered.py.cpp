@@ -8,8 +8,8 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <hipipe/python/initialize.hpp>
-#include <hipipe/python/utility/pyboost_is_registered.hpp>
+#include <hipipe/core/python/initialize.hpp>
+#include <hipipe/core/python/utility/pyboost_is_registered.hpp>
 
 #include <cassert>
 #include <vector>

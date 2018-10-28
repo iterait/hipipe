@@ -13,7 +13,7 @@
 #include <hipipe/build_config.hpp>
 
 #ifdef HIPIPE_BUILD_PYTHON
-#include <hipipe/python/utility/pyboost_vector_converter.hpp>
+#include <hipipe/core/python/utility/ndim_vector_converter.hpp>
 #endif
 
 #include <range/v3/view/any_view.hpp>

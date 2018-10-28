@@ -9,8 +9,8 @@
  ****************************************************************************/
 
 #include <hipipe/core/stream/column.hpp>
-#include <hipipe/python/initialize.hpp>
-#include <hipipe/python/utility/pyboost_vector_converter.hpp>
+#include <hipipe/core/python/initialize.hpp>
+#include <hipipe/core/python/utility/ndim_vector_converter.hpp>
 
 #include <tuple>
 #include <vector>
@@ -49,7 +49,7 @@ auto py_vectorbool()
     return hipipe::python::utility::to_python(vecbool);
 }
 
-BOOST_PYTHON_MODULE(pyboost_vector_converter_py_cpp)
+BOOST_PYTHON_MODULE(ndim_vector_converter_py_cpp)
 {
     // initialize hipipe OpenCV converters, exceptions, etc.
     hipipe::python::initialize();

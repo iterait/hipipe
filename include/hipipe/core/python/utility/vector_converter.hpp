@@ -8,11 +8,12 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_PYTHON_UTILITY_PYBOOST_NDARRAY_CONVERTER_HPP
-#define HIPIPE_PYTHON_UTILITY_PYBOOST_NDARRAY_CONVERTER_HPP
+#pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
 // this header has to be included before the numpy header
-#include <hipipe/python/initialize.hpp>
+#include <hipipe/core/python/initialize.hpp>
 
 #include <Python.h>
 #include <boost/python.hpp>
@@ -127,4 +128,5 @@ PyObject* to_ndarray(std::vector<T> vec)
 }
 
 }  // namespace hipipe::python::utility
-#endif
+
+#endif  // HIPIPE_BUILD_PYTHON

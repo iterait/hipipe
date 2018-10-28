@@ -76,6 +76,7 @@ public:
         auto shared_task = std::make_shared<std::packaged_task<Ret(Args...)>>(std::move(task));
         auto shared_args = std::make_shared<boost::hana::tuple<Args...>>(std::move(args)...);
         auto asio_task = [task = std::move(shared_task), args = std::move(shared_args)]() {
+            // TODO is std::apply ok already?
             return boost::hana::unpack(std::move(*args), std::move(*task));
         };
         service_.post(std::move(asio_task));

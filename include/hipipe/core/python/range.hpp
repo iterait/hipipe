@@ -8,10 +8,11 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_PYTHON_RANGE_HPP
-#define HIPIPE_PYTHON_RANGE_HPP
+#pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
-#include <hipipe/python/utility/pyboost_is_registered.hpp>
+#include <hipipe/core/python/utility/pyboost_is_registered.hpp>
 
 #include <boost/python.hpp>
 #include <range/v3/core.hpp>
@@ -213,4 +214,5 @@ public:
 };  // class range
 
 }  // end namespace hipipe::python
-#endif
+
+#endif  // HIPIPE_BUILD_PYTHON

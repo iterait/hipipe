@@ -8,10 +8,12 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_PYTHON_STREAM_CONVERTER_HPP
-#define HIPIPE_PYTHON_STREAM_CONVERTER_HPP
+#pragma once
+#include <hipipe/build_config.hpp>
+#ifdef HIPIPE_BUILD_PYTHON
 
-#include <hipipe/python/range.hpp>
+#include <hipipe/core/stream/column.hpp>
+#include <hipipe/core/python/range.hpp>
 
 #include <range/v3/view/transform.hpp>
 
@@ -31,4 +33,5 @@ inline auto to_python(hipipe::stream::input_stream_t stream)
 }
 
 }  // end namespace hipipe::python::stream
-#endif
+
+#endif  // HIPIPE_BUILD_PYTHON

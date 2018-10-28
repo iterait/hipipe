@@ -8,7 +8,7 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#include <hipipe/python/initialize.hpp>
+#include <hipipe/core/python/initialize.hpp>
 
 #include <boost/python.hpp>
 #include <opencv2/core/core.hpp>

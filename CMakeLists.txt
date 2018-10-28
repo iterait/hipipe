@@ -87,8 +87,13 @@ endif()
 # Build hipipe core
 # ------------------
 
-add_library(hipipe_core SHARED
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/core/placeholder.cpp"
+file(GLOB_RECURSE
+  hipipe_core_sources
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/core/*.cpp"
+)
+add_library(
+  hipipe_core SHARED
+  ${hipipe_core_sources}
 )
 set_target_properties(
   hipipe_core PROPERTIES
@@ -127,11 +132,6 @@ endif()
 # --------------------------------------
 
 if(BUILD_PYTHON)
-  target_sources(
-    hipipe_core
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/initialize.cpp"
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_fs_path_converter.cpp"
-  )
   target_include_directories(
     hipipe_core
     PUBLIC ${PYTHON_INCLUDE_DIRS}
@@ -149,11 +149,6 @@ if(BUILD_PYTHON)
   # -------------------------------------------------
 
   if(BUILD_PYTHON_OPENCV)
-    target_sources(
-      hipipe_core
-      PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_cv2_converter.cpp"
-      PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/python/utility/pyboost_cv3_converter.cpp"
-    )
     target_include_directories(
       hipipe_core
       PUBLIC ${OpenCV_INCLUDE_DIRS}
@@ -171,9 +166,13 @@ endif()
 # -------------------------
 
 if(BUILD_TENSORFLOW)
+  file(GLOB_RECURSE
+    hipipe_tensorflow_sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/tensorflow/*.cpp"
+  )
   add_library(
     hipipe_tensorflow SHARED
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/tensorflow/load_graph.cpp"
+    ${hipipe_tensorflow_sources}
   )
   set_target_properties(
     hipipe_tensorflow PROPERTIES EXPORT_NAME Tensorflow
@@ -272,19 +271,6 @@ install(
   DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/"
   DESTINATION include
 )
-
-# install hipipe::python library
-# TODO move to include/hipipe/core/python and remove from here
-if(BUILD_PYTHON)
-  install(
-    DIRECTORY include/hipipe/python/
-    DESTINATION include/hipipe/python
-  )
-  install(
-    FILES include/hipipe/python.hpp
-    DESTINATION include/hipipe
-  )
-endif()
 
 # install hipipe::tensorflow library
 if(BUILD_TENSORFLOW)
