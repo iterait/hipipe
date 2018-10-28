@@ -123,7 +123,7 @@ generate_groups(std::size_t n, std::size_t size,
         auto groups = initial_groups;
         // select those groups, which are volatile (those will be replaced)
         auto groups_volatile =
-          groups | view::filter([volatile_size](std::size_t l) { return l < volatile_size; });
+          view::filter(groups, [volatile_size](std::size_t l) { return l < volatile_size; });
         // count the number of volatile groups
         std::size_t volatile_count = ranges::distance(groups_volatile);
         // generate the replacement

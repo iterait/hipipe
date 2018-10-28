@@ -65,19 +65,17 @@ public:
     /// \throws std::out_of_range If any of the values does not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals) const
     {
-        return vals
-          | ranges::view::transform([this](const T& val) {
-                return this->index_for(val);
-            });
+        return ranges::view::transform(vals, [this](const T& val) {
+            return this->index_for(val);
+        });
     }
 
     /// Returns the indexes of the given values or a default value if they do not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals, std::size_t defval) const
     {
-        return vals
-          | ranges::view::transform([this, defval](const T& val) {
-                return this->index_for(val, defval);
-            });
+        return ranges::view::transform(vals, [this, defval](const T& val) {
+            return this->index_for(val, defval);
+        });
     }
 
     // at //
@@ -98,10 +96,9 @@ public:
     /// \throws std::out_of_range If any of the indexes does not exist in the mapper.
     std::vector<T> at(const std::vector<std::size_t>& idxs) const
     {
-        return idxs
-          | ranges::view::transform([this](std::size_t idx) {
-                return this->at(idx);
-            });
+        return ranges::view::transform(idxs, [this](std::size_t idx) {
+            return this->at(idx);
+        });
     }
 
     // insert //

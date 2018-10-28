@@ -39,12 +39,18 @@ namespace detail {
         // Properly zips/unzips the data and applies the filter function.
         utility::maybe_tuple<FromTypes...> operator()(FromTypes&... cols)
         {
+            // the following is much nicer when written as a pipeline, but this
+            // is more compilation time friendly
             auto range_of_tuples =
-                ranges::view::zip(cols...)
-              | ranges::view::filter([this](const auto& tuple) -> bool {
-                    return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
-                })
-              | ranges::view::move;
+              ranges::view::move(
+                ranges::view::filter(
+                  ranges::view::zip(cols...),
+                  [this](const auto& tuple) -> bool {
+                      return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
+                  }
+                )
+              );
+                
             return utility::maybe_untuple(utility::unzip(std::move(range_of_tuples)));
         }
     };

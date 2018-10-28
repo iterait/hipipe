@@ -416,7 +416,7 @@ auto unzip(Rng range_of_tuples)
 template<typename Rng, CONCEPT_REQUIRES_(ranges::View<Rng>())>
 auto unzip(Rng view_of_tuples)
 {
-    return utility::unzip(view_of_tuples | ranges::to_vector);
+    return utility::unzip(ranges::to_vector(view_of_tuples));
 }
 
 // maybe unzip //

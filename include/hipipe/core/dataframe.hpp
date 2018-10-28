@@ -63,7 +63,7 @@ public:
         throw_check_new_header(columns.size(), header);
         for (std::size_t i = 0; i < columns.size(); ++i) {
             std::string col_name = header.empty() ? "" : std::move(header[i]);
-            insert_col(columns[i] | ranges::view::move, std::move(col_name));
+            insert_col(ranges::view::move(columns[i]), std::move(col_name));
         }
     }
 
@@ -95,7 +95,7 @@ public:
         utility::tuple_for_each_with_index(std::move(columns),
           [this, &header](auto& column, auto index) {
               std::string col_name = header.empty() ? "" : std::move(header[index]);
-              this->insert_col(column | ranges::view::move, std::move(col_name));
+              this->insert_col(ranges::view::move(column), std::move(col_name));
         });
     }
 
@@ -119,7 +119,7 @@ public:
         throw_check_insert_col_name(col_name);
         throw_check_insert_col_size(ranges::size(rng));
         if (col_name.size()) header_.insert(col_name);
-        data_.emplace_back(rng | ranges::view::transform(cvt));
+        data_.emplace_back(ranges::view::transform(rng, cvt));
         return n_cols() - 1;
     }
 
@@ -218,7 +218,7 @@ public:
     auto raw_icol(std::size_t col_index)
     {
         throw_check_col_idx(col_index);
-        return raw_cols()[col_index] | ranges::view::all;
+        return ranges::view::all(raw_cols()[col_index]);
     }
 
     /// Return a raw view of a column.
@@ -228,7 +228,7 @@ public:
     auto raw_icol(std::size_t col_index) const
     {
         throw_check_col_idx(col_index);
-        return raw_cols()[col_index] | ranges::view::all;
+        return ranges::view::all(raw_cols()[col_index]);
     }
 
     /// Return a raw view of a column.
@@ -278,7 +278,7 @@ public:
     auto icol(std::size_t col_index,
               std::function<T(const std::string&)> cvt = utility::string_to<T>) const
     {
-        return raw_icol(col_index) | ranges::view::transform(cvt);
+        return ranges::view::transform(raw_icol(col_index), cvt);
     }
 
     /// Return a typed view of a column.
@@ -316,7 +316,7 @@ public:
     /// \returns A range of ranges of std::string&.
     auto raw_cols()
     {
-        return data_ | ranges::view::transform(ranges::view::all);
+        return ranges::view::transform(data_, ranges::view::all);
     }
 
     /// Return a raw view of all columns.
@@ -326,7 +326,7 @@ public:
     /// \returns A range of ranges of const std::string&.
     auto raw_cols() const
     {
-        return data_ | ranges::view::transform(ranges::view::all);
+        return ranges::view::transform(data_, ranges::view::all);
     }
 
     /// Return a raw view of multiple columns.
@@ -408,7 +408,7 @@ public:
         assert(sizeof...(Ts) == ranges::size(col_indexes));
         return utility::tuple_transform_with_index(std::move(cvts),
           [raw_cols = raw_icols(std::move(col_indexes))](auto&& cvt, auto i) {
-              return raw_cols[i] | ranges::view::transform(std::move(cvt));
+              return ranges::view::transform(raw_cols[i], std::move(cvt));
         });
     }
 

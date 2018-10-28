@@ -411,7 +411,7 @@ namespace detail {
         static auto impl()
         {
             return ranges::view::for_each([](auto& subrng) {
-                return subrng | flat_view_impl<Dim-1>::impl();
+                return flat_view_impl<Dim-1>::impl()(subrng);
             });
         }
     };
@@ -447,7 +447,7 @@ template<long NDims, typename Rng>
 auto flat_view(Rng& rng)
 {
     static_assert(NDims > 0);
-    return rng | detail::flat_view_impl<NDims>::impl();
+    return detail::flat_view_impl<NDims>::impl()(rng);
 }
 
 /// Const version of flat_view.
@@ -455,7 +455,7 @@ template<long NDims, typename Rng>
 auto flat_view(const Rng& rng)
 {
     static_assert(NDims > 0);
-    return rng | detail::flat_view_impl<NDims>::impl();
+    return detail::flat_view_impl<NDims>::impl()(rng);
 }
 
 /// flat_view specialization which automatically deduced number of dimensions.
@@ -475,7 +475,7 @@ namespace detail {
         {
             return ranges::view::chunk((*shape_ptr)[N-2])
               | ranges::view::transform([shape_ptr](auto subview) {
-                    return std::move(subview) | reshaped_view_impl_go<N-1>::impl(shape_ptr);
+                    return reshaped_view_impl_go<N-1>::impl(shape_ptr)(std::move(subview));
             });
         }
     };
@@ -512,7 +512,7 @@ namespace detail {
         ranges::partial_sum(shape, shape, std::multiplies<>{});
         // the recursive chunks will share a single copy of the shape list (performance)
         auto shape_ptr = std::make_shared<std::vector<long>>(std::move(shape));
-        return std::move(flat) | detail::reshaped_view_impl_go<N>::impl(shape_ptr);
+        return detail::reshaped_view_impl_go<N>::impl(shape_ptr)(std::move(flat));
     }
 
 }  // namespace detail
