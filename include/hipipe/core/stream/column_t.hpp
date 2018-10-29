@@ -60,7 +60,7 @@ public:
     /// \code
     ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
     ///     std::unique_ptr<IntCol> col = std::make_unique<IntCol>();
-    ///     col.data().assign({1, 2, 3});
+    ///     col->data().assign({1, 2, 3});
     ///     std::unique_ptr<abstract_column> ab_col = std::move(col);
     ///     ab_col->extract<IntCol>() == std::vector<int>({1, 2, 3});
     /// \endcode
@@ -110,13 +110,13 @@ public:
     // python conversion //
 
     #ifdef HIPIPE_BUILD_PYTHON
-    /// Steal the given number of examples and build a new column of them.
+    /// Convert the column data to a python object.
     ///
     /// See the corresponding function in \ref column_base class for more info.
     virtual boost::python::object to_python() = 0;
     #endif
 
-    // virtual destrutor //
+    // virtual destructor //
 
     virtual ~abstract_column() = default;
 };
