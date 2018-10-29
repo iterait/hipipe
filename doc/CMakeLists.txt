@@ -6,6 +6,8 @@ add_custom_target(
   doc
   COMMAND "${CMAKE_COMMAND}" -E remove_directory html
   COMMAND "${DOXYGEN_EXECUTABLE}" Doxyfile
+  COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+                                               "${CMAKE_CURRENT_BINARY_DIR}/html/resources"
   VERBATIM
 )
 
