@@ -1,4 +1,8 @@
+add_boost_test("test.core.stream.batch_t" "batch_t.cpp" "")
+
 add_boost_test("test.core.stream.buffer" "buffer.cpp" "")
+
+add_boost_test("test.core.stream.column_t" "column_t.cpp" "")
 
 add_boost_test("test.core.stream.create" "create.cpp" "")
 
