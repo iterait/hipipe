@@ -83,7 +83,7 @@ lot of time, and you are also not interested in Python interoperability,
 you may use the `BUILD_TEST` and `BUILD_PYTHON` flags as follows:
 
 ```
-cmake -DBUILD_TEST=OFF -DBUILD_PYTHON=OFF ..
+cmake -DHIPIPE_BUILD_TEST=OFF -DHIPIPE_BUILD_PYTHON=OFF ..
 ```
 
 The full list of supported options is the following:
