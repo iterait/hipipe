@@ -75,7 +75,7 @@ namespace detail {
 /// \ingroup Stream
 /// \brief Unpack a stream into a tuple of ranges.
 ///
-/// This operation transforms the stream (i.e., a range of tuples of columns) into a
+/// This operation transforms the stream (i.e., a range of batches) into a
 /// tuple of the types represented by the columns. The data can be unpacked in a specific
 /// dimension and then the higher dimensions are joined together.
 ///

@@ -43,7 +43,6 @@ namespace detail {
 /// \brief Apply a function to a subset of stream columns.
 ///
 /// The given function is applied to a subset of columns given by FromColumns.
-/// The transformed range is the same as the input range, no elements are actually changed.
 /// The function is applied lazily, i.e., only when the range is iterated.
 ///
 /// Example:

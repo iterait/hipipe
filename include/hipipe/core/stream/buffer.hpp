@@ -169,7 +169,7 @@ public:
 /// data in asynchronous threads. To avoid recalculation of the entire underlying
 /// range whenever e.g., std::distance is called, this transformer intentionally
 /// changes the stream type to InputRange. The downside is that no further
-/// transformations can be appended (except for \ref stream::rebatch) and everything
+/// transformations can be appended (except for \ref Stream stream::rebatch) and everything
 /// has to be prepared before the application of this transformer.
 ///
 /// \code

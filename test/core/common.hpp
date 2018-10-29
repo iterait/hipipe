@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <hipipe/build_config.hpp>
+
 #include <boost/test/unit_test.hpp>
 
 #include <range/v3/core.hpp>

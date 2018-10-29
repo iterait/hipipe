@@ -11,9 +11,9 @@
 #pragma once
 
 #include <hipipe/core/stream/stream_t.hpp>
-#include <hipipe/core/utility/tuple.hpp>
 
 #include <range/v3/view/transform.hpp>
+
 
 namespace hipipe::stream {
 

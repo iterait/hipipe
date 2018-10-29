@@ -92,11 +92,15 @@ namespace detail {
 
 }  // namespace detail
 
-// TODO fix docs
-// Transform a subset of tuple elements for each tuple in a range and concatenate the result
-// with the original tuple.
+// Transform a subset of columns in each batch.
 //
-// The result tuple overrides the corresponding types from the original tuple.
+// This transformer accepts a function that is applied on the chosen
+// subset of source columns from the batch. The function should accept
+// data_type of the chosen source columns as its parameters and return
+// a tuple of data_type of the chosen target columns.
+//
+// This transformer is used internally by stream::transform and should not
+// be used directly by the end user of the library.
 inline ranges::view::view<detail::partial_transform_fn> partial_transform{};
 
 // transform //
