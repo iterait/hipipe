@@ -157,6 +157,6 @@ BOOST_AUTO_TEST_CASE(test_push_back_throws_error)
     std::unique_ptr<Int> col2 = std::make_unique<Int>();
     std::unique_ptr<Int> col3 = std::make_unique<Int>();
 
-    BOOST_CHECK_THROW(col1->push_back(std::move(col2)), std::bad_cast);
-    BOOST_CHECK_THROW(col3->push_back(std::move(col1)), std::bad_cast);
+    BOOST_CHECK_THROW(col1->push_back(std::move(col2)), std::runtime_error);
+    BOOST_CHECK_THROW(col3->push_back(std::move(col1)), std::runtime_error);
 }
