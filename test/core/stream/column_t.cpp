@@ -157,11 +157,9 @@ BOOST_AUTO_TEST_CASE(test_push_back_throws_error)
     using hipipe::stream::abstract_column;
     
     std::unique_ptr<Unique> col1 = std::make_unique<Unique>();
-    col1->data().push_back(std::make_unique<int>(1));
-    col1->data().push_back(std::make_unique<int>(2));
     std::unique_ptr<Int> col2 = std::make_unique<Int>();
-    col2->data().assign({3, 4, 5});
+    std::unique_ptr<Int> col3 = std::make_unique<Int>();
 
     BOOST_CHECK_THROW(col1->push_back(std::move(col2)), std::bad_cast);
-    BOOST_CHECK_THROW(col2->push_back(std::move(col1)), std::bad_cast);
+    BOOST_CHECK_THROW(col3->push_back(std::move(col1)), std::bad_cast);
 }
