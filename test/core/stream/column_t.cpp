@@ -14,8 +14,6 @@
 
 #include <hipipe/core/stream/column_t.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 
 BOOST_AUTO_TEST_CASE(test_extract_column)
 {
@@ -151,7 +149,6 @@ BOOST_AUTO_TEST_CASE(test_push_back_move_only_column)
 }
 
 
-// update after TODO is done
 BOOST_AUTO_TEST_CASE(test_push_back_throws_error)
 {
     using hipipe::stream::abstract_column;

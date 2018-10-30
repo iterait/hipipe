@@ -14,8 +14,6 @@
 
 #include <hipipe/core/stream/batch_t.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 
 BOOST_AUTO_TEST_CASE(test_batch_insert_assign_extract)
 {
