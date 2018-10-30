@@ -186,7 +186,6 @@ public:
             throw std::runtime_error{"hipipe: Attempting to take "
               + std::to_string(n) + " examples out of column `" + name()
               + "` with " + std::to_string(size()) + " examples."};
-
         }
         data_type taken_examples(n);
         std::move(data_.begin(), data_.begin() + n, taken_examples.begin());
@@ -212,7 +211,10 @@ public:
     ///            the same type (i.e., the same ColumnName) as this column.
     void push_back(std::unique_ptr<abstract_column> rhs) override
     {
-        /// TODO add condition that throws error if columns have incompatible types
+        if (typeid(*this) != typeid(rhs.get())) {
+            throw std::runtime_error{"hipipe: Attempting to push back "
+              "column `" + rhs->name() + "` to column `" + name() + "."};
+        }
         ColumnName& typed_rhs = dynamic_cast<ColumnName&>(*rhs);
         data_.reserve(data_.size() + typed_rhs.data_.size());
         for (example_type& example : typed_rhs.data_) {
