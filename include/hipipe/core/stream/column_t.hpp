@@ -212,6 +212,7 @@ public:
     ///            the same type (i.e., the same ColumnName) as this column.
     void push_back(std::unique_ptr<abstract_column> rhs) override
     {
+        /// TODO add condition that throws error if columns have incompatible types
         ColumnName& typed_rhs = dynamic_cast<ColumnName&>(*rhs);
         data_.reserve(data_.size() + typed_rhs.data_.size());
         for (example_type& example : typed_rhs.data_) {

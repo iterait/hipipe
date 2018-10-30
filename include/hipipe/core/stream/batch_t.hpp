@@ -85,37 +85,6 @@ public:
         return columns_.at(std::type_index{typeid(Column)})->extract<Column>();
     }
 
-    // raw column access //
-
-    /// \brief Retrieve the reference to the given column.
-    ///
-    /// Example:
-    /// \code
-    ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
-    ///     stream::batch b;
-    ///     b.insert_or_assign<IntCol>(std::vector<int>{0, 1, 2});
-    ///     b.at<IntCol>().value() == std::vector<int>{0, 1, 2};
-    /// \endcode
-    ///
-    /// \tparam Column The column to be retrieved.
-    /// \throws std::runtime_error If the batch does not contain the given column.
-    template<typename Column>
-    Column& at()
-    {
-        throw_check_contains<Column>();
-        return *columns_.at(std::type_index{typeid(Column)});
-    }
-
-    /// \brief Retrieve a const reference to the given column.
-    ///
-    /// This is the same as previous, but returns a const reference.
-    template<typename Column>
-    const Column& at() const
-    {
-        throw_check_contains<Column>();
-        return *columns_.at(std::type_index{typeid(Column)});
-    }
-
     // column insertion/rewrite //
 
     /// \brief Insert a new column to the batch or overwrite an existing one.
