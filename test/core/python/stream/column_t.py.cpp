@@ -34,7 +34,7 @@ auto one_dim_column()
 auto two_dim_column()
 {
     IntVec col;
-    col.data().assign({std::vector<int>({1, 2}), std::vector<int>({3, 4}), std::vector<int>({5, 6})});
+    col.data().assign({{1, 2}, {3, 4}, {5, 6}});
     return col.to_python();
 }
 
