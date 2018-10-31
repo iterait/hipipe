@@ -50,11 +50,13 @@ BOOST_AUTO_TEST_CASE(test_extract_move_only_column)
     col->data().push_back(std::make_unique<int>(1));
     col->data().push_back(std::make_unique<int>(2));
     col->data().push_back(std::make_unique<int>(3));
+    BOOST_TEST(col->size() == 3);
     BOOST_TEST(*col->extract<Unique>().at(0) == 1);
     BOOST_TEST(*col->extract<Unique>().at(1) == 2);
     BOOST_TEST(*col->extract<Unique>().at(2) == 3);
 
     std::unique_ptr<abstract_column> ab_col = std::move(col);
+    BOOST_TEST(ab_col->size() == 3);
     BOOST_TEST(*ab_col->extract<Unique>().at(0) == 1);
     BOOST_TEST(*ab_col->extract<Unique>().at(1) == 2);
     BOOST_TEST(*ab_col->extract<Unique>().at(2) == 3);

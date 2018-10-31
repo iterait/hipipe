@@ -51,10 +51,11 @@ BOOST_AUTO_TEST_CASE(test_batch_insert_assign_extract_move_only)
     batch.insert_or_assign<Unique>();
     batch.extract<Unique>().push_back(std::make_unique<int>(1));
     batch.extract<Unique>().push_back(std::make_unique<int>(2));
+    BOOST_TEST(batch.batch_size() == 2);
     BOOST_TEST(*batch.extract<Unique>().at(0) == 1);
     BOOST_TEST(*batch.extract<Unique>().at(1) == 2);
     batch.insert_or_assign<Unique>();
-    BOOST_CHECK_THROW(*batch.extract<Unique>().at(0), std::out_of_range);
+    BOOST_TEST(batch.extract<Unique>().empty());
 }    
 
 
@@ -187,7 +188,6 @@ BOOST_AUTO_TEST_CASE(test_batch_push_back_move_only)
     batch2.extract<Unique>().push_back(std::make_unique<int>(3));
     batch1.push_back(std::move(batch2));
     BOOST_TEST(batch1.batch_size() == 3);
-    BOOST_TEST(batch2.batch_size() == 0);
     BOOST_TEST(*batch1.extract<Unique>().at(0) == 1);
     BOOST_TEST(*batch1.extract<Unique>().at(1) == 2);
     BOOST_TEST(*batch1.extract<Unique>().at(2) == 3);
