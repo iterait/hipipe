@@ -85,7 +85,7 @@ T&& operator|(T&& val, identity_t)
 }
 
 /// Function object type forwarding the given object back to the caller.
-auto identity = identity_t{};
+inline auto identity = identity_t{};
 
 }  // namespace hipipe::stream
 #endif

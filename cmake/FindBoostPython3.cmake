@@ -25,11 +25,11 @@ while(NOT BoostPython3_FOUND)
   endif()
 
   # break if there are no minor versions to cut off
-  STRING(REGEX MATCH "([0-9.]+).[0-9]+" _has_minor ${_python_version})
+  STRING(REGEX MATCH "([0-9a-zA-Z.]+).[0-9a-zA-Z]+" _has_minor ${_python_version})
   if("${_has_minor}" STREQUAL "")
     break()
   else()
-    STRING(REGEX REPLACE "([0-9.]+).[0-9]+" "\\1" _python_version ${_python_version})
+    STRING(REGEX REPLACE "([0-9a-zA-Z.]+).[0-9a-zA-Z]+" "\\1" _python_version ${_python_version})
   endif()
 
 endwhile()
