@@ -12,8 +12,8 @@ class TransposeAddOneNet():
     def __init__(self, in_height, in_width):
         with tf.device('/cpu:0'):
             self._input_data = tf.placeholder(dtype=tf.float32,
-                                        shape=[None, in_height, in_width],
-                                        name='input')
+                                              shape=[None, in_height, in_width],
+                                              name='input')
             var = tf.Variable(1, dtype=tf.float32, name='var')
             self._output_data = tf.add(tf.transpose(self._input_data), var, name='output')
 
