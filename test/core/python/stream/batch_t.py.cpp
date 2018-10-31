@@ -30,7 +30,7 @@ auto non_empty_batch()
     batch_t batch;
     batch.insert_or_assign<Int>();
     batch.insert_or_assign<Double>(std::vector<double>{0., 1.});
-    batch.insert_or_assign<IntVec>(std::vector<std::vector<int>>{std::vector<int>({1, 2}), std::vector<int>({3, 4})});
+    batch.insert_or_assign<IntVec>(std::vector<std::vector<int>>{{1, 2}, {3, 4}});
     return batch.to_python();
 }
 
