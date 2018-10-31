@@ -14,8 +14,6 @@
 
 #include <hipipe/core/stream/column_t.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 
 BOOST_AUTO_TEST_CASE(test_extract_column)
 {
@@ -153,7 +151,6 @@ BOOST_AUTO_TEST_CASE(test_push_back_move_only_column)
 }
 
 
-// update after TODO is done
 BOOST_AUTO_TEST_CASE(test_push_back_throws_error)
 {
     using hipipe::stream::abstract_column;
@@ -162,6 +159,6 @@ BOOST_AUTO_TEST_CASE(test_push_back_throws_error)
     std::unique_ptr<Int> col2 = std::make_unique<Int>();
     std::unique_ptr<Int> col3 = std::make_unique<Int>();
 
-    BOOST_CHECK_THROW(col1->push_back(std::move(col2)), std::bad_cast);
-    BOOST_CHECK_THROW(col3->push_back(std::move(col1)), std::bad_cast);
+    BOOST_CHECK_THROW(col1->push_back(std::move(col2)), std::runtime_error);
+    BOOST_CHECK_THROW(col3->push_back(std::move(col1)), std::runtime_error);
 }

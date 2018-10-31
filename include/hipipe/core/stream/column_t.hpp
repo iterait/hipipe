@@ -28,27 +28,14 @@ namespace hipipe::stream {
 class abstract_column {
 private:
 
-    /// \brief Check whether this abstract column is actually the
-    /// column specified in the template.
-    ///
-    /// Example:
-    /// \code
-    ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
-    ///     HIPIPE_DEFINE_COLUMN(FloatCol, float)
-    ///     std::unique_ptr<abstract_column> col = std::make_unique<IntCol>();
-    ///     col->throw_check_contains<IntCol>();    // ok
-    ///     col->throw_check_contains<FloatCol>();  // throws
-    /// \endcode
-    ///
-    /// \throws std::runtime_error If the check fails.
+    /// \brief Returns a runtime error informing the user that the extraction
+    /// of the given column from this abstract column failed.
     template<typename Column>
-    void throw_check_contains() const
+    std::runtime_error extraction_error() const
     {
-        if (typeid(*this) != typeid(Column)) {
-            throw std::runtime_error{
-              std::string{"Trying to extract column `"} + Column{}.name()
-              + "` from a column of type `" + this->name() + "`."};
-        }
+        return std::runtime_error{
+          std::string{"Trying to extract column `"} + Column{}.name()
+          + "` from a column of type `" + this->name() + "`."};
     }
 
 public:
@@ -70,8 +57,11 @@ public:
     template<typename Column>
     typename Column::data_type& extract()
     {
-        throw_check_contains<Column>();
-        return dynamic_cast<Column&>(*this).data();
+        try {
+            return dynamic_cast<Column&>(*this).data();
+        } catch (const std::bad_cast&) {
+            throw extraction_error<Column>();
+        }
     }
 
     /// Extract a const reference to the stored data.
@@ -80,8 +70,11 @@ public:
     template<typename Column>
     const typename Column::data_type& extract() const
     {
-        throw_check_contains<Column>();
-        return dynamic_cast<const Column&>(*this).data();
+        try {
+            return dynamic_cast<const Column&>(*this).data();
+        } catch (const std::bad_cast&) {
+            throw extraction_error<Column>();
+        }
     }
 
     // name accessor //
@@ -186,7 +179,6 @@ public:
             throw std::runtime_error{"hipipe: Attempting to take "
               + std::to_string(n) + " examples out of column `" + name()
               + "` with " + std::to_string(size()) + " examples."};
-
         }
         data_type taken_examples(n);
         std::move(data_.begin(), data_.begin() + n, taken_examples.begin());
@@ -212,11 +204,15 @@ public:
     ///            the same type (i.e., the same ColumnName) as this column.
     void push_back(std::unique_ptr<abstract_column> rhs) override
     {
-        /// TODO add condition that throws error if columns have incompatible types
-        ColumnName& typed_rhs = dynamic_cast<ColumnName&>(*rhs);
-        data_.reserve(data_.size() + typed_rhs.data_.size());
-        for (example_type& example : typed_rhs.data_) {
-            data_.push_back(std::move(example));
+        try {
+            ColumnName& typed_rhs = dynamic_cast<ColumnName&>(*rhs);
+            data_.reserve(data_.size() + typed_rhs.data_.size());
+            for (example_type& example : typed_rhs.data_) {
+                data_.push_back(std::move(example));
+            }
+        } catch (const std::bad_cast&) {
+            throw std::runtime_error{"hipipe: Attempting to push back "
+              "column `" + rhs->name() + "` to column `" + name() + "."};
         }
     }
 
