@@ -33,7 +33,7 @@ namespace hipipe {
 namespace detail {
 
     // Read and discard blank characters (similar to std::ws, but uses std::isblank).
-    std::istream& blanks(std::istream& in)
+    inline std::istream& blanks(std::istream& in)
     {
         while (std::isblank(in.peek())) in.get();
         return in;

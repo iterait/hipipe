@@ -23,7 +23,7 @@ namespace detail {
 
     // Generate random path inside the temp directory. This path is not
     // checked for existence.
-    std::experimental::filesystem::path generate_temp_path(std::string pattern)
+    inline std::experimental::filesystem::path generate_temp_path(std::string pattern)
     {
         constexpr const char* hexchars = "0123456789abcdef";
         static thread_local std::mt19937 gen{std::random_device{}()};
@@ -42,7 +42,7 @@ namespace detail {
 ///
 /// \param pattern Directory name pattern. All '\%' symbols in the pattern are
 ///                replaced by a random character from [0-9a-f].
-std::experimental::filesystem::path create_temp_directory(const std::string &pattern)
+inline std::experimental::filesystem::path create_temp_directory(const std::string &pattern)
 {
     namespace fs = std::experimental::filesystem;
     int max_retries = 100;

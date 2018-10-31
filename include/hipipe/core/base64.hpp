@@ -24,7 +24,7 @@ namespace hipipe {
 
 /// \ingroup Base64
 /// \brief Decode base64 encoded string to a vector of bytes.
-std::vector<std::uint8_t> base64_decode(const std::string& b64data)
+inline std::vector<std::uint8_t> base64_decode(const std::string& b64data)
 {
     using namespace boost::archive::iterators;
     using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
@@ -38,7 +38,7 @@ std::vector<std::uint8_t> base64_decode(const std::string& b64data)
 
 /// \ingroup Base64
 /// \brief Encode a vector of bytes to a base64 encoded string.
-std::string base64_encode(const std::vector<std::uint8_t>& data)
+inline std::string base64_encode(const std::vector<std::uint8_t>& data)
 {
     using namespace boost::archive::iterators;
     using It = base64_from_binary<transform_width<std::vector<std::uint8_t>::const_iterator, 6, 8>>;
