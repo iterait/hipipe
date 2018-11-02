@@ -6,15 +6,16 @@ import sys
 
 from freeze_graph import freeze_graph
 
+
 class TransposeAddOneNet():
 
     def __init__(self, in_height, in_width):
         with tf.device('/cpu:0'):
-            input_data = tf.placeholder(dtype=tf.float32,
-                                        shape=[None, in_height, in_width],
-                                        name='input')
+            self._input_data = tf.placeholder(dtype=tf.float32,
+                                              shape=[None, in_height, in_width],
+                                              name='input')
             var = tf.Variable(1, dtype=tf.float32, name='var')
-            output_data = tf.add(tf.transpose(input_data), var, name='output')
+            self._output_data = tf.add(tf.transpose(self._input_data), var, name='output')
 
             self._session = tf.Session()
             self._session.run(tf.global_variables_initializer())
@@ -24,10 +25,14 @@ class TransposeAddOneNet():
         graph_path = '{}.graph'.format(file_prefix)
         checkpoint_path = '{}.ckpt'.format(file_prefix)
         frozen_graph_path = '{}.pb'.format(file_prefix)
+        lite_graph_path = '{}.tflite'.format(file_prefix)
 
         tf.train.write_graph(self._session.graph_def, '', graph_path, as_text=False)
+
+        # save regular checkpoint
         self._saver.save(self._session, checkpoint_path)
 
+        # save frozen graph
         freeze_graph(input_graph=graph_path,
                      input_saver="",
                      input_binary=True,
@@ -39,6 +44,12 @@ class TransposeAddOneNet():
                      clear_devices=True,
                      initializer_nodes="")
 
+        # save tflite graph
+        # TODO: in TF1.12+ use `tf.contrib.lite.TFLiteConverter` instead
+        converter = tf.contrib.lite.TocoConverter.from_session(self._session, [self._input_data], [self._output_data])
+        tflite_model = converter.convert()
+        with open(lite_graph_path, "wb") as file:
+            file.write(tflite_model)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=
@@ -51,4 +62,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     net = TransposeAddOneNet(args.rows, args.cols)
-    net.save('transpose_add_one_{}_{}_net'.format(args.rows, args.cols))
+    os.makedirs('model', exist_ok=True)
+    net.save(os.path.join('model', 'transpose_add_one_{}_{}_net'.format(args.rows, args.cols)))
+
