@@ -109,7 +109,7 @@ csv_istream_range::csv_istream_range(
 }
 
 
-dataframe<> read_csv(
+dataframe read_csv(
   std::istream& in,
   int drop,
   bool has_header,
@@ -171,7 +171,7 @@ dataframe<> read_csv(
 }
 
 
-dataframe<> read_csv(
+dataframe read_csv(
   const std::experimental::filesystem::path& file,
   int drop,
   bool header,
@@ -228,7 +228,7 @@ std::ostream& write_csv_row(
 
 std::ostream& write_csv(
   std::ostream& out,
-  const dataframe<>& df,
+  const dataframe& df,
   char separator,
   char quote,
   char escape)
@@ -243,7 +243,7 @@ std::ostream& write_csv(
 
 void write_csv(
   const std::experimental::filesystem::path& file,
-  const dataframe<>& df,
+  const dataframe& df,
   char separator,
   char quote,
   char escape)

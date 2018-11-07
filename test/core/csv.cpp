@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(test_csv_istream_range_quoted_csv)
 BOOST_AUTO_TEST_CASE(test_read_csv_from_istream)
 {
     std::istringstream simple_csv_ss{simple_csv};
-    const dataframe<> df = read_csv(simple_csv_ss);
+    const dataframe df = read_csv(simple_csv_ss);
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     test_ranges_equal(df.header(), simple_csv_rows[0]);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_no_file)
 BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
 {
     std::istringstream simple_csv_ss{simple_csv};
-    const dataframe<> df = read_csv(simple_csv_ss, 1, false);
+    const dataframe df = read_csv(simple_csv_ss, 1, false);
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     BOOST_TEST(df.header().empty());
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
 BOOST_AUTO_TEST_CASE(test_read_quoted_csv_from_istream)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    const dataframe<> df = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
+    const dataframe df = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 2);
     test_ranges_equal(df.header(), quoted_csv_rows[0]);
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(test_read_quoted_csv_from_istream)
 BOOST_AUTO_TEST_CASE(test_write_quoted_to_ostream)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    const dataframe<> df = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
+    const dataframe df = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
   
     std::ostringstream oss;
     write_csv(oss, df, '|', '*', '+');
@@ -186,11 +186,11 @@ BOOST_AUTO_TEST_CASE(test_write_quoted_to_ostream)
 BOOST_AUTO_TEST_CASE(test_compare_after_write_and_read)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    const dataframe<> df1 = read_csv(quoted_csv_ss);
+    const dataframe df1 = read_csv(quoted_csv_ss);
   
     std::stringstream oss;
     write_csv(oss, df1, '|', '*', '+');
-    const dataframe<> df2 = read_csv(oss, 0, true, '|', '*', '+');
+    const dataframe df2 = read_csv(oss, 0, true, '|', '*', '+');
     test_ranges_equal(df1.header(), df2.header());
     std::vector<std::vector<std::string>> df1_cols = df1.raw_cols();
     std::vector<std::vector<std::string>> df2_cols = df2.raw_cols();
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(test_write_to_no_file)
 {
     namespace fs = std::experimental::filesystem;
     std::istringstream simple_csv_ss{simple_csv};
-    const dataframe<> df = read_csv(simple_csv_ss);
+    const dataframe df = read_csv(simple_csv_ss);
     fs::path dir{"dummy_directory"};
     fs::create_directory(dir);
     BOOST_CHECK_THROW(write_csv(dir, df), std::ios_base::failure);
@@ -210,11 +210,11 @@ BOOST_AUTO_TEST_CASE(test_write_to_no_file)
 BOOST_AUTO_TEST_CASE(test_file_write_and_read)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    const dataframe<> df1 = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
+    const dataframe df1 = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
 
     fs::path csv_file{"test.core.csv.test_file_write_and_read.csv"};
     write_csv(csv_file, df1, '|', '*', '+');
-    const dataframe<> df2 = read_csv(csv_file, 0, true, '|', '*', '+');
+    const dataframe df2 = read_csv(csv_file, 0, true, '|', '*', '+');
     fs::remove(csv_file);
     test_ranges_equal(df1.header(), df2.header());
     std::vector<std::vector<std::string>> df1_cols = df1.raw_cols();

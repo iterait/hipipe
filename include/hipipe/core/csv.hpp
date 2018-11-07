@@ -110,7 +110,7 @@ public:
 /// \param separator Field separator.
 /// \param quote Quote character.
 /// \param escape Character used to escape a quote inside quotes.
-dataframe<> read_csv(
+dataframe read_csv(
   std::istream& in,
   int drop = 0,
   bool has_header = true,
@@ -122,7 +122,7 @@ dataframe<> read_csv(
 /// \ingroup CSV
 /// \brief Same as read_csv() but read directly from a file.
 /// \throws std::ios_base::failure If the specified file cannot be opened.
-dataframe<> read_csv(
+dataframe read_csv(
   const std::experimental::filesystem::path& file,
   int drop = 0,
   bool header = true,
@@ -153,7 +153,7 @@ std::ostream& write_csv_row(
 /// \throws std::ios_base::failure if badbit is triggered.
 std::ostream& write_csv(
   std::ostream& out,
-  const dataframe<>& df,
+  const dataframe& df,
   char separator = ',',
   char quote = '"',
   char escape = '\\');
@@ -164,7 +164,7 @@ std::ostream& write_csv(
 /// \throws std::ios_base::failure If the specified file cannot be opened.
 void write_csv(
   const std::experimental::filesystem::path& file,
-  const dataframe<>& df,
+  const dataframe& df,
   char separator = ',',
   char quote = '"',
   char escape = '\\');
