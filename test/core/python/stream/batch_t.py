@@ -12,6 +12,8 @@ def main():
     assert(list(batch['Int']) == [])
     assert(list(batch['Double']) == [0.0, 1.0])
     np.testing.assert_array_equal(np.array(batch['IntVec']), np.array([[1, 2], [3, 4]]))
+    # More complex conversions from C++ to Python are performed
+    # in python::utility::to_python. There is no need to test those here.
 
 
 if __name__ == '__main__':
