@@ -33,11 +33,6 @@ static std::experimental::filesystem::path generate_temp_path(std::string patter
 }
 
 
-/// \ingroup Filesystem
-/// \brief Create a temporary directory.
-///
-/// \param pattern Directory name pattern. All '\%' symbols in the pattern are
-///                replaced by a random character from [0-9a-f].
 std::experimental::filesystem::path create_temp_directory(const std::string &pattern)
 {
     namespace fs = std::experimental::filesystem;
