@@ -1,7 +1,7 @@
 /****************************************************************************
  *  hipipe library
  *  Copyright (c) 2018, Iterait a.s.
- *  Author(s) Filip Matzner, Jana Horecka
+ *  Author(s) Filip Matzner, Jana Horecka, Adam Blazek
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
@@ -27,6 +27,20 @@ BOOST_AUTO_TEST_CASE(test_batch_insert_assign_extract)
     batch.insert_or_assign<Int>(std::vector<int>{});
     BOOST_TEST(batch.extract<Int>() == std::vector<int>({}));
     BOOST_CHECK_THROW(batch.extract<Double>(), std::runtime_error);
+}
+
+
+BOOST_AUTO_TEST_CASE(test_batch_insert_at_raw_insert)
+{
+    using hipipe::stream::batch_t;
+
+    batch_t batch, batch2;
+    batch.insert_or_assign<Int>(std::vector<int>{0, 1, 2});
+    BOOST_TEST(batch.at<Int>()->extract<Int>() == std::vector<int>({0, 1, 2}));
+    BOOST_CHECK_THROW(batch.at<Double>(), std::runtime_error);
+
+    batch2.raw_insert_or_assign<Int>(std::move(batch.at<Int>()));
+    BOOST_TEST(batch2.at<Int>()->extract<Int>() == std::vector<int>({0, 1, 2}));
 }
 
 
