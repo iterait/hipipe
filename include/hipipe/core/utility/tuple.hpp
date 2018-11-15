@@ -285,7 +285,7 @@ namespace detail {
     struct unzip_if_impl<false>
     {
         template<typename Rng>
-        static constexpr Rng&& impl(Rng&& rng)
+        static Rng&& impl(Rng&& rng)
         {
             return std::forward<Rng>(rng);
         }

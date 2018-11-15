@@ -8,22 +8,25 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#pragma once
 #include <hipipe/build_config.hpp>
 #ifdef HIPIPE_BUILD_PYTHON
 
-#include <hipipe/core/stream/stream_t.hpp>
+#include <hipipe/core/python/range.hpp>
+#include <hipipe/core/python/stream/converter.hpp>
 
-#include <range/v3/view/any_view.hpp>
+#include <range/v3/view/transform.hpp>
 
 namespace hipipe::python::stream {
 
 
-/// \ingroup Python
-/// \brief Make a Python \ref range from a stream (i.e, a view of batches).
-///
-/// This turns a view of batches to a Python's generator of dicts.
-range<ranges::any_view<boost::python::dict>> to_python(hipipe::stream::input_stream_t stream);
+range<ranges::any_view<boost::python::dict>> to_python(hipipe::stream::input_stream_t stream)
+{
+    ranges::any_view<boost::python::dict> range_of_dicts =
+      ranges::view::transform(std::move(stream), &hipipe::stream::batch_t::to_python);
+
+    // make python iterator out of the range of python types
+    return range<ranges::any_view<boost::python::dict>>{std::move(range_of_dicts)};
+}
 
 
 }  // end namespace hipipe::python::stream
