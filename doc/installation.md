@@ -5,11 +5,11 @@ Requirements
 ------------
 ---
 
-Officially supported systems are Ubuntu 16.10+ and Arch Linux, although __hipipe__ should
-work on any recent enough system. The __hipipe core__ is a pure C++ library with a
-single dependency to [Boost C++ Libraries](http://www.boost.org/)
-(Boost 1.61+ is required). Extensions to the core library are __Python bindings__ with
-automatic [OpenCV](http://opencv.org/) image conversion between C++ and Python.
+Officially supported systems are Ubuntu 18.04+ and Arch Linux, although __hipipe__ should
+work on any recent enough system. The __hipipe core__ is a pure C++ library that by default 
+depends on [Boost C++ Libraries](http://www.boost.org/) (v1.61+ with Boost::Python
+is required) and [OpenCV](http://opencv.org/) for image conversion between C++ and Python.
+Python bindings and OpenCV support can be disabled, see Advanced Build Options section below.
 
 If you plan to use the full functionality (this is the default behavior),
 install all the requirements by one of the following commands:
@@ -18,18 +18,8 @@ install all the requirements by one of the following commands:
 # Arch Linux
 pacman -S git base-devel cmake boost opencv python python-numpy
 
-# Ubuntu 16.10+
+# Ubuntu 18.04+
 apt install git build-essential cmake libboost-all-dev libopencv-dev python3-dev python3-numpy
-```
-
-If you want to use __hipipe core__ only, use one of the following instead:
-
-```
-# Arch Linux
-pacman -S git base-devel cmake boost
-
-# Ubuntu 16.10+
-apt install git build-essential cmake libboost-all-dev
 ```
 
 If you plan to use [TensorFlow C++ API](https://www.tensorflow.org/api_guides/cc/guide),
@@ -58,8 +48,8 @@ Use the following for system-wide installation:
 ```
 mkdir build && cd build
 cmake ..
-make -j5
-make test
+make -j4
+ctest --output-on-failure
 sudo make install
 ```
 
@@ -68,8 +58,8 @@ Or use the following for userspace installation:
 ```
 mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX=~/.local ..
-make -j5
-make test
+make -j4
+ctest --output-on-failure
 make install
 ```
 
@@ -93,18 +83,44 @@ lot of time, and you are also not interested in Python interoperability,
 you may use the `BUILD_TEST` and `BUILD_PYTHON` flags as follows:
 
 ```
-cmake -DBUILD_TEST=OFF -DBUILD_PYTHON=OFF ..
+cmake -DHIPIPE_BUILD_TEST=OFF -DHIPIPE_BUILD_PYTHON=OFF ..
 ```
 
 The full list of supported options is the following:
 
-| Option               | Description                                                                   | Default      |
-|----------------------|-------------------------------------------------------------------------------|--------------|
-| BUILD_TEST           | Build tests.                                                                  | ON           |
-| BUILD_DOC            | Build documentation.                                                          | OFF          |
-| BUILD_PYTHON         | Build Python functionality.                                                   | ON           |
-| BUILD_PYTHON_OPENCV  | Build Python OpenCV converters (requires BUILD_PYTHON).                       | ON           |
-| BUILD_TENSORFLOW     | Build TensorFlow functionality (unnecessary if you use TensorFlow in Python). | OFF          |
-| BUILTIN_RANGEV3      | Install and use the built-in Range-v3 library.                                | ON           |
-| CMAKE_INSTALL_PREFIX | The path where hipipe will be installed.                                      | OS-dependent |
-| CMAKE_CXX_COMPILER   | The compiler command to be used, e.g., g++ or clang++.                        | OS-dependent |
+| Option                     | Description                                                                   | Default      |
+|----------------------------|-------------------------------------------------------------------------------|--------------|
+| HIPIPE_BUILD_TEST          | Build tests.                                                                  | ON           |
+| HIPIPE_BUILD_DOC           | Build documentation.                                                          | OFF          |
+| HIPIPE_BUILD_PYTHON        | Build Python functionality.                                                   | ON           |
+| HIPIPE_BUILD_PYTHON_OPENCV | Build Python OpenCV converters (requires HIPIPE_BUILD_PYTHON).                | ON           |
+| HIPIPE_BUILD_TENSORFLOW    | Build TensorFlow functionality (unnecessary if you use TensorFlow in Python). | OFF          |
+| HIPIPE_BUILTIN_RANGEV3     | Install and use the built-in Range-v3 library.                                | ON           |
+| CMAKE_INSTALL_PREFIX       | The path where hipipe will be installed.                                      | OS-dependent |
+| CMAKE_CXX_COMPILER         | The compiler command to be used, e.g., g++ or clang++.                        | OS-dependent |
+
+Development
+-----------
+---
+
+Are you missing a feature or have you found a bug? You can either fill an issue on our
+GitHub (https://github.com/iterait/hipipe) or even better, become a developer!
+
+There are no special requirements for development, just a few hints:
+- Header files are under `include/` directory.
+- Source files are under `src/` directory.
+- Unit tests are under `test/` directory.
+- Any new functionality has to be accompanied by unit tests.
+- If you add a new header, don't forget to add it to the corresponding accumulating header in parent folder.
+  For instance, `include/core/stream.hpp` lists all the headers under `include/core/stream` directory.
+- If you add a new test, don't forget to register it in `CMakeLists.txt` located in the same folder as the test.
+- To build and run a single unit test, run e.g.,:
+```
+make test.core.stream.drop
+ctest --output-on-failure -R test.core.stream.drop
+```
+- To build and run a single test that requires building a Python module, run e.g.,:
+```
+make test.core.python.stream.converter_py_cpp  # note the py_cpp suffix
+ctest --output-on-failure -R test.core.python.stream.converter
+```

@@ -87,16 +87,5 @@ T&& operator|(T&& val, identity_t)
 /// Function object type forwarding the given object back to the caller.
 inline auto identity = identity_t{};
 
-struct ref_wrap_t {
-    template <typename T>
-    constexpr decltype(auto) operator()(T& val) const noexcept
-    {
-        return std::ref(val);
-    }
-};
-
-/// Function object type wrapping the given object in std::reference_wrapper.
-auto ref_wrap = ref_wrap_t{};
-
 }  // namespace hipipe::stream
 #endif

@@ -40,11 +40,10 @@ Ranges will soon become a fundamental part of C++ standard and Range-v3 library
 is an experimental implementation of the proposal. To sum up the idea, a range can be
 thought of as a pair of begin/end iterators with potentially infinite distance.
 
-Now, a stream in the context of __HiPipe__ is a range of tuples, where the tuples
-contain so-called _columns_.  Each column contains a single _batch_ of data of
-the same type. To demonstrate this concept on an example, let us assume that
-we have a table of four users and each user consists of two
-columns: `login` and `age`:
+Now, a _stream_ in the context of __HiPipe__ is a range of _batches_, where each batch
+contains one or more _columns_. To demonstrate this concept on an example,
+let us assume that we have a table of four users and each user has
+properties: `login` and `age`:
 
 | login | age |
 |-------|-----|
@@ -55,14 +54,7 @@ columns: `login` and `age`:
 
 A stream made of such data with batch size of two may look as following:
 
-```{.cpp}
-HIPIPE_DEFINE_COLUMN(login, std::string)  # helper macro to define a column of strings
-HIPIPE_DEFINE_COLUMN(age, int)
-
-std::tuple<login, age> data1 = {{"marry", "ted"}, {24, 41}},
-std::tuple<login, age> data2 = {{"anna", "josh"}, {16, 59}};
-std::vector<std::tuple<login, age>> stream = {data1, data2};
-```
+![diagram of stream, batch and column](./resources/stream_batch_column.png)
 
 Of course, the stream may as well be loaded from a file or a database and may even
 be infinite. __HiPipe__ provides \ref Stream "many tools" to manipulate such

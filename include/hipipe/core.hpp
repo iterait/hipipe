@@ -16,6 +16,7 @@
 #include <hipipe/core/dataframe.hpp>
 #include <hipipe/core/groups.hpp>
 #include <hipipe/core/index_mapper.hpp>
+#include <hipipe/core/python.hpp>
 #include <hipipe/core/stream.hpp>
 #include <hipipe/core/thread.hpp>
 #include <hipipe/core/utility.hpp>

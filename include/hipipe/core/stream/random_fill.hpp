@@ -8,13 +8,9 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_RANDOM_FILL_HPP
-#define HIPIPE_CORE_STREAM_RANDOM_FILL_HPP
+#pragma once
 
 #include <hipipe/core/stream/generate.hpp>
-
-#include <functional>
-#include <random>
 
 namespace hipipe::stream {
 
@@ -47,23 +43,25 @@ namespace hipipe::stream {
 /// \param prng The random generator to be used.
 /// \param d This is the dimension in which will the generator be applied.
 ///          E.g., if set to 1, the generator result is considered to be a single example.
-///          The default is ndims<ToColumn::batch_type> - ndims<dist(prng)>.
+///          The default is ndims<ToColumn::data_type> - ndims<dist(prng)>.
 ///          This value has to be positive.
 template<typename FromColumn, typename ToColumn, typename Prng = std::mt19937,
          typename Dist = std::uniform_real_distribution<double>,
-         int Dim = utility::ndims<typename ToColumn::batch_type>::value
+         int Dim = utility::ndims<typename ToColumn::data_type>::value
                  - utility::ndims<std::result_of_t<Dist(Prng&)>>::value>
-constexpr auto random_fill(from_t<FromColumn> size_from,
-                           to_t<ToColumn> fill_to,
-                           long rnddims = std::numeric_limits<long>::max(),
-                           Dist dist = Dist{0, 1},
-                           Prng& prng = hipipe::utility::random_generator,
-                           dim_t<Dim> d = dim_t<Dim>{})
+auto random_fill(from_t<FromColumn> size_from,
+                 to_t<ToColumn> fill_to,
+                 long rnddims = std::numeric_limits<long>::max(),
+                 Dist dist = Dist{0, 1},
+                 Prng& prng = hipipe::utility::random_generator,
+                 dim_t<Dim> d = dim_t<Dim>{})
 {
+    // a bit of function type erasure to speed up compilation
+    using GenT = std::function<
+      utility::ndim_type_t<typename ToColumn::data_type, Dim>()>;
     // distribution is always copied to avoid race conditions
-    auto fun = [dist, &prng]() { return std::invoke(Dist{dist}, prng); };
+    GenT fun = [dist, &prng]() { return std::invoke(Dist{dist}, prng); };
     return stream::generate(size_from, fill_to, std::move(fun), rnddims, d);
 }
 
 }  // namespace hipipe::stream
-#endif

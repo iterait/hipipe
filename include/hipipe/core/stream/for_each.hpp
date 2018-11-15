@@ -8,8 +8,7 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_FOR_EACH_HPP
-#define HIPIPE_CORE_STREAM_FOR_EACH_HPP
+#pragma once
 
 #include <hipipe/core/stream/template_arguments.hpp>
 #include <hipipe/core/stream/transform.hpp>
@@ -25,8 +24,11 @@ namespace detail {
     struct wrap_void_fun_for_transform {
         Fun fun;
 
-        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... args)
+        utility::maybe_tuple<FromTypes...> operator()(FromTypes&... args)
         {
+            static_assert(std::is_invocable_v<Fun, FromTypes&...>,
+              "hipipe::stream::for_each: "
+              "Cannot apply the given function to the given `from<>` columns.");
             std::invoke(fun, args...);
             // we can force std::move here because the old
             // data are going to be ignored anyway
@@ -36,11 +38,11 @@ namespace detail {
 
 }  // namespace detail
 
+
 /// \ingroup Stream
 /// \brief Apply a function to a subset of stream columns.
 ///
 /// The given function is applied to a subset of columns given by FromColumns.
-/// The transformed range is the same as the input range, no elements are actually changed.
 /// The function is applied lazily, i.e., only when the range is iterated.
 ///
 /// Example:
@@ -57,15 +59,21 @@ namespace detail {
 /// \param d The dimension in which the function is applied. Choose 0 for the function to
 ///          be applied to the whole batch.
 template<typename... FromColumns, typename Fun, int Dim = 1>
-constexpr auto for_each(from_t<FromColumns...> f, Fun fun, dim_t<Dim> d = dim_t<1>{})
+auto for_each(from_t<FromColumns...> f, Fun fun, dim_t<Dim> d = dim_t<1>{})
 {
+    static_assert(
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...),
+      "hipipe::stream::for_each: The dimension in which to apply the operation "
+      " needs to be at most the lowest dimension of all the from<> columns.");
+    // a bit of function type erasure to speed up compilation
+    using FunT = std::function<
+      void(utility::ndim_type_t<typename FromColumns::data_type, Dim>&...)>;
     // wrap the function to be compatible with stream::transform
     detail::wrap_void_fun_for_transform<
-      Fun, utility::ndim_type_t<typename FromColumns::batch_type, Dim>...>
+      FunT, utility::ndim_type_t<typename FromColumns::data_type, Dim>...>
         fun_wrapper{std::move(fun)};
     // apply the dummy transformation
     return stream::transform(f, to<FromColumns...>, std::move(fun_wrapper), d);
 }
 
 }  // namespace hipipe::stream
-#endif

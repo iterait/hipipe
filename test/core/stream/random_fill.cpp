@@ -11,64 +11,72 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE stream_random_fill_test
 
-#include "../common.hpp"
+#include "common.hpp"
 
-#include <hipipe/core/stream/create.hpp>
 #include <hipipe/core/stream/random_fill.hpp>
-#include <hipipe/core/utility/vector.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 
 #include <range/v3/action/sort.hpp>
+#include <range/v3/view/move.hpp>
 #include <range/v3/view/unique.hpp>
-
-#include <boost/test/unit_test.hpp>
 
 #include <vector>
 
-using namespace hipipe::stream;
-using namespace hipipe::utility;
 
-HIPIPE_DEFINE_COLUMN(IntVec2d, std::vector<std::vector<int>>)
-HIPIPE_DEFINE_COLUMN(Random, std::vector<double>)
-
-template<typename Vector2d>
-void check(Vector2d vec, std::vector<long> unique, long unique_total)
+// Check that the given 2D vector has the given number of unique values in each subvector.
+void check(std::vector<std::vector<double>> vec, std::vector<long> unique, long unique_total)
 {
     for (std::size_t i = 0; i < vec.size(); ++i) {
         vec.at(i) |= ranges::action::sort;
-        auto n_unique = ranges::distance(vec.at(i) | ranges::view::unique);
+        long n_unique = ranges::distance(vec.at(i) | ranges::view::unique);
         BOOST_TEST(n_unique == unique.at(i));
     }
 
-    std::vector<double> all_vals = flat_view(vec);
+    std::vector<double> all_vals = hipipe::utility::flat_view(vec);
     all_vals |= ranges::action::sort;
-    auto n_unique = ranges::distance(all_vals | ranges::view::unique);
+    long n_unique = ranges::distance(all_vals | ranges::view::unique);
     BOOST_TEST(n_unique == unique_total);
 }
 
+
 BOOST_AUTO_TEST_CASE(test_simple)
 {
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+
+    HIPIPE_DEFINE_COLUMN(IntVec2d, std::vector<std::vector<int>>)
+    HIPIPE_DEFINE_COLUMN(Random, std::vector<double>)
+
     std::mt19937 gen{1000003};
     std::uniform_real_distribution<> dist{0, 1};
-    std::vector<std::vector<std::vector<int>>> batch2 =
-      {{{}, {}}, {{}, {}, {}}};
-    std::vector<std::vector<std::vector<int>>> batch4 =
-      {{{}, {}}, {}, {{}, {}}, {}};
-    std::vector<std::tuple<IntVec2d>> data = {batch2, batch4};
 
-    auto stream = data
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert_or_assign<IntVec2d>();
+    batch1.extract<IntVec2d>().push_back(IntVec2d::example_type{{}, {}    });
+    batch1.extract<IntVec2d>().push_back(IntVec2d::example_type{{}, {}, {}});
+    data.push_back(std::move(batch1));
+    batch2.insert_or_assign<IntVec2d>();
+    batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{{}, {}    });
+    batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{          });
+    batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{{}, {}    });
+    batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{          });
+    data.push_back(std::move(batch2));
+
+    std::vector<batch_t> stream = data
+      | ranges::view::move
       | random_fill(from<IntVec2d>, to<Random>, 1, dist, gen);
 
-    int batch_i = 0;
     std::vector<std::vector<double>> all_random;
-    for (auto batch : stream) {
-        auto random = std::get<Random>(batch).value();
-        switch (batch_i) {
+    for (std::size_t i = 0; i < stream.size(); ++i) {
+        std::vector<std::vector<double>> random = stream.at(i).extract<Random>();
+        all_random.insert(all_random.end(), random.begin(), random.end());
+        switch (i) {
         case 0: check(random, {1, 1}, 2); break;
         case 1: check(random, {1, 0, 1, 0}, 2); break;
         default: BOOST_FAIL("Only two batches should be provided");
         }
-        all_random.insert(all_random.end(), random.begin(), random.end());
-        ++batch_i;
     }
     check(all_random, {1, 1, 1, 0, 1, 0}, 4);
 }

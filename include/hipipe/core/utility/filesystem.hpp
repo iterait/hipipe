@@ -9,50 +9,20 @@
  ****************************************************************************/
 /// \defgroup Filesystem Filesystem utilities.
 
-#ifndef HIPIPE_CORE_UTILITY_FILESYSTEM_HPP
-#define HIPIPE_CORE_UTILITY_FILESYSTEM_HPP
+#pragma once
 
-#include <exception>
 #include <experimental/filesystem>
-#include <random>
 #include <string>
 
 namespace hipipe::utility {
 
-namespace detail {
-
-    // Generate random path inside the temp directory. This path is not
-    // checked for existence.
-    inline std::experimental::filesystem::path generate_temp_path(std::string pattern)
-    {
-        constexpr const char* hexchars = "0123456789abcdef";
-        static thread_local std::mt19937 gen{std::random_device{}()};
-        std::uniform_int_distribution<> dis{0, 15};
-        for (char& ch: pattern) {
-            if (ch == '%') ch = hexchars[dis(gen)];
-        }
-        namespace fs = std::experimental::filesystem;
-        return fs::temp_directory_path() / pattern;
-    }
-
-}  // namespace detail
 
 /// \ingroup Filesystem
 /// \brief Create a temporary directory.
 ///
 /// \param pattern Directory name pattern. All '\%' symbols in the pattern are
 ///                replaced by a random character from [0-9a-f].
-inline std::experimental::filesystem::path create_temp_directory(const std::string &pattern)
-{
-    namespace fs = std::experimental::filesystem;
-    int max_retries = 100;
-    while (max_retries--) {
-        auto temp_path = detail::generate_temp_path(pattern);
-        bool success = fs::create_directory(temp_path);
-        if (success) return temp_path;
-    }
-    throw std::runtime_error(std::string{"Cannot create temporary directory ["} + pattern + "]");
-}
+std::experimental::filesystem::path create_temp_directory(const std::string &pattern);
 
-}  // namespace hipipe
-#endif
+
+}  // namespace hipipe::utility

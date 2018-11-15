@@ -12,9 +12,9 @@
 #define HIPIPE_CORE_UTILITY_HPP
 
 #include <hipipe/core/utility/filesystem.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 #include <hipipe/core/utility/random.hpp>
 #include <hipipe/core/utility/string.hpp>
 #include <hipipe/core/utility/tuple.hpp>
-#include <hipipe/core/utility/vector.hpp>
 
 #endif

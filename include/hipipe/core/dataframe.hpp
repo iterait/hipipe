@@ -9,8 +9,7 @@
  ****************************************************************************/
 /// \defgroup Dataframe Dataframe class.
 
-#ifndef HIPIPE_CORE_DATAFRAME_HPP
-#define HIPIPE_CORE_DATAFRAME_HPP
+#pragma once
 
 #include <hipipe/core/index_mapper.hpp>
 #include <hipipe/core/utility/string.hpp>
@@ -30,21 +29,146 @@
 
 namespace hipipe {
 
+
 /// \ingroup Dataframe
 /// \brief Tabular object with convenient data access methods.
 ///
 /// By default, all fields are stored as std::string and they are
 /// cast to the requested type on demand.
-template<typename DataTable = std::vector<std::vector<std::string>>>
 class dataframe {
 public:
+
+    using data_table_t = std::vector<std::vector<std::string>>;
+    using header_t = index_mapper<std::string>;
+
+private:
+
+    // data storage //
+
+    data_table_t data_;
+    header_t header_;
+
+    // helper functions //
+
+    static void throw_check_new_header(
+      std::size_t n_cols,
+      const std::vector<std::string>& header)
+    {
+        if (header.size() && header.size() != n_cols) {
+            throw std::invalid_argument{"The dataframe with " + std::to_string(n_cols) +
+              " columns cannot have a header of size " + std::to_string(header.size()) + "."};
+        }
+        for (const std::string& h : header) {
+            if (!h.size()) {
+                throw std::invalid_argument{"When providing a header to a dataframe,"
+                  " all the column names have to be non-empty."};
+            }
+        }
+    }
+
+    void throw_check_insert_col_name(const std::string& name) const
+    {
+        if (header_.size() && !name.size()) {
+            throw std::invalid_argument{"The dataframe has a header, please provide"
+              " a column name when inserting a new column."};
+        }
+        if (n_cols() != 0 && !header_.size() && name.size()) {
+            throw std::invalid_argument{"The dataframe has no header, but a column"
+              " name \"" + name + "\" was provided when inserting a new column."};
+        }
+    }
+
+    void throw_check_insert_col_size(std::size_t col_size) const
+    {
+        if (n_rows() != 0 && col_size != n_rows()) {
+            throw std::invalid_argument{"Cannot insert a column of size "
+              + std::to_string(col_size) + " to a dataframe with "
+              + std::to_string(n_rows()) + " rows."};
+        }
+    }
+
+    void throw_check_insert_row_size(std::size_t row_size) const
+    {
+        if (n_cols() != 0 && row_size != n_cols()) {
+            throw std::invalid_argument{"Cannot insert a row of size "
+              + std::to_string(row_size) + " to a dataframe with "
+              + std::to_string(n_cols()) + " columns."};
+        }
+    }
+
+    void throw_check_row_idx(std::size_t row_idx) const
+    {
+        if (row_idx < 0 || row_idx >= n_rows()) {
+            throw std::out_of_range{"Row index " + std::to_string(row_idx) +
+              " is not in a dataframe with " + std::to_string(n_rows()) + " rows."};
+        }
+    }
+
+    void throw_check_col_idx(std::size_t col_idx) const
+    {
+        if (col_idx < 0 || col_idx >= n_cols()) {
+            throw std::out_of_range{"Column index " + std::to_string(col_idx) +
+              " is not in a dataframe with " + std::to_string(n_cols()) + " columns."};
+        }
+    }
+
+    void throw_check_col_name(const std::string& col_name) const
+    {
+        if (header_.size() == 0) {
+            throw std::out_of_range{"Dataframe has no header, cannot index by column name."};
+        }
+        if (!header_.contains(col_name)) {
+            throw std::out_of_range{"Column " + col_name + " not found in the dataframe."};
+        }
+    }
+
+    template <typename This>
+    static auto raw_irows_impl(This this_ptr, std::vector<std::size_t> col_indexes)
+    {
+        namespace view = ranges::view;
+        return view::iota(0UL, this_ptr->n_rows())
+          | view::transform([this_ptr, col_indexes=std::move(col_indexes)](std::size_t i) {
+                return this_ptr->raw_icols(col_indexes)
+                  // decltype(auto) to make sure a reference is returned
+                  | view::transform([i](auto&& col) -> decltype(auto) {
+                        return col[i];
+                    });
+            });
+      }
+
+      template<typename This>
+      static auto raw_rows_impl(This this_ptr)
+      {
+        namespace view = ranges::view;
+        return view::iota(0UL, this_ptr->n_rows())
+          | view::transform([this_ptr](std::size_t i) {
+                return view::iota(0UL, this_ptr->n_cols())
+                  // decltype(auto) to make sure a reference is returned
+                  | view::transform([this_ptr, i](std::size_t j) -> decltype(auto) {
+                        return this_ptr->raw_cols()[j][i];
+                    });
+            });
+      }
+
+      template<typename This>
+      static auto raw_icols_impl(This this_ptr, std::vector<std::size_t> col_indexes)
+      {
+        return std::move(col_indexes)
+          | ranges::experimental::view::shared
+          | ranges::view::transform([this_ptr](std::size_t idx) {
+                return this_ptr->raw_cols()[idx];
+            });
+      }
+
+public:
+
     dataframe() = default;
 
     /// Constructs the dataset from a vector of columns of the same type.
     ///
     /// Example:
     /// \code
-    ///     dataframe<> df{
+    ///     dataframe df{
     ///       // columns
     ///       std::vector<std::vector<int>>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}},
     ///       // header
@@ -63,7 +187,7 @@ public:
         throw_check_new_header(columns.size(), header);
         for (std::size_t i = 0; i < columns.size(); ++i) {
             std::string col_name = header.empty() ? "" : std::move(header[i]);
-            insert_col(columns[i] | ranges::view::move, std::move(col_name));
+            insert_col(ranges::view::move(columns[i]), std::move(col_name));
         }
     }
 
@@ -71,7 +195,7 @@ public:
     ///
     /// Example:
     /// \code
-    ///     dataframe<> df{
+    ///     dataframe df{
     ///       // columns
     ///       std::make_tuple(
     ///         std::vector<int>{1, 2, 3},
@@ -95,7 +219,7 @@ public:
         utility::tuple_for_each_with_index(std::move(columns),
           [this, &header](auto& column, auto index) {
               std::string col_name = header.empty() ? "" : std::move(header[index]);
-              this->insert_col(column | ranges::view::move, std::move(col_name));
+              this->insert_col(ranges::view::move(column), std::move(col_name));
         });
     }
 
@@ -119,7 +243,7 @@ public:
         throw_check_insert_col_name(col_name);
         throw_check_insert_col_size(ranges::size(rng));
         if (col_name.size()) header_.insert(col_name);
-        data_.emplace_back(rng | ranges::view::transform(cvt));
+        data_.emplace_back(ranges::view::transform(rng, cvt));
         return n_cols() - 1;
     }
 
@@ -202,105 +326,6 @@ public:
         }
     }
 
-    // raw column access //
-
-    /// Return a raw view of a column.
-    ///
-    /// The data can be directly changed by writing to the view.
-    ///
-    /// Example:
-    /// \code
-    ///     df.raw_icol(3)[2] = "new_value";
-    /// \endcode
-    ///
-    /// \returns A of range of std::string&.
-    /// \throws std::out_of_range If the column is not in the dataframe.
-    auto raw_icol(std::size_t col_index)
-    {
-        throw_check_col_idx(col_index);
-        return raw_cols()[col_index] | ranges::view::all;
-    }
-
-    /// Return a raw view of a column.
-    ///
-    /// \returns A of range of const std::string&.
-    /// \throws std::out_of_range If the column is not in the dataframe.
-    auto raw_icol(std::size_t col_index) const
-    {
-        throw_check_col_idx(col_index);
-        return raw_cols()[col_index] | ranges::view::all;
-    }
-
-    /// Return a raw view of a column.
-    ///
-    /// The data can be directly changed by writing to the view.
-    ///
-    /// Example:
-    /// \code
-    ///     df.raw_col("long column")[2] = "new_value";
-    /// \endcode
-    ///
-    /// \returns A of range of std::string&.
-    /// \throws std::out_of_range If the column is not in the dataframe.
-    auto raw_col(const std::string& col_name)
-    {
-        throw_check_col_name(col_name);
-        return raw_icol(header_.index_for(col_name));
-    }
-
-    /// Return a raw view of a column.
-    ///
-    /// This is just a const overload of the non-const raw_col().
-    ///
-    /// \returns A of range of const std::string&.
-    /// \throws std::out_of_range If the column is not in the dataframe.
-    auto raw_col(const std::string& col_name) const
-    {
-        throw_check_col_name(col_name);
-        return raw_icol(header_.index_for(col_name));
-    }
-
-    // typed column access //
-
-    /// Return a typed view of a column.
-    ///
-    /// By default, this function does not provide a direct access to the stored data.
-    /// Instead, each field is converted to the type T and a copy is returned.
-    ///
-    /// Example:
-    /// \code
-    ///     std::vector<long> data = df.icol<long>(3);
-    /// \endcode
-    ///
-    /// \returns A range of T.
-    /// \throws std::out_of_range If the column is not in the dataframe.
-    template<typename T>
-    auto icol(std::size_t col_index,
-              std::function<T(const std::string&)> cvt = utility::string_to<T>) const
-    {
-        return raw_icol(col_index) | ranges::view::transform(cvt);
-    }
-
-    /// Return a typed view of a column.
-    ///
-    /// By default, this function does not provide a direct access to the stored data.
-    /// Instead, each field is converted to the type T and a copy is returned.
-    ///
-    /// Example:
-    /// \code
-    ///     std::vector<long> data = df.col<long>("long column");
-    /// \endcode
-    ///
-    /// \returns A range of T.
-    /// \throws std::out_of_range If the column is not in the dataframe.
-    template<typename T>
-    auto col(const std::string& col_name,
-             std::function<T(const std::string&)> cvt = utility::string_to<T>) const
-    {
-        throw_check_col_name(col_name);
-        return icol<T>(header_.index_for(col_name), std::move(cvt));
-    }
-
     // raw multi column access //
 
     /// Return a raw view of all columns.
@@ -316,7 +341,7 @@ public:
     /// \returns A range of ranges of std::string&.
     auto raw_cols()
     {
-        return data_ | ranges::view::transform(ranges::view::all);
+        return ranges::view::transform(data_, ranges::view::all);
     }
 
     /// Return a raw view of all columns.
@@ -326,7 +351,7 @@ public:
     /// \returns A range of ranges of const std::string&.
     auto raw_cols() const
     {
-        return data_ | ranges::view::transform(ranges::view::all);
+        return ranges::view::transform(data_, ranges::view::all);
     }
 
     /// Return a raw view of multiple columns.
@@ -408,7 +433,7 @@ public:
         assert(sizeof...(Ts) == ranges::size(col_indexes));
         return utility::tuple_transform_with_index(std::move(cvts),
           [raw_cols = raw_icols(std::move(col_indexes))](auto&& cvt, auto i) {
-              return raw_cols[i] | ranges::view::transform(std::move(cvt));
+              return ranges::view::transform(raw_cols[i], std::move(cvt));
         });
     }
 
@@ -430,6 +455,106 @@ public:
         for (auto& col_name : col_names) throw_check_col_name(col_name);
         return icols<Ts...>(header_.index_for(col_names), std::move(cvts));
     }
+
+    // raw column access //
+
+    /// Return a raw view of a column.
+    ///
+    /// The data can be directly changed by writing to the view.
+    ///
+    /// Example:
+    /// \code
+    ///     df.raw_icol(3)[2] = "new_value";
+    /// \endcode
+    ///
+    /// \returns A of range of std::string&.
+    /// \throws std::out_of_range If the column is not in the dataframe.
+    auto raw_icol(std::size_t col_index)
+    {
+        throw_check_col_idx(col_index);
+        return ranges::view::all(raw_cols()[col_index]);
+    }
+
+    /// Return a raw view of a column.
+    ///
+    /// \returns A of range of const std::string&.
+    /// \throws std::out_of_range If the column is not in the dataframe.
+    auto raw_icol(std::size_t col_index) const
+    {
+        throw_check_col_idx(col_index);
+        return ranges::view::all(raw_cols()[col_index]);
+    }
+
+    /// Return a raw view of a column.
+    ///
+    /// The data can be directly changed by writing to the view.
+    ///
+    /// Example:
+    /// \code
+    ///     df.raw_col("long column")[2] = "new_value";
+    /// \endcode
+    ///
+    /// \returns A of range of std::string&.
+    /// \throws std::out_of_range If the column is not in the dataframe.
+    auto raw_col(const std::string& col_name)
+    {
+        throw_check_col_name(col_name);
+        return raw_icol(header_.index_for(col_name));
+    }
+
+    /// Return a raw view of a column.
+    ///
+    /// This is just a const overload of the non-const raw_col().
+    ///
+    /// \returns A of range of const std::string&.
+    /// \throws std::out_of_range If the column is not in the dataframe.
+    auto raw_col(const std::string& col_name) const
+    {
+        throw_check_col_name(col_name);
+        return raw_icol(header_.index_for(col_name));
+    }
+
+    // typed column access //
+
+    /// Return a typed view of a column.
+    ///
+    /// By default, this function does not provide a direct access to the stored data.
+    /// Instead, each field is converted to the type T and a copy is returned.
+    ///
+    /// Example:
+    /// \code
+    ///     std::vector<long> data = df.icol<long>(3);
+    /// \endcode
+    ///
+    /// \returns A range of T.
+    /// \throws std::out_of_range If the column is not in the dataframe.
+    template<typename T>
+    auto icol(std::size_t col_index,
+              std::function<T(const std::string&)> cvt = utility::string_to<T>) const
+    {
+        return ranges::view::transform(raw_icol(col_index), cvt);
+    }
+
+    /// Return a typed view of a column.
+    ///
+    /// By default, this function does not provide a direct access to the stored data.
+    /// Instead, each field is converted to the type T and a copy is returned.
+    ///
+    /// Example:
+    /// \code
+    ///     std::vector<long> data = df.col<long>("long column");
+    /// \endcode
+    ///
+    /// \returns A range of T.
+    /// \throws std::out_of_range If the column is not in the dataframe.
+    template<typename T>
+    auto col(const std::string& col_name,
+             std::function<T(const std::string&)> cvt = utility::string_to<T>) const
+    {
+        throw_check_col_name(col_name);
+        return icol<T>(header_.index_for(col_name), std::move(cvt));
+    }
+
 
     /// Return a raw view of all rows.
     ///
@@ -530,7 +655,7 @@ public:
                std::tuple<std::function<Ts(const std::string&)>...> cvts =
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
-        return std::experimental::apply(
+        return std::apply(
           ranges::view::zip,
           icols<Ts...>(std::move(col_indexes), std::move(cvts)));
     }
@@ -698,188 +823,23 @@ public:
     }
 
     /// Return a reference to the raw data table.
-    DataTable& data()
+    data_table_t& data()
     {
         return data_;
     }
 
     /// Return a const reference to the raw data table.
-    const DataTable& data() const
+    const data_table_t& data() const
     {
         return data_;
     }
 
-private:
-
-    static void throw_check_new_header(
-      std::size_t n_cols,
-      const std::vector<std::string>& header)
-    {
-        if (header.size() && header.size() != n_cols) {
-            throw std::invalid_argument{"The dataframe with " + std::to_string(n_cols) +
-              " columns cannot have a header of size " + std::to_string(header.size()) + "."};
-        }
-        for (const std::string& h : header) {
-            if (!h.size()) {
-                throw std::invalid_argument{"When providing a header to a dataframe,"
-                  " all the column names have to be non-empty."};
-            }
-        }
-    }
-
-    void throw_check_insert_col_name(const std::string& name) const
-    {
-        if (header_.size() && !name.size()) {
-            throw std::invalid_argument{"The dataframe has a header, please provide"
-              " a column name when inserting a new column."};
-        }
-        if (n_cols() != 0 && !header_.size() && name.size()) {
-            throw std::invalid_argument{"The dataframe has no header, but a column"
-              " name \"" + name + "\" was provided when inserting a new column."};
-        }
-    }
-
-    void throw_check_insert_col_size(std::size_t col_size) const
-    {
-        if (n_rows() != 0 && col_size != n_rows()) {
-            throw std::invalid_argument{"Cannot insert a column of size "
-              + std::to_string(col_size) + " to a dataframe with "
-              + std::to_string(n_rows()) + " rows."};
-        }
-    }
-
-    void throw_check_insert_row_size(std::size_t row_size) const
-    {
-        if (n_cols() != 0 && row_size != n_cols()) {
-            throw std::invalid_argument{"Cannot insert a row of size "
-              + std::to_string(row_size) + " to a dataframe with "
-              + std::to_string(n_cols()) + " columns."};
-        }
-    }
-
-    void throw_check_row_idx(std::size_t row_idx) const
-    {
-        if (row_idx < 0 || row_idx >= n_rows()) {
-            throw std::out_of_range{"Row index " + std::to_string(row_idx) +
-              " is not in a dataframe with " + std::to_string(n_rows()) + " rows."};
-        }
-    }
-
-    void throw_check_col_idx(std::size_t col_idx) const
-    {
-        if (col_idx < 0 || col_idx >= n_cols()) {
-            throw std::out_of_range{"Column index " + std::to_string(col_idx) +
-              " is not in a dataframe with " + std::to_string(n_cols()) + " columns."};
-        }
-    }
-
-    void throw_check_col_name(const std::string& col_name) const
-    {
-        if (header_.size() == 0) {
-            throw std::out_of_range{"Dataframe has no header, cannot index by column name."};
-        }
-        if (!header_.contains(col_name)) {
-            throw std::out_of_range{"Column " + col_name + " not found in the dataframe."};
-        }
-    }
-
-    template <typename This>
-    static auto raw_irows_impl(This this_ptr, std::vector<std::size_t> col_indexes)
-    {
-        namespace view = ranges::view;
-        return view::iota(0UL, this_ptr->n_rows())
-          | view::transform([this_ptr, col_indexes=std::move(col_indexes)](std::size_t i) {
-                return this_ptr->raw_icols(col_indexes)
-                  // decltype(auto) to make sure a reference is returned
-                  | view::transform([i](auto&& col) -> decltype(auto) {
-                        return col[i];
-                    });
-            });
-      }
-
-      template<typename This>
-      static auto raw_rows_impl(This this_ptr)
-      {
-        namespace view = ranges::view;
-        return view::iota(0UL, this_ptr->n_rows())
-          | view::transform([this_ptr](std::size_t i) {
-                return view::iota(0UL, this_ptr->n_cols())
-                  // decltype(auto) to make sure a reference is returned
-                  | view::transform([this_ptr, i](std::size_t j) -> decltype(auto) {
-                        return this_ptr->raw_cols()[j][i];
-                    });
-            });
-      }
-
-      template<typename This>
-      static auto raw_icols_impl(This this_ptr, std::vector<std::size_t> col_indexes)
-      {
-        return std::move(col_indexes)
-          | ranges::experimental::view::shared
-          | ranges::view::transform([this_ptr](std::size_t idx) {
-                return this_ptr->raw_cols()[idx];
-            });
-      }
-
-
-      // data storage //
-
-      DataTable data_;
-
-      using header_t = index_mapper<std::string>;
-      header_t header_;
-
 };  // class dataframe
+
 
 /// \ingroup Dataframe
 /// \brief Pretty printing of dataframe to std::ostream.
-template<typename DataTable>
-std::ostream& operator<<(std::ostream& out, const dataframe<DataTable>& df)
-{
-    namespace view = ranges::view;
-    // calculate the width of the columns using their longest field
-    std::vector<std::size_t> col_widths = df.raw_cols()
-      | view::transform([](auto&& col) {
-            std::vector<std::size_t> elem_sizes = col
-              | view::transform([](auto& field) { return ranges::size(field); });
-            return ranges::max(elem_sizes) + 2;
-        });
+std::ostream& operator<<(std::ostream& out, const dataframe& df);
 
-    auto header = df.header();
-    if (header.size()) {
-        // update col_widths using header widths
-        col_widths = view::zip(col_widths, header)
-          | view::transform([](auto&& tpl) {
-                return std::max(std::get<0>(tpl), std::get<1>(tpl).size() + 2);
-            });
-
-        // print header
-        for (std::size_t j = 0; j < header.size(); ++j) {
-            out << std::setw(col_widths[j]) << header[j];
-            if (j + 1 < header.size()) out << '|';
-            else out << '\n';
-        }
-
-        // print header and data separator
-        for (std::size_t j = 0; j < header.size(); ++j) {
-            out << std::setw(col_widths[j]) << std::setfill('-');
-            if (j + 1 < header.size()) out << '-' << '+';
-            else out << '-' << '\n';
-        }
-        out << std::setfill(' ');
-    }
-
-    // print data
-    for (std::size_t i = 0; i < df.n_rows(); ++i) {
-        for (std::size_t j = 0; j < df.n_cols(); ++j) {
-            out << std::setw(col_widths[j]) << df.raw_rows()[i][j];
-            if (j + 1 < df.n_cols()) out << '|';
-            else out << '\n';
-        }
-    }
-
-    return out;
-}
 
 }  // end namespace hipipe
-#endif

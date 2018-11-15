@@ -12,8 +12,6 @@
 #ifndef HIPIPE_CORE_TUPLE_UTILS_HPP
 #define HIPIPE_CORE_TUPLE_UTILS_HPP
 
-#include <boost/hana.hpp>
-#include <boost/hana/ext/std/tuple.hpp>
 #include <range/v3/core.hpp>
 #include <range/v3/size.hpp>
 #include <range/v3/to_container.hpp>
@@ -172,130 +170,6 @@ struct tuple_contains<T, std::tuple<Types...>>
 };
 
 /// \ingroup Tuple
-/// \brief Makes a sub-tuple made of references to the original tuple (selected by type).
-///
-/// Example:
-/// \code
-///     auto tpl = std::make_tuple(0, 5., 'c');
-///     auto subtpl = tuple_type_view<char, int>(t1);
-///     static_assert(std::is_same<std::tuple<char&, int&>, decltype(subtpl)>{});
-///     assert(subtpl == std::tuple<char, int>{'c', 0});
-/// \endcode
-///
-/// \returns The view of the original tuple.
-template<typename... Types, typename Tuple>
-constexpr auto tuple_type_view(Tuple& tuple)
-{
-    return std::make_tuple(std::ref(std::get<Types>(tuple))...);
-}
-
-/// \ingroup Tuple
-/// \brief Makes a sub-tuple made of references to the original tuple (selected by index).
-///
-/// Example:
-/// \code
-///     auto tpl = std::make_tuple(0, 5., 'c');
-///     auto subtpl = tuple_index_view<2, 0>(t1);
-///     // or equivalently: auto subtpl = tuple_index_view(t1, std::index_sequence<2, 0>{});
-///     static_assert(std::is_same<std::tuple<char&, int&>, decltype(subtpl)>{});
-///     assert(subtpl == std::tuple<char, int>{'c', 0});
-/// \endcode
-///
-/// \returns The view of the original tuple.
-template<std::size_t... Idxs, typename Tuple>
-constexpr auto tuple_index_view(Tuple& tuple, std::index_sequence<Idxs...> = {})
-{
-    return std::make_tuple(std::ref(std::get<Idxs>(tuple))...);
-}
-
-// tuple cat unique //
-
-namespace detail {
-
-    // This finds the indices of the first elements of each unique type in
-    // a tuple. E.g, for tuple<int, double, int, char, double>, the
-    // unique_indices class inherits from std::index_sequence<0, 1, 3>
-    //
-    // This implementation is sligthly faster than the previous one
-    // which was using boost::hana.
-    template<typename Tuple,
-             typename Known = std::tuple<>,
-             typename Is = std::index_sequence<>,
-             std::size_t I = 0,
-             bool In = tuple_contains<std::tuple_element_t<0, Tuple>, Known>::value>
-    struct unique_indices_impl;
-
-    template<typename THead1, typename THead2, typename... TTail, typename... Types,
-             std::size_t... Is, std::size_t I>
-    struct unique_indices_impl<std::tuple<THead1, THead2, TTail...>, std::tuple<Types...>,
-                               std::index_sequence<Is...>, I, true>
-      : unique_indices_impl<std::tuple<THead2, TTail...>, std::tuple<Types...>,
-                            std::index_sequence<Is...>, I + 1>
-    { };
-
-    template<typename THead1, typename THead2, typename... TTail, typename... Types,
-             std::size_t... Is, std::size_t I>
-    struct unique_indices_impl<std::tuple<THead1, THead2, TTail...>, std::tuple<Types...>,
-                               std::index_sequence<Is...>, I, false>
-      : unique_indices_impl<std::tuple<THead2, TTail...>, std::tuple<THead1, Types...>,
-                            std::index_sequence<Is..., I>, I + 1>
-    { };
-
-    template<typename THead, typename Known, std::size_t... Is, std::size_t I>
-    struct unique_indices_impl<std::tuple<THead>, Known, std::index_sequence<Is...>, I, false>
-      : std::index_sequence<Is..., I>
-    { };
-
-    template<typename THead, typename Known, std::size_t... Is, std::size_t I>
-    struct unique_indices_impl<std::tuple<THead>, Known, std::index_sequence<Is...>, I, true>
-      : std::index_sequence<Is...>
-    { };
-
-    template<typename Tuple>
-    struct unique_indices
-      : unique_indices_impl<Tuple>
-    { };
-
-    template<>
-    struct unique_indices<std::tuple<>>
-      : std::index_sequence<>
-    { };
-
-    template<std::size_t... Idxs, typename Tuple>
-    constexpr auto make_tuple_by_idxs(Tuple&& tuple, std::index_sequence<Idxs...> = {})
-    {
-        return std::make_tuple(std::get<Idxs>(std::forward<Tuple>(tuple))...);
-    }
-
-    template<typename Tuple>
-    constexpr auto make_unique_tuple(Tuple tuple)
-    {
-        return detail::make_tuple_by_idxs(std::move(tuple), unique_indices<Tuple>{});
-    }
-
-}  // namespace detail
-
-/// \ingroup Tuple
-/// \brief Concatenate two tuples and keep only the first element of each type.
-///
-/// Note: All the reference types are decayed during this operation.
-///
-/// Example:
-/// \code
-///     auto t1 = std::make_tuple(0, '1');
-///     auto t2 = std::make_tuple(2, '3', 5.);
-///     auto t3 = tuple_cat_unique(t1, t2);
-///     static_assert(std::is_same<std::tuple<int, char, double>, decltype(t3)>{});
-///     assert(t2 == std::make_tuple(0, '1', 5.));
-/// \endcode
-template <typename... Tuples>
-constexpr auto tuple_cat_unique(Tuples&&... tuples)
-{
-    auto all = std::tuple_cat(std::forward<Tuples>(tuples)...);
-    return detail::make_unique_tuple(std::move(all));
-}
-
-/// \ingroup Tuple
 /// \brief Tuple pretty printing to std::ostream.
 template<typename Tuple, size_t... Is>
 std::ostream& tuple_print(std::ostream& out, const Tuple& tuple, std::index_sequence<Is...>)
@@ -312,32 +186,6 @@ template<typename... Ts>
 std::ostream& operator<<(std::ostream& out, const std::tuple<Ts...>& tuple)
 {
     return utility::tuple_print(out, tuple, std::make_index_sequence<sizeof...(Ts)>{});
-}
-
-// tuple_remove //
-
-/// \ingroup Tuple
-/// \brief Remove types from a tuple.
-///
-/// Note: All the reference types are decayed during this operation.
-///
-/// Example:
-/// \code
-///     auto t1 = std::make_tuple(0, '1');
-///     auto t2 = tuple_remove<int>(t1);
-///     static_assert(std::is_same<std::tuple<char>, decltype(t2)>{});
-///     assert(t2 == std::make_tuple('1'));
-///     auto t3 = tuple_remove<int, char>(std::make_tuple(0, 'a', 3L, 'b'));
-///     static_assert(std::is_same<std::tuple<long>, decltype(t3)>{});
-///     assert(t3 == std::make_tuple(3L));
-/// \endcode
-template<typename... Rem, typename Tuple>
-constexpr auto tuple_remove(Tuple tuple)
-{
-    constexpr auto to_remove = boost::hana::make_set(boost::hana::type_c<std::decay_t<Rem>>...);
-    return boost::hana::remove_if(std::move(tuple), [&to_remove](const auto& a) {
-        return boost::hana::contains(to_remove, boost::hana::type_c<std::decay_t<decltype(a)>>);
-    });
 }
 
 // unzip //
@@ -416,7 +264,7 @@ auto unzip(Rng range_of_tuples)
 template<typename Rng, CONCEPT_REQUIRES_(ranges::View<Rng>())>
 auto unzip(Rng view_of_tuples)
 {
-    return utility::unzip(view_of_tuples | ranges::to_vector);
+    return utility::unzip(ranges::to_vector(view_of_tuples));
 }
 
 // maybe unzip //
@@ -437,7 +285,7 @@ namespace detail {
     struct unzip_if_impl<false>
     {
         template<typename Rng>
-        static constexpr Rng&& impl(Rng&& rng)
+        static Rng&& impl(Rng&& rng)
         {
             return std::forward<Rng>(rng);
         }
@@ -524,38 +372,6 @@ decltype(auto) maybe_untuple(Tuple&& tuple)
 {
     constexpr std::size_t tuple_size = std::tuple_size<std::decay_t<Tuple>>::value;
     return detail::maybe_untuple_impl<tuple_size>::impl(std::forward<Tuple>(tuple));
-}
-
-// range to tuple //
-
-namespace detail {
-
-    template<typename Rng, std::size_t... Is>
-    constexpr auto range_to_tuple_impl(Rng rng, std::index_sequence<Is...>)
-    {
-        return std::make_tuple(std::move(ranges::at(std::forward<Rng>(rng), Is))...);
-    }
-
-}  // namespace detail
-
-/// \ingroup Tuple
-/// \brief Converts a range to a tuple.
-///
-/// Example:
-/// \code
-///     std::vector<std::unique_ptr<int>> data;
-///     data.emplace_back(std::make_unique<int>(5));
-///     data.emplace_back(std::make_unique<int>(6));
-///     data.emplace_back(std::make_unique<int>(7));
-///
-///     auto tpl = range_to_tuple<3>(std::move(data));
-///     assert(tpl == std::make_tuple(5, 6, 7));
-/// \endcode
-template<std::size_t N, typename RARng>
-constexpr auto range_to_tuple(RARng&& rng)
-{
-    assert(ranges::size(rng) >= N);
-    return detail::range_to_tuple_impl(std::forward<RARng>(rng), std::make_index_sequence<N>{});
 }
 
 // times with index //

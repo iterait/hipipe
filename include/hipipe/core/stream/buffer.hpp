@@ -20,8 +20,10 @@
 #include <climits>
 #include <deque>
 #include <future>
+#include <memory>
 
 namespace hipipe::stream {
+
 
 template<typename Rng>
 struct buffer_view : ranges::view_facade<buffer_view<Rng>> {
@@ -37,9 +39,16 @@ private:
     private:
         buffer_view<Rng>* rng_ = nullptr;
         ranges::iterator_t<Rng> it_ = {};
+        using value_type = ranges::range_value_type_t<Rng>;
+        using reference_type = value_type&;
 
         std::size_t n_;
-        std::deque<std::shared_future<ranges::range_value_type_t<Rng>>> buffer_;
+
+        // std::shared_future only allows retrieving the shared state via
+        // a const reference. Therefore, we store the computed results
+        // on heap (shared_ptr) and return references to those objects
+        // (non-const references).
+        std::deque<std::shared_future<std::shared_ptr<value_type>>> buffer_;
 
         void pop_buffer()
         {
@@ -51,14 +60,17 @@ private:
         void fill_buffer()
         {
             while (it_ != ranges::end(rng_->rng_) && buffer_.size() < n_) {
-                auto task = [it = it_]() { return *it; };
+                auto task = [it = it_]() { return std::make_shared<value_type>(*it); };
                 buffer_.emplace_back(global_thread_pool.enqueue(std::move(task)));
                 ++it_;
             }
         }
 
     public:
+        using single_pass = std::true_type;
+
         cursor() = default;
+
         explicit cursor(buffer_view<Rng>& rng)
           : rng_{&rng}
           , it_{ranges::begin(rng.rng_)}
@@ -67,9 +79,9 @@ private:
             fill_buffer();
         }
 
-        decltype(auto) read() const
+        value_type&& read() const
         {
-            return buffer_.front().get();
+            return std::move(*buffer_.front().get());
         }
 
         bool equal(ranges::default_sentinel) const
@@ -153,13 +165,20 @@ public:
 /// next element, it is already prepared. This view works for any range, not only
 /// for hipipe streams.
 ///
+/// Note that this transformer is not lazy and instead _eagerly evaluates_ the
+/// data in asynchronous threads. To avoid recalculation of the entire underlying
+/// range whenever e.g., std::distance is called, this transformer intentionally
+/// changes the stream type to InputRange. The downside is that no further
+/// transformations can be appended (except for \ref Stream stream::rebatch) and everything
+/// has to be prepared before the application of this transformer.
+///
 /// \code
 ///     std::vector<int> data = {1, 2, 3, 4, 5};
 ///     auto buffered_rng = data
 ///       | ranges::view::transform([](int v) { return v + 1; })
 ///       | buffer(2);
 /// \endcode
-constexpr ranges::view::view<buffer_fn> buffer{};
+inline ranges::view::view<buffer_fn> buffer{};
 
 }  // end namespace hipipe::stream
 #endif

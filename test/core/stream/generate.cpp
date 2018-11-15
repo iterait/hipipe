@@ -11,55 +11,60 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE stream_generate_test
 
-#include "../common.hpp"
+#include "common.hpp"
 
 #include <hipipe/core/stream/generate.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 #include <vector>
 
-using namespace hipipe::stream;
-using namespace hipipe::utility;
-
-HIPIPE_DEFINE_COLUMN(IntVec3d, std::vector<std::vector<int>>)
+HIPIPE_DEFINE_COLUMN(IntVec2d, std::vector<std::vector<int>>)
 HIPIPE_DEFINE_COLUMN(Generated, std::vector<int>)
 HIPIPE_DEFINE_COLUMN(Generated3d, std::vector<std::vector<std::vector<int>>>)
 
+
 BOOST_AUTO_TEST_CASE(test_simple)
 {
-    std::vector<std::vector<std::vector<int>>> batch2 =
-      {{{-1}, {-1}, {}}, {{-1}, {-1}}};
-    std::vector<std::vector<std::vector<int>>> batch4 =
-      {{{-1}, {-1}}, {}, {{-1}, {-1}}, {}};
-    std::vector<std::tuple<IntVec3d>> data = {batch2, batch4};
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
 
-    auto stream = data
-      | generate(from<IntVec3d>, to<Generated>, [i = 0]() mutable {
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert_or_assign<IntVec2d>();
+    batch1.extract<IntVec2d>().push_back(IntVec2d::example_type{{-1}, {-1}, {}});
+    batch1.extract<IntVec2d>().push_back(IntVec2d::example_type{{-1}, {-1},   });
+    data.push_back(std::move(batch1));
+    batch2.insert_or_assign<IntVec2d>();
+    batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{{-1}, {-1}    });
+    batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{              });
+    batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{{-1}, {-1}    });
+    batch2.extract<IntVec2d>().push_back(IntVec2d::example_type{              });
+    data.push_back(std::move(batch2));
+
+    std::vector<batch_t> stream = data
+      | ranges::view::move
+      | generate(from<IntVec2d>, to<Generated>, [i = 0]() mutable {
             return i++;
         }, 1)
-      | generate(from<IntVec3d>, to<Generated3d>, [i = 0]() mutable {
+      | generate(from<IntVec2d>, to<Generated3d>, [i = 0]() mutable {
             return std::vector<int>{i++};
         }, 1);
 
-    int batch_i = 0;
-    for (auto batch : stream) {
-        auto generated = std::get<Generated>(batch).value();
-        auto generated3d = std::get<Generated3d>(batch).value();
-        // check the contents
-        switch (batch_i) {
-        case 0: BOOST_CHECK((generated == Generated::batch_type
-                                            {{0, 0, 0}, {1, 1}}));
-                BOOST_CHECK((generated3d == Generated3d::batch_type
-                                              {{{{0}}, {{0}}, {}}, {{{1}}, {{1}}}}));
+    for (std::size_t i = 0; i < stream.size(); ++i) {
+        Generated::data_type generated     = stream.at(i).extract<Generated>();
+        Generated3d::data_type generated3d = stream.at(i).extract<Generated3d>();
+        switch (i) {
+        case 0: BOOST_TEST(generated == (Generated::data_type
+                           {{0, 0, 0}, {1, 1}} ));
+                BOOST_TEST(generated3d == (Generated3d::data_type
+                           {{{{0}}, {{0}}, {}}, {{{1}}, {{1}}}} ));
                 break;
-        case 1: BOOST_CHECK((generated == Generated::batch_type
-                                            {{2, 2}, {}, {4, 4}, {}}));
-                BOOST_CHECK((generated3d == Generated3d::batch_type
-                                              {{{{2}}, {{2}}}, {}, {{{4}}, {{4}}}, {}}));
+        case 1: BOOST_TEST(generated == (Generated::data_type
+                           {{2, 2}, {}, {4, 4}, {}} ));
+                BOOST_TEST(generated3d == (Generated3d::data_type
+                           {{{{2}}, {{2}}}, {}, {{{4}}, {{4}}}, {}} ));
                 break;
         default: BOOST_FAIL("Only two batches should be provided");
         }
-        ++batch_i;
     }
 }

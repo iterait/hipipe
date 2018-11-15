@@ -8,29 +8,16 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_DROP_HPP
-#define HIPIPE_CORE_STREAM_DROP_HPP
+#pragma once
 
-#include <hipipe/core/utility/tuple.hpp>
+#include <hipipe/core/stream/stream_t.hpp>
 
 #include <range/v3/view/transform.hpp>
+
 
 namespace hipipe::stream {
 
 namespace detail {
-
-    template<typename Source, typename... DropColumns>
-    struct drop_impl;
-
-    template<typename... SourceColumns, typename... DropColumns>
-    struct drop_impl<std::tuple<SourceColumns...>, DropColumns...> {
-
-        constexpr decltype(auto) operator()(std::tuple<SourceColumns...> source) const
-        {
-            return utility::tuple_remove<DropColumns...>(std::move(source));
-        }
-
-    };
 
     template<typename... Columns>
     class drop_fn {
@@ -43,26 +30,28 @@ namespace detail {
         }
 
     public:
-        template<typename Rng, CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
-        constexpr auto operator()(Rng&& rng) const
+        template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
+        forward_stream_t operator()(Rng&& rng) const
         {
-            using StreamType = ranges::range_value_type_t<Rng>;
-            return ranges::view::transform(
-              std::forward<Rng>(rng),
-              drop_impl<StreamType, Columns...>{});
+            return ranges::view::transform(std::forward<Rng>(rng),
+              [](batch_t batch) -> batch_t {
+                  ((batch.erase<Columns>()), ...);
+                  return batch;
+            });
         }
 
         /// \cond
-        template<typename Rng, CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+        template<typename Rng, CONCEPT_REQUIRES_(!ranges::InputRange<Rng>())>
         void operator()(Rng&&) const
         {
-            CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
-              "stream::drop only works on ranges satisfying the ForwardRange concept.");
+            CONCEPT_ASSERT_MSG(ranges::InputRange<Rng>(),
+              "stream::drop only works on ranges satisfying the InputRange concept.");
         }
         /// \endcond
     };
 
 }  // namespace detail
+
 
 /// \ingroup Stream
 /// \brief Drops columns from a stream.
@@ -75,7 +64,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | drop<id>;
 /// \endcode
 template <typename... Columns>
-constexpr ranges::view::view<detail::drop_fn<Columns...>> drop{};
+ranges::view::view<detail::drop_fn<Columns...>> drop{};
 
 }  // end namespace hipipe::stream
-#endif

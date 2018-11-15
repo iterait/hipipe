@@ -8,11 +8,10 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_GENERATE_HPP
-#define HIPIPE_CORE_STREAM_GENERATE_HPP
+#pragma once
 
 #include <hipipe/core/stream/transform.hpp>
-#include <hipipe/core/utility/vector.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 
 namespace hipipe::stream {
 namespace detail {
@@ -23,19 +22,25 @@ namespace detail {
         Gen gen;
         long gendims;
 
-        typename ToColumn::batch_type operator()(typename FromColumn::batch_type& source)
+        typename ToColumn::data_type operator()(typename FromColumn::data_type& source)
         {
-            using SourceVector = typename FromColumn::batch_type;
-            using TargetVector = typename ToColumn::batch_type;
+            using SourceVector = typename FromColumn::data_type;
+            using TargetVector = typename ToColumn::data_type;
             constexpr long SourceDims = utility::ndims<SourceVector>::value;
-            static_assert(Dim <= SourceDims, "stream::generate requires"
+            constexpr long TargetDims = utility::ndims<TargetVector>::value;
+            static_assert(Dim <= SourceDims, "hipipe::stream::generate requires"
               " the dimension in which to apply the generator to be at most the number"
               " of dimensions of the source column (i.e., the column the shape is taken"
               " from).");
+            static_assert(Dim <= TargetDims, "hipipe::stream::generate: The requested"
+              " dimension is higher than the number of dimensions of the target column.");
             // get the size of the source up to the dimension of the target
             std::vector<std::vector<long>> target_size = utility::ndim_size<Dim>(source);
             // create, resize, and fill the target using the generator
             TargetVector target;
+            static_assert(std::is_invocable_r_v<utility::ndim_type_t<TargetVector, Dim>, Gen>,
+              " hipipe::stream::generate: The given generator does not generate a"
+              " type convertible to the given column in the given dimension.");
             utility::ndim_resize<Dim>(target, target_size);
             utility::generate<Dim>(target, gen, gendims);
             return target;
@@ -70,21 +75,23 @@ namespace detail {
 /// \param gendims The number of generated dimensions. See \ref utility::generate().
 /// \param d This is the dimension in which will the generator be applied.
 ///          E.g., if set to 1, the generator result is considered to be a single example.
-///          The default is ndims<ToColumn::batch_type> - ndims<gen()>. This value
+///          The default is ndims<ToColumn::data_type> - ndims<gen()>. This value
 ///          has to be positive.
 template<typename FromColumn, typename ToColumn, typename Gen,
-         int Dim = utility::ndims<typename ToColumn::batch_type>::value
+         int Dim = utility::ndims<typename ToColumn::data_type>::value
                  - utility::ndims<std::result_of_t<Gen()>>::value>
-constexpr auto generate(from_t<FromColumn> size_from,
-                        to_t<ToColumn> fill_to,
-                        Gen gen,
-                        long gendims = std::numeric_limits<long>::max(),
-                        dim_t<Dim> d = dim_t<Dim>{})
+auto generate(from_t<FromColumn> size_from,
+              to_t<ToColumn> fill_to,
+              Gen gen,
+              long gendims = std::numeric_limits<long>::max(),
+              dim_t<Dim> d = dim_t<Dim>{})
 {
-    detail::wrap_generate_fun_for_transform<FromColumn, ToColumn, Gen, Dim>
+    // a bit of function type erasure to speed up compilation
+    using GenT = std::function<
+      utility::ndim_type_t<typename ToColumn::data_type, Dim>()>;
+    detail::wrap_generate_fun_for_transform<FromColumn, ToColumn, GenT, Dim>
       trans_fun{std::move(gen), gendims};
     return stream::transform(from<FromColumn>, to<ToColumn>, std::move(trans_fun), dim<0>);
 }
 
 }  // namespace hipipe::stream
-#endif

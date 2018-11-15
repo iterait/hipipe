@@ -9,8 +9,7 @@
  ****************************************************************************/
 /// \defgroup String String utilities.
 
-#ifndef HIPIPE_CORE_UTILITY_STRING_HPP
-#define HIPIPE_CORE_UTILITY_STRING_HPP
+#pragma once
 
 #include <boost/lexical_cast.hpp>
 #include <range/v3/view/transform.hpp>
@@ -126,4 +125,3 @@ inline std::string to_string(const bool& b)
 }
 
 }  // namespace hipipe
-#endif

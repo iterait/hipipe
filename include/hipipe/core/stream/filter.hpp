@@ -8,8 +8,7 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_FILTER_HPP
-#define HIPIPE_CORE_STREAM_FILTER_HPP
+#pragma once
 
 #include <hipipe/core/stream/template_arguments.hpp>
 #include <hipipe/core/stream/transform.hpp>
@@ -38,15 +37,20 @@ namespace detail {
         Fun fun;
 
         // Properly zips/unzips the data and applies the filter function.
-        constexpr utility::maybe_tuple<FromTypes...> operator()(FromTypes&... cols)
+        utility::maybe_tuple<FromTypes...> operator()(FromTypes&... cols)
         {
+            // the following is much nicer when written as a pipeline, but this
+            // is more compilation time friendly
             auto range_of_tuples =
-                ranges::view::zip(cols...)
-              | ranges::view::filter([this](const auto& tuple) -> bool {
-                    auto slice_view = utility::tuple_index_view<ByIdxs...>(tuple);
-                    return boost::hana::unpack(std::move(slice_view), this->fun);
-                })
-              | ranges::view::move;
+              ranges::view::move(
+                ranges::view::filter(
+                  ranges::view::zip(cols...),
+                  [this](const auto& tuple) -> bool {
+                      return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
+                  }
+                )
+              );
+                
             return utility::maybe_untuple(utility::unzip(std::move(range_of_tuples)));
         }
     };
@@ -60,13 +64,17 @@ namespace detail {
     {
         Fun fun;
 
-        template<typename... SourceColumns>
-        constexpr bool operator()(const std::tuple<SourceColumns...>& tuple)
+        bool operator()(const batch_t& source)
         {
-            auto proj = [](auto& column) { return std::ref(column.value()); };
-            auto slice_view = utility::tuple_type_view<ByColumns...>(tuple);
-            auto values = utility::tuple_transform(std::move(slice_view), std::move(proj));
-            return boost::hana::unpack(std::move(values), fun);
+            std::tuple<const typename ByColumns::data_type&...> slice_view{
+                source.extract<ByColumns>()...
+            };
+            static_assert(std::is_invocable_r_v<
+              bool, Fun&, const typename ByColumns::data_type&...>,
+              "hipipe::stream::filter: "
+              "The function has to accept the selected `by<>` columns (specifically "
+              "const ByColumns::data_type&) and return a bool.");
+            return std::apply(fun, std::move(slice_view));
         }
     };
 
@@ -77,13 +85,18 @@ namespace detail {
     struct filter_impl
     {
         template<typename... FromColumns, typename... ByColumns, typename Fun>
-        static constexpr auto impl(from_t<FromColumns...> f, by_t<ByColumns...> b, Fun fun)
+        static auto impl(from_t<FromColumns...> f, by_t<ByColumns...> b, Fun fun)
         {
             static_assert(sizeof...(ByColumns) <= sizeof...(FromColumns),
               "Cannot have more ByColumns than FromColumns.");
+            static_assert(
+              ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+              ((utility::ndims<typename ByColumns::data_type>::value >= Dim) && ...),
+              "hipipe::stream::filter: The dimension in which to apply the operation needs"
+              " to be at most the lowest dimension of all the from<> and by<> columns.");
 
             detail::wrap_filter_fun_for_transform<
-              Fun, from_t<utility::ndim_type_t<typename FromColumns::batch_type, Dim-1>...>,
+              Fun, from_t<utility::ndim_type_t<typename FromColumns::data_type, Dim-1>...>,
               std::index_sequence<utility::variadic_find<ByColumns, FromColumns...>::value...>>
                 fun_wrapper{std::move(fun)};
 
@@ -96,7 +109,7 @@ namespace detail {
     struct filter_impl<0>
     {
         template<typename From, typename... ByColumns, typename Fun>
-        static constexpr auto impl(From, by_t<ByColumns...>, Fun fun)
+        static auto impl(From, by_t<ByColumns...>, Fun fun)
         {
             apply_filter_fun_to_columns<Fun, ByColumns...> fun_wrapper{std::move(fun)};
             return ranges::view::filter(std::move(fun_wrapper));
@@ -125,13 +138,20 @@ namespace detail {
 /// \param d The dimension in which the function is applied. Choose 0 to filter
 ///          whole batches (in such a case, the f parameter is ignored).
 template<typename... FromColumns, typename... ByColumns, typename Fun, int Dim = 1>
-constexpr auto filter(from_t<FromColumns...> f,
-                      by_t<ByColumns...> b,
-                      Fun fun,
-                      dim_t<Dim> d = dim_t<1>{})
+auto filter(from_t<FromColumns...> f,
+            by_t<ByColumns...> b,
+            Fun fun,
+            dim_t<Dim> d = dim_t<1>{})
 {
-    return detail::filter_impl<Dim>::impl(f, b, std::move(fun));
+    static_assert(
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ByColumns::data_type>::value >= Dim) && ...),
+      "hipipe::stream::filter: The dimension in which to apply the operation "
+      " needs to be at most the lowest dimension of all the from<> and by<> columns.");
+    // a bit of function type erasure to speed up compilation
+    using FunT = std::function<
+      bool(const utility::ndim_type_t<typename ByColumns::data_type, Dim>&...)>;
+    return detail::filter_impl<Dim>::impl(f, b, FunT{std::move(fun)});
 }
 
 }  // namespace hipipe::stream
-#endif

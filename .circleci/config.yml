@@ -44,7 +44,6 @@ references:
       name: Build by g++.
       command: |
         mkdir build && cd build
-        # decrease the debug level to reduce g++ memory usage
         cmake -DCMAKE_BUILD_TYPE=Debug ..
         make
         make install
@@ -65,7 +64,7 @@ references:
       name: Build with static TensorFlow.
       command: |
         mkdir build && cd build
-        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ -DBUILD_TENSORFLOW=ON ..
+        cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ -DHIPIPE_BUILD_TENSORFLOW=ON ..
         make
         make install
       no_output_timeout: 20m

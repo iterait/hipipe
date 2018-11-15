@@ -8,14 +8,14 @@
  *  See the accompanying file LICENSE.txt for the complete license agreement.
  ****************************************************************************/
 
-#ifndef HIPIPE_CORE_STREAM_TRANSFORM_HPP
-#define HIPIPE_CORE_STREAM_TRANSFORM_HPP
+#pragma once
 
 #include <hipipe/build_config.hpp>
+#include <hipipe/core/stream/stream_t.hpp>
 #include <hipipe/core/stream/template_arguments.hpp>
+#include <hipipe/core/utility/ndim.hpp>
 #include <hipipe/core/utility/random.hpp>
 #include <hipipe/core/utility/tuple.hpp>
-#include <hipipe/core/utility/vector.hpp>
 
 #include <range/v3/view/any_view.hpp>
 #include <range/v3/view/transform.hpp>
@@ -31,122 +31,131 @@ namespace hipipe::stream {
 namespace detail {
 
     // Implementation of partial_transform.
-    template<typename Fun, typename Projection, typename Source, typename From, typename To>
-    struct partial_transformer;
+    template<typename Fun, typename From, typename To>
+    struct partial_transform_impl;
 
-    template<typename Fun, typename Projection, typename... SourceTypes,
-             typename... FromTypes, typename... ToTypes>
-    struct partial_transformer<Fun, Projection, std::tuple<SourceTypes...>,
-                               from_t<FromTypes...>, to_t<ToTypes...>> {
+    template<typename Fun, typename... FromTypes, typename... ToTypes>
+    struct partial_transform_impl<Fun, from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
-        Projection proj;
 
-        constexpr auto operator()(std::tuple<SourceTypes...> source)
+        batch_t operator()(batch_t source)
         {
-            // build the view for the transformer, i.e., slice and project
-            auto slice_view =
-              utility::tuple_transform(utility::tuple_type_view<FromTypes...>(source), proj);
+            // build the view of the selected source columns for the transformer
+            std::tuple<typename FromTypes::data_type&...> slice_view{
+                source.extract<FromTypes>()...
+            };
             // process the transformer's result and convert it to the requested types
-            std::tuple<ToTypes...> result{std::invoke(fun, std::move(slice_view))};
-            // replace the corresponding fields
-            return utility::tuple_cat_unique(std::move(result), std::move(source));
+            static_assert(std::is_invocable_v<Fun&, decltype(slice_view)&&>,
+              "hipipe::stream::partial_transform: "
+              "Cannot apply the given function to the given `from<>` columns.");
+            static_assert(std::is_invocable_r_v<
+              std::tuple<typename ToTypes::data_type...>, Fun&, decltype(slice_view)&&>,
+              "hipipe::stream::partial_transform: "
+              "The function return type does not correspond to the tuple of the "
+              "selected `to<>` columns.");
+            std::tuple<typename ToTypes::data_type...> result =
+              std::invoke(fun, std::move(slice_view));
+            // convert the function results to the corresponding column(s)
+            utility::times_with_index<sizeof...(ToTypes)>([&source, &result](auto i) {
+                using Column = std::tuple_element_t<i, std::tuple<ToTypes...>>;
+                source.insert_or_assign<Column>(std::move(std::get<i>(result)));
+            });
+            return source;
         }
     };
 
     class partial_transform_fn {
     private:
         friend ranges::view::view_access;
-    
-        template <typename From, typename To, typename Fun, typename Projection = ref_wrap_t>
-        static auto bind(partial_transform_fn transformer, From f, To t, Fun fun,
-                         Projection proj = Projection{})
+
+        template <typename From, typename To, typename Fun>
+        static auto bind(partial_transform_fn transformer, From f, To t, Fun fun)
         {
             return ranges::make_pipeable(
-              std::bind(transformer, std::placeholders::_1, f, t, std::move(fun), std::move(proj)));
+              std::bind(transformer, std::placeholders::_1, f, t, std::move(fun)));
         }
-    
+
     public:
-        template <typename Rng, typename... FromTypes, typename... ToTypes,
-                  typename Fun, typename Projection = ref_wrap_t,
-                  CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
-        constexpr auto operator()(Rng&& rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun,
-                                  Projection proj = Projection{}) const
+        template <typename... FromTypes, typename... ToTypes, typename Fun>
+        forward_stream_t operator()(
+          forward_stream_t rng, from_t<FromTypes...>, to_t<ToTypes...>, Fun fun) const
         {
-            static_assert(sizeof...(ToTypes) > 0, "For non-transforming operations, please"
-                                                  " use stream::for_each.");
-    
-            using StreamType = ranges::range_value_type_t<Rng>;
-            detail::partial_transformer<Fun, Projection,
-              StreamType, from_t<FromTypes...>, to_t<ToTypes...>>
-              trans_fun{std::move(fun), std::move(proj)};
-    
-            // any_view is used to erase types and speed up compilation time
-            using RefType = ranges::range_reference_t<Rng>;
-            return ranges::view::transform(
-              ranges::any_view<RefType, ranges::category::forward>{std::forward<Rng>(rng)},
-              std::move(trans_fun));
+            static_assert(sizeof...(ToTypes) > 0,
+              "For non-transforming operations, please use stream::for_each.");
+
+            detail::partial_transform_impl<Fun, from_t<FromTypes...>, to_t<ToTypes...>>
+              trans_fun{std::move(fun)};
+
+            return ranges::view::transform(std::move(rng), std::move(trans_fun));
         }
-    
-        /// \cond
-        template <typename Rng, typename From, typename To,
-                  typename Fun, typename Proj = ref_wrap_t,
-                  CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
-        constexpr auto operator()(Rng&& rng, From, To, Fun, Proj, Proj proj = Proj{}) const
-        {
-            CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
-              "Stream transformations only work on ranges satisfying the ForwardRange concept.");
-        }
-        /// \endcond
     };
 
 }  // namespace detail
 
-// Transform a subset of tuple elements for each tuple in a range and concatenate the result
-// with the original tuple.
+// Transform a subset of columns in each batch.
 //
-// The result tuple overrides the corresponding types from the original tuple.
-constexpr ranges::view::view<detail::partial_transform_fn> partial_transform{};
+// This transformer accepts a function that is applied on the chosen
+// subset of source columns from the batch. The function should accept
+// data_type of the chosen source columns as its parameters and return
+// a tuple of data_type of the chosen target columns.
+//
+// This transformer is used internally by stream::transform and should not
+// be used directly by the end user of the library.
+inline ranges::view::view<detail::partial_transform_fn> partial_transform{};
 
 // transform //
 
 namespace detail {
 
     // Apply fun to each element in tuple of ranges in the given dimension.
-    template<typename Fun, std::size_t Dim, std::size_t NOuts, typename From, typename To>
+    template<typename Fun, std::size_t Dim, typename From, typename To>
     struct wrap_fun_for_dim;
 
-    template<typename Fun, std::size_t Dim, std::size_t NOuts,
-             typename... FromTypes, typename... ToTypes>
-    struct wrap_fun_for_dim<Fun, Dim, NOuts, from_t<FromTypes...>, to_t<ToTypes...>> {
+    template<typename Fun, std::size_t Dim, typename... FromTypes, typename... ToTypes>
+    struct wrap_fun_for_dim<Fun, Dim, from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
         using FunRef = decltype(std::ref(fun));
 
-        constexpr utility::maybe_tuple<ToTypes...>
+        utility::maybe_tuple<ToTypes...>
         operator()(std::tuple<FromTypes&...> tuple_of_ranges)
         {
             assert(utility::same_size(tuple_of_ranges));
             // build the function to be applied
-            wrap_fun_for_dim<FunRef, Dim-1, NOuts,
+            wrap_fun_for_dim<FunRef, Dim-1,
               from_t<ranges::range_value_type_t<FromTypes>...>,
               to_t<ranges::range_value_type_t<ToTypes>...>>
                 fun_wrapper{std::ref(fun)};
             // transform
             auto range_of_tuples =
               ranges::view::transform(
-                boost::hana::unpack(std::move(tuple_of_ranges), ranges::view::zip),
+                std::apply(ranges::view::zip, std::move(tuple_of_ranges)),
                 std::move(fun_wrapper));
-            return utility::unzip_if<(NOuts > 1)>(std::move(range_of_tuples));
+            return utility::unzip_if<(sizeof...(ToTypes) > 1)>(std::move(range_of_tuples));
         }
     };
 
-    template<typename Fun, std::size_t NOuts, typename... FromTypes, typename... ToTypes>
-    struct wrap_fun_for_dim<Fun, 0, NOuts, from_t<FromTypes...>, to_t<ToTypes...>> {
+    template<typename Fun, typename... FromTypes, typename... ToTypes>
+    struct wrap_fun_for_dim<Fun, 0, from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
 
-        constexpr utility::maybe_tuple<ToTypes...>
+        utility::maybe_tuple<ToTypes...>
         operator()(std::tuple<FromTypes&...> tuple)
         {
-            return boost::hana::unpack(std::move(tuple), fun);
+            static_assert(std::is_invocable_v<Fun&, FromTypes&...>,
+              "hipipe::stream::transform: "
+              "Cannot call the given function on the selected from<> columns.");
+            if constexpr(sizeof...(ToTypes) == 1) {
+                static_assert(std::is_invocable_r_v<
+                  ToTypes..., Fun&, FromTypes&...>,
+                  "hipipe::stream::transform: "
+                  "The function does not return the selected to<> column.");
+            } else {
+                static_assert(std::is_invocable_r_v<
+                  std::tuple<ToTypes...>, Fun&, FromTypes&...>,
+                  "hipipe::stream::transform: "
+                  "The function does not return the tuple of the selected to<> columns.");
+            }
+            return std::apply(fun, std::move(tuple));
         }
     };
 
@@ -175,20 +184,30 @@ namespace detail {
 /// \param d The dimension in which is the function applied. Choose 0 for the function to
 ///          be applied to the whole batch.
 template<typename... FromColumns, typename... ToColumns, typename Fun, int Dim = 1>
-constexpr auto transform(from_t<FromColumns...> f,
-                         to_t<ToColumns...> t,
-                         Fun fun,
-                         dim_t<Dim> d = dim_t<1>{})
+auto transform(
+  from_t<FromColumns...> f,
+  to_t<ToColumns...> t,
+  Fun fun,
+  dim_t<Dim> d = dim_t<1>{})
 {
+    static_assert(
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::data_type>::value >= Dim) && ...),
+      "hipipe::stream::transform: The dimension in which to apply the operation needs"
+      " to be at most the lowest dimension of all the from<> and to<> columns.");
+
+    // a bit of function type erasure to speed up compilation
+    using FunT = std::function<
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::data_type, Dim>&...)>;
     // wrap the function to be applied in the appropriate dimension
     detail::wrap_fun_for_dim<
-      Fun, Dim, sizeof...(ToColumns),
-      from_t<typename FromColumns::batch_type...>,
-      to_t<typename ToColumns::batch_type...>>
-      fun_wrapper{std::move(fun)};
+      FunT, Dim,
+      from_t<typename FromColumns::data_type...>,
+      to_t<typename ToColumns::data_type...>>
+        fun_wrapper{std::move(fun)};
 
-    auto proj = [](auto& column) { return std::ref(column.value()); };
-    return stream::partial_transform(f, t, std::move(fun_wrapper), std::move(proj));
+    return stream::partial_transform(f, t, std::move(fun_wrapper));
 }
 
 // conditional transform //
@@ -199,13 +218,15 @@ namespace detail {
     template<typename Fun, typename FromIdxs, typename ToIdxs, typename From, typename To>
     struct wrap_fun_with_cond;
 
-    template<typename Fun, typename FromIdxs, std::size_t... ToIdxs,
+    template<typename Fun, std::size_t... FromIdxs, std::size_t... ToIdxs,
              typename CondCol, typename... Cols, typename... ToTypes>
-    struct wrap_fun_with_cond<Fun, FromIdxs, std::index_sequence<ToIdxs...>,
+    struct wrap_fun_with_cond<Fun,
+                              std::index_sequence<FromIdxs...>,
+                              std::index_sequence<ToIdxs...>,
                               from_t<CondCol, Cols...>, to_t<ToTypes...>> {
         Fun fun;
 
-        constexpr utility::maybe_tuple<ToTypes...> operator()(CondCol& cond, Cols&... cols)
+        utility::maybe_tuple<ToTypes...> operator()(CondCol& cond, Cols&... cols)
         {
             // make a tuple of all arguments, except for the condition
             std::tuple<Cols&...> args_view{cols...};
@@ -213,8 +234,16 @@ namespace detail {
             if (cond) {
                 // the function is applied only on a subset of the arguments
                 // representing FromColumns
-                return boost::hana::unpack(
-                  utility::tuple_index_view(args_view, FromIdxs{}), fun);
+                static_assert(std::is_invocable_v<Fun&,
+                  std::tuple_element_t<FromIdxs, decltype(args_view)>...>,
+                  "hipipe::stream::conditional_transform: "
+                  "Cannot apply the given function to the given `from<>` columns.");
+                static_assert(std::is_invocable_r_v<
+                  std::tuple<ToTypes...>, Fun&,
+                  std::tuple_element_t<FromIdxs, decltype(args_view)>...>,
+                  "hipipe::stream::conditional_transform: "
+                  "The function return type does not correspond to the selected `to<>` columns.");
+                return std::invoke(fun, std::get<FromIdxs>(args_view)...);
             }
             // return the original arguments if the condition is false
             // only a subset of the arguments representing ToColumns is returned
@@ -282,7 +311,7 @@ template<
   typename CondColumn,
   typename Fun,
   int Dim = 1>
-constexpr auto transform(
+auto transform(
   from_t<FromColumns...> f,
   to_t<ToColumns...> t,
   cond_t<CondColumn> c,
@@ -296,13 +325,24 @@ constexpr auto transform(
     using FromIdxs = std::make_index_sequence<n_from>;
     using ToIdxs = utility::make_offset_index_sequence<n_from, n_to>;
 
+    static_assert(
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::data_type>::value >= Dim) && ...) &&
+      utility::ndims<typename CondColumn::data_type>::value >= Dim,
+      "hipipe::stream::conditional_transform: The dimension in which to apply the operation needs"
+      " to be at most the lowest dimension of all the from<>, to<> and cond<> columns.");
+
+    // a bit of function type erasure to speed up compilation
+    using FunT = std::function<
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::data_type, Dim>&...)>;
     // wrap the function to be applied in the appropriate dimension using the condition column
     detail::wrap_fun_with_cond<
-      Fun, FromIdxs, ToIdxs,
-      from_t<utility::ndim_type_t<typename CondColumn::batch_type, Dim>,
-             utility::ndim_type_t<typename FromColumns::batch_type, Dim>...,
-             utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>,
-      to_t<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>>
+      FunT, FromIdxs, ToIdxs,
+      from_t<utility::ndim_type_t<typename CondColumn::data_type, Dim>,
+             utility::ndim_type_t<typename FromColumns::data_type, Dim>...,
+             utility::ndim_type_t<typename ToColumns::data_type, Dim>...>,
+      to_t<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>>
       cond_fun{std::move(fun)};
 
     // transform from both, FromColumns and ToColumns into ToColumns
@@ -322,10 +362,11 @@ namespace detail {
     struct wrap_fun_with_prob;
 
     template<typename Fun, typename Prng,
-             typename FromIdxs, std::size_t... ToIdxs,
+             std::size_t... FromIdxs, std::size_t... ToIdxs,
              typename... FromTypes, typename... ToTypes>
     struct wrap_fun_with_prob<Fun, Prng,
-                              FromIdxs, std::index_sequence<ToIdxs...>,
+                              std::index_sequence<FromIdxs...>,
+                              std::index_sequence<ToIdxs...>,
                               from_t<FromTypes...>, to_t<ToTypes...>> {
         Fun fun;
         std::reference_wrapper<Prng> prng;
@@ -341,8 +382,16 @@ namespace detail {
             if (prob == 1. || (prob > 0. && dis(prng.get()) < prob)) {
                 // the function is applied only on a subset of the arguments
                 // representing FromColumns
-                return boost::hana::unpack(
-                  utility::tuple_index_view(args_view, FromIdxs{}), fun);
+                static_assert(std::is_invocable_v<Fun&,
+                  std::tuple_element_t<FromIdxs, decltype(args_view)>...>,
+                  "hipipe::stream::probabilistic_transform: "
+                  "Cannot apply the given function to the given `from<>` columns.");
+                static_assert(std::is_invocable_r_v<
+                  std::tuple<ToTypes...>, Fun&,
+                  std::tuple_element_t<FromIdxs, decltype(args_view)>...>,
+                  "hipipe::stream::probabilistic_transform: "
+                  "The function return type does not correspond to the selected `to<>` columns.");
+                return std::invoke(fun, std::get<FromIdxs>(args_view)...);
             }
             // return the original arguments if the dice roll fails
             // only a subset of the arguments representing ToColumns is returned
@@ -391,7 +440,7 @@ template<
   typename Fun,
   typename Prng = std::mt19937,
   int Dim = 1>
-constexpr auto transform(
+auto transform(
   from_t<FromColumns...> f,
   to_t<ToColumns...> t,
   double prob,
@@ -406,12 +455,22 @@ constexpr auto transform(
     using FromIdxs = std::make_index_sequence<n_from>;
     using ToIdxs = utility::make_offset_index_sequence<n_from, n_to>;
 
+    static_assert(
+      ((utility::ndims<typename FromColumns::data_type>::value >= Dim) && ...) &&
+      ((utility::ndims<typename ToColumns::data_type>::value >= Dim) && ...),
+      "hipipe::stream::probabilistic_transform: The dimension in which to apply the operation "
+      " needs to be at most the lowest dimension of all the from<> and to<> columns.");
+
+    // a bit of function type erasure to speed up compilation
+    using FunT = std::function<
+      utility::maybe_tuple<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>
+      (utility::ndim_type_t<typename FromColumns::data_type, Dim>&...)>;
     // wrap the function to be applied in the appropriate dimension with the given probabiliy
     detail::wrap_fun_with_prob<
-      Fun, Prng, FromIdxs, ToIdxs,
-      from_t<utility::ndim_type_t<typename FromColumns::batch_type, Dim>...,
-             utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>,
-      to_t<utility::ndim_type_t<typename ToColumns::batch_type, Dim>...>>
+      FunT, Prng, FromIdxs, ToIdxs,
+      from_t<utility::ndim_type_t<typename FromColumns::data_type, Dim>...,
+             utility::ndim_type_t<typename ToColumns::data_type, Dim>...>,
+      to_t<utility::ndim_type_t<typename ToColumns::data_type, Dim>...>>
       prob_fun{std::move(fun), prng, prob};
 
     // transform from both, FromColumns and ToColumns into ToColumns
@@ -420,4 +479,3 @@ constexpr auto transform(
 }
 
 } // namespace hipipe::stream
-#endif

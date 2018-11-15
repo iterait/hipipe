@@ -11,57 +11,102 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE for_each_test
 
-#include "../common.hpp"
+#include "common.hpp"
 
-#include <hipipe/core/stream/create.hpp>
 #include <hipipe/core/stream/for_each.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <range/v3/to_container.hpp>
-#include <range/v3/view/iota.hpp>
-#include <range/v3/view/move.hpp>
 
-#include <memory>
-#include <tuple>
-#include <vector>
-
-using namespace hipipe::stream;
 
 BOOST_AUTO_TEST_CASE(test_for_each_of_two)
 {
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert_or_assign<Int>();
+    batch1.extract<Int>().push_back(1);
+    batch1.extract<Int>().push_back(3);
+    batch1.insert_or_assign<Double>();
+    batch1.extract<Double>().push_back(5.);
+    batch1.extract<Double>().push_back(6.);
+    data.push_back(std::move(batch1));
+    batch2.insert_or_assign<Int>();
+    batch2.extract<Int>().push_back(1);
+    batch2.insert_or_assign<Double>();
+    batch2.extract<Double>().push_back(2.);
+    data.push_back(std::move(batch2));
+
     // for_each of two columns
-    std::vector<std::tuple<Int, Double>> data = {{{1, 3}, {5., 6.}}, {1, 2.}};
     int sum = 0;
-    auto generated = data
-      | for_each(from<Int, Double>,
-          [&sum](const int& v, double c) { sum += v; })
-      | ranges::to_vector;
-    std::vector<std::tuple<Int, Double>> desired = {{{1, 3}, {5., 6.}}, {1, 2.}};
+    std::vector<batch_t> stream = data
+      | ranges::view::move
+      | hipipe::stream::for_each(from<Int, Double>,
+          [&sum](const int& v, double c) { sum += v; }
+        );
+
     BOOST_TEST(sum == 5);
-    test_ranges_equal(generated, desired);
+    BOOST_TEST(stream.size() == 2);
+    BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>{1, 3}));
+    BOOST_TEST(stream.at(0).extract<Double>() == (std::vector<double>{5., 6.}));
+    BOOST_TEST(stream.at(1).extract<Int>()    == (std::vector<int>{1}));
+    BOOST_TEST(stream.at(1).extract<Double>() == (std::vector<double>{2.}));
 }
+
 
 BOOST_AUTO_TEST_CASE(test_for_each_mutable)
 {
-    std::vector<std::tuple<Int>> data = {{{1, 3}}, {{5, 7}}};
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert_or_assign<Int>();
+    batch1.extract<Int>().push_back(1);
+    batch1.extract<Int>().push_back(3);
+    data.push_back(std::move(batch1));
+    batch2.insert_or_assign<Int>();
+    batch2.extract<Int>().push_back(5);
+    batch2.extract<Int>().push_back(7);
+    data.push_back(std::move(batch2));
+
     struct {
         int i = 0;
         std::shared_ptr<int> i_ptr = std::make_shared<int>(0);
         void operator()(const int&) { *i_ptr = ++i; }
     } func;
 
-    auto generated = data
-      | for_each(from<Int>, func)
+    data
+      | ranges::view::move
+      | hipipe::stream::for_each(from<Int>, func)
       | ranges::to_vector;
+
     BOOST_TEST(*(func.i_ptr) == 4);
 }
 
+
 BOOST_AUTO_TEST_CASE(test_for_each_move_only)
 {
-    // for_each of a move-only column
-    std::vector<std::tuple<Int, Unique>> data;
-    data.emplace_back(3, std::make_unique<int>(5));
-    data.emplace_back(1, std::make_unique<int>(2));
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert_or_assign<Int>();
+    batch1.extract<Int>().push_back(3);
+    batch1.insert_or_assign<Unique>();
+    batch1.extract<Unique>().push_back(std::make_unique<int>(5));
+    data.push_back(std::move(batch1));
+    batch2.insert_or_assign<Int>();
+    batch2.extract<Int>().push_back(1);
+    batch2.insert_or_assign<Unique>();
+    batch2.extract<Unique>().push_back(std::make_unique<int>(2));
+    data.push_back(std::move(batch2));
   
     std::vector<int> generated;
     data
@@ -72,60 +117,83 @@ BOOST_AUTO_TEST_CASE(test_for_each_move_only)
         })
       | ranges::to_vector;
   
-    test_ranges_equal(generated, std::vector<int>{8, 3});
+    BOOST_TEST(generated == (std::vector<int>{8, 3}));
 }
+
 
 BOOST_AUTO_TEST_CASE(test_for_each_dim0)
 {
-    std::vector<std::tuple<Int, Unique>> data;
-    data.emplace_back(3, std::make_unique<int>(5));
-    data.emplace_back(1, std::make_unique<int>(2));
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::dim;
+
+    batch_t batch1, batch2;
+    std::vector<batch_t> data;
+    batch1.insert_or_assign<Int>();
+    batch1.extract<Int>().push_back(3);
+    batch1.insert_or_assign<Unique>();
+    batch1.extract<Unique>().push_back(std::make_unique<int>(5));
+    data.push_back(std::move(batch1));
+    batch2.insert_or_assign<Int>();
+    batch2.extract<Int>().push_back(1);
+    batch2.insert_or_assign<Unique>();
+    batch2.extract<Unique>().push_back(std::make_unique<int>(2));
+    data.push_back(std::move(batch2));
   
     std::vector<int> generated;
     data
       | ranges::view::move
-      | for_each(from<Int, Unique>,
+      | hipipe::stream::for_each(from<Int, Unique>,
           [&generated](const std::vector<int>& int_batch,
                        const std::vector<std::unique_ptr<int>>& ptr_batch) {
               generated.push_back(*(ptr_batch[0]) + int_batch[0]);
         }, dim<0>)
       | ranges::to_vector;
   
-    test_ranges_equal(generated, std::vector<int>{8, 3});
+    BOOST_TEST(generated == (std::vector<int>{8, 3}));
 }
+
 
 BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only)
 {
-    auto data = generate_move_only_data();
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::dim;
+
+    std::vector<batch_t> data = generate_move_only_data_2d();
 
     std::vector<int> generated;
-    auto rng = data
+    data
       | ranges::view::move
-      | create<Int, UniqueVec>(2)
       | hipipe::stream::for_each(from<UniqueVec>,
           [&generated](std::unique_ptr<int>& ptr) {
               generated.push_back(*ptr + 1);
           }, dim<2>)
       | ranges::to_vector;
 
-    std::vector<int> desired = {2, 5, 9, 3, 3, 6};
-    BOOST_CHECK(generated == desired);
+    BOOST_TEST(generated == (std::vector<int>{7, 4, 8, 5, 3, 2, 3, 9}));
 }
+
 
 BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only_mutable)
 {
-    auto data = generate_move_only_data();
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::dim;
+
+    std::vector<batch_t> data = generate_move_only_data_2d();
 
     std::vector<int> generated;
-    auto rng = data
+    data
       | ranges::view::move
-      | create<Int, UniqueVec>(2)
       | hipipe::stream::for_each(from<UniqueVec>,
           [&generated, i = 4](std::unique_ptr<int>&) mutable {
               generated.push_back(i++);
           }, dim<2>)
       | ranges::to_vector;
 
-    std::vector<int> desired = {4, 5, 6, 7, 8, 9};
-    BOOST_CHECK(generated == desired);
+    BOOST_TEST(generated == (std::vector<int>{4, 5, 6, 7, 8, 9, 10, 11}));
 }

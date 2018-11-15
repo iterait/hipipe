@@ -11,45 +11,71 @@
 // The tests for stream::transform are split to multiple
 // files to speed up compilation in case of multiple CPUs.
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE transform4_test
+#define BOOST_TEST_MODULE transform5_test
 
-#include "transform.hpp"
+#include "common.hpp"
 
-using namespace hipipe::stream;
+#include <hipipe/core/stream/transform.hpp>
+#include <hipipe/core/utility/ndim.hpp>
+
 
 BOOST_AUTO_TEST_CASE(test_probabilistic_dim2_move_only)
 {
-    auto data = generate_move_only_data();
+    using hipipe::stream::batch_t;
+    using hipipe::stream::from;
+    using hipipe::stream::to;
+    using hipipe::stream::dim;
+    using hipipe::stream::cond;
 
-    auto rng = data
+    std::vector<batch_t> data = generate_move_only_data_2d();
+    std::mt19937 prng{1000003};
+
+    std::vector<batch_t> stream = data
       | ranges::view::move
-      | create<Int, UniqueVec>(2)
-      | drop<Int>
       // create IntVec column
-      | transform(from<UniqueVec>, to<IntVec>, [](auto&&) {
-            return 7;
-        }, dim<2>)
-      // probabilistically transform a single columns to a different column
-      | transform(from<IntVec>, to<UniqueVec>, 1.0,
-          [](int) {
-            return std::make_unique<int>(18);
-        }, prng, dim<2>)
+      | hipipe::stream::transform(from<UniqueVec>, to<IntVec>,
+         [](std::unique_ptr<int>&) -> int {
+             return 7;
+         }, dim<2>)
+      // probabilistically transform a single column to a different column
+      // fills UniqueVec with number 18
+      | hipipe::stream::transform(from<IntVec>, to<UniqueVec>, 1.0,
+          [](int&) -> std::unique_ptr<int> {
+              return std::make_unique<int>(18);
+          }, prng, dim<2>)
       // probabilistically transform two columns to two columns
-      | transform(from<UniqueVec, IntVec>, to<IntVec, UniqueVec>, 0.5,
-          [](std::unique_ptr<int>& ptr, int val) {
-            return std::make_tuple(val, std::make_unique<int>(19));
-        }, prng, dim<2>)
+      // replaces approx half of the 18 to 19 in UniqueVec
+      | hipipe::stream::transform(from<UniqueVec, IntVec>, to<IntVec, UniqueVec>, 0.5,
+          [](std::unique_ptr<int>& ptr, int val) -> std::tuple<int, std::unique_ptr<int>> {
+              return std::make_tuple(val, std::make_unique<int>(19));
+          }, prng, dim<2>)
       // probabilistically transform two columns to one column
-      | transform(from<IntVec, UniqueVec>, to<UniqueVec>, 0.5,
-          [](int, std::unique_ptr<int>& ptr) {
-            return std::make_unique<int>(19);
-        }, prng, dim<2>)
-      | unique_vec_to_int_vec();  // the original IntVec gets overwritten here
+      // again, replaces approx half of the 18 to 19 in UniqueVec
+      | hipipe::stream::transform(from<IntVec, UniqueVec>, to<UniqueVec>, 0.5,
+          [](int, std::unique_ptr<int>& ptr) -> std::unique_ptr<int> {
+              return std::make_unique<int>(19);
+          }, prng, dim<2>)
+      // convert UniqueVec to IntVec (just for convenience)
+      | hipipe::stream::transform(from<UniqueVec>, to<IntVec>,
+          [](std::unique_ptr<int>& ptr) -> int {
+              return *ptr;
+          }, dim<2>);
 
-    std::vector<int> generated = unpack(rng, from<IntVec>, dim<2>);
-    long number18 = ranges::count(generated, 18);
-    long number19 = ranges::count(generated, 19);
-    BOOST_TEST(generated.size() == 6);
-    BOOST_TEST(number19 >= 3);
-    BOOST_TEST(number19 == 6 - number18);
+    BOOST_CHECK(stream.size() == 2);
+    BOOST_CHECK(stream.at(0).extract<IntVec>().size()       == 3);
+    BOOST_CHECK(stream.at(0).extract<IntVec>().at(0).size() == 2);
+    BOOST_CHECK(stream.at(0).extract<IntVec>().at(1).size() == 2);
+    BOOST_CHECK(stream.at(0).extract<IntVec>().at(2).size() == 2);
+    BOOST_CHECK(stream.at(1).extract<IntVec>().size()       == 1);
+    BOOST_CHECK(stream.at(1).extract<IntVec>().at(0).size() == 2);
+
+    long number18 =
+      ranges::count(hipipe::utility::flat_view(stream.at(0).extract<IntVec>()), 18) +
+      ranges::count(hipipe::utility::flat_view(stream.at(1).extract<IntVec>()), 18);
+    long number19 =
+      ranges::count(hipipe::utility::flat_view(stream.at(0).extract<IntVec>()), 19) +
+      ranges::count(hipipe::utility::flat_view(stream.at(1).extract<IntVec>()), 19);
+
+    BOOST_TEST(number19 >= 4);
+    BOOST_TEST(number19 == 8 - number18);
 }
