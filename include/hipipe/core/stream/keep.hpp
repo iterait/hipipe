@@ -1,7 +1,7 @@
 /****************************************************************************
  *  hipipe library
  *  Copyright (c) 2018, Iterait a.s.
- *  Author(s) Adam Blažek
+ *  Author(s) Adam Blazek
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
