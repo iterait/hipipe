@@ -8,6 +8,8 @@ add_boost_test("test.core.stream.create" "create.cpp" "")
 
 add_boost_test("test.core.stream.drop" "drop.cpp" "")
 
+add_boost_test("test.core.stream.keep" "keep.cpp" "")
+
 add_boost_test("test.core.stream.example" "example.cpp" "")
 
 add_boost_test("test.core.stream.filter1" "filter1.cpp" "")
