@@ -134,8 +134,8 @@ public:
 
     /// \brief Insert a raw column handle to the batch or rewrite an existing one.
     ///
-    /// This is particularly useful when a raw column handle is retrieved with the at() function and there is no need
-    /// for creating a new column.
+    /// This is particularly useful when a raw column handle is retrieved with the at()
+    /// function and there is no need for creating a new column.
     ///
     /// Example:
     /// \code
