@@ -54,6 +54,27 @@ public:
     batch(const batch&) = delete;
     batch(batch&&) = default;
 
+    // direct access //
+
+    /// \brief Retrieve the handle (unique pointer reference) to the given column.
+    ///
+    /// Example:
+    /// \code
+    ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
+    ///     stream::batch b;
+    ///     b.insert_or_assign<IntCol>(std::vector<int>{0, 1, 2});
+    ///     b.at<IntCol>()->extract<IntCol>() == std::vector<int>{0, 1, 2};
+    /// \endcode
+    ///
+    /// \tparam Column The column whose handle should be retrieved.
+    /// \throws std::runtime_error If the batch does not contain the given column.
+    template<typename Column>
+    std::unique_ptr<abstract_column>& at()
+    {
+        throw_check_contains<Column>();
+        return columns_.at(std::type_index{typeid(Column)});
+    }
+
     // value extraction //
 
     /// \brief Extract a reference to the stored data of the given column.
@@ -109,6 +130,27 @@ public:
         columns_.insert_or_assign(
           std::type_index{typeid(Column)},
           std::make_unique<Column>(std::forward<Args>(args)...));
+    }
+
+    /// \brief Insert a raw column handle to the batch or rewrite an existing one.
+    ///
+    /// This is particularly useful when a raw column handle is retrieved with the at() function and there is no need
+    /// for creating a new column.
+    ///
+    /// Example:
+    /// \code
+    ///     HIPIPE_DEFINE_COLUMN(IntCol, int)
+    ///     stream::batch b1, b2;
+    ///     b1.insert_or_assign<IntCol>(std::vector<int>{0, 1, 2});
+    ///     b2.raw_insert_or_assign<IntCol>(std::move(b1.at<IntCol>()));  // b2 now holds the vector
+    /// \endcode
+    ///
+    /// \tparam Column The column to be inserted.
+    /// \param column_ptr The unique pointer to the column.
+    template<typename Column>
+    void raw_insert_or_assign(std::unique_ptr<abstract_column> column_ptr)
+    {
+        columns_.insert_or_assign(std::type_index{typeid(Column)}, std::move(column_ptr));
     }
 
     // column check //

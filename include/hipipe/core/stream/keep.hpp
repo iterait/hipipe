@@ -35,7 +35,7 @@ namespace detail {
             return ranges::view::transform(std::forward<Rng>(rng),
               [](batch_t batch) -> batch_t {
                   batch_t result;
-                  (result.insert_or_assign<Columns>(std::move(batch.extract<Columns>())), ...);
+                  (result.raw_insert_or_assign<Columns>(std::move(batch.at<Columns>())), ...);
                   return result;
             });
         }
