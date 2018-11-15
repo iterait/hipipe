@@ -1,8 +1,7 @@
 /****************************************************************************
  *  hipipe library
- *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Copyright (c) 2018, Iterait a.s.
- *  Author(s) Filip Matzner, Adam Blažek
+ *  Author(s) Adam Blažek
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
@@ -62,7 +61,7 @@ namespace detail {
 ///     HIPIPE_DEFINE_COLUMN(id, int)
 ///     HIPIPE_DEFINE_COLUMN(value, double)
 ///     std::vector<std::tuple<int, double>> data = {{3, 5.}, {1, 2.}};
-///     auto rng = data | create<id, value>() | keep<value>; // now it has only the value column
+///     auto rng = data | create<id, value>() | keep<value>;  // now it has only the value column
 /// \endcode
 template <typename... Columns>
 ranges::view::view<detail::keep_fn<Columns...>> keep{};

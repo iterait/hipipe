@@ -1,8 +1,7 @@
 /****************************************************************************
  *  hipipe library
- *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Copyright (c) 2018, Iterait a.s.
- *  Author(s) Filip Matzner, Adam Blažek
+ *  Author(s) Adam Blažek
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
@@ -16,7 +15,6 @@
 #include <hipipe/core/stream/keep.hpp>
 
 HIPIPE_DEFINE_COLUMN(Unique3, std::unique_ptr<int>)
-
 
 
 BOOST_AUTO_TEST_CASE(test_keep_int_column)
