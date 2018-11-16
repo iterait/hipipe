@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['index_5fmapper',['index_mapper',['../classhipipe_1_1index__mapper.html',1,'hipipe']]],
-  ['index_5fmapper_3c_20std_3a_3astring_20_3e',['index_mapper&lt; std::string &gt;',['../classhipipe_1_1index__mapper.html',1,'hipipe']]]
+  ['column_5fbase',['column_base',['../classhipipe_1_1stream_1_1column__base.html',1,'hipipe::stream']]],
+  ['csv_5fistream_5frange',['csv_istream_range',['../classhipipe_1_1csv__istream__range.html',1,'hipipe']]]
 ];

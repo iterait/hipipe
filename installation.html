@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">HiPipe
-   &#160;<span id="projectnumber">0.5.1</span>
+   &#160;<span id="projectnumber">0.6.0</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
@@ -70,41 +70,53 @@ $(function() {
 <div class="contents">
 <div class="textblock"><h2>Requirements </h2>
 <hr/>
-<p>Officially supported systems are Ubuntu 16.10+ and Arch Linux, although <b>hipipe</b> should work on any recent enough system. The <b>hipipe core</b> is a pure C++ library with a single dependency to <a href="http://www.boost.org/">Boost C++ Libraries</a> (Boost 1.61+ is required). Extensions to the core library are <b>Python bindings</b> with automatic <a href="http://opencv.org/">OpenCV</a> image conversion between C++ and Python.</p>
+<p>Officially supported systems are Ubuntu 18.04+ and Arch Linux, although <b>hipipe</b> should work on any recent enough system. The <b>hipipe core</b> is a pure C++ library that by default depends on <a href="http://www.boost.org/">Boost C++ Libraries</a> (v1.61+ with Boost::Python is required) and <a href="http://opencv.org/">OpenCV</a> for image conversion between C++ and Python. Python bindings and OpenCV support can be disabled, see Advanced Build Options section below.</p>
 <p>If you plan to use the full functionality (this is the default behavior), install all the requirements by one of the following commands:</p>
-<div class="fragment"><div class="line"># Arch Linux</div><div class="line">pacman -S git base-devel cmake boost opencv python python-numpy</div><div class="line"></div><div class="line"># Ubuntu 16.10+</div><div class="line">apt install git build-essential cmake libboost-all-dev libopencv-dev python3-dev python3-numpy</div></div><!-- fragment --><p>If you want to use <b>hipipe core</b> only, use one of the following instead:</p>
-<div class="fragment"><div class="line"># Arch Linux</div><div class="line">pacman -S git base-devel cmake boost</div><div class="line"></div><div class="line"># Ubuntu 16.10+</div><div class="line">apt install git build-essential cmake libboost-all-dev</div></div><!-- fragment --><p>If you plan to use <a href="https://www.tensorflow.org/api_guides/cc/guide">TensorFlow C++ API</a>, please install the TensorFlow C++ library into your system using <a href="https://github.com/FloopCZ/tensorflow_cc">tensorflow_cc</a> project. This is not neccessary if you only want to use TensorFlow in Python and it is disabled by default.</p>
+<div class="fragment"><div class="line"># Arch Linux</div><div class="line">pacman -S git base-devel cmake boost opencv python python-numpy</div><div class="line"></div><div class="line"># Ubuntu 18.04+</div><div class="line">apt install git build-essential cmake libboost-all-dev libopencv-dev python3-dev python3-numpy</div></div><!-- fragment --><p>If you plan to use <a href="https://www.tensorflow.org/api_guides/cc/guide">TensorFlow C++ API</a>, please install the TensorFlow C++ library into your system using <a href="https://github.com/FloopCZ/tensorflow_cc">tensorflow_cc</a> project. This is not neccessary if you only want to use TensorFlow in Python and it is disabled by default.</p>
 <h2>Download </h2>
 <hr/>
 <p>The complete source code can be downloaded from our official GitHub <a href="https://github.com/iterait/hipipe">repository</a> using the following commands:</p>
 <div class="fragment"><div class="line">git clone --recursive https://github.com/iterait/hipipe.git</div><div class="line">cd hipipe</div></div><!-- fragment --><h2>Build &amp; Install </h2>
 <hr/>
 <p>Use the following for system-wide installation:</p>
-<div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div><div class="line">cmake ..</div><div class="line">make -j5</div><div class="line">make test</div><div class="line">sudo make install</div></div><!-- fragment --><p>Or use the following for userspace installation:</p>
-<div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div><div class="line">cmake -DCMAKE_INSTALL_PREFIX=~/.local ..</div><div class="line">make -j5</div><div class="line">make test</div><div class="line">make install</div></div><!-- fragment --><p>For userspace installation, don't forget to set the appropriate environmental variables, e.g., add the following to your <code>.bashrc</code> / <code>.zshrc</code>: </p><div class="fragment"><div class="line"># register ~/.local system hierarchy</div><div class="line">export PATH=&quot;${HOME}/.local/bin:$PATH&quot;</div><div class="line">export LIBRARY_PATH=&quot;${HOME}/.local/lib:$LIBRARY_PATH&quot;</div><div class="line">export LD_LIBRARY_PATH=&quot;${HOME}/.local/lib:$LD_LIBRARY_PATH&quot;</div><div class="line">export CPLUS_INCLUDE_PATH=&quot;${HOME}/.local/include:$CPLUS_INCLUDE_PATH&quot;</div></div><!-- fragment --><h2>Advanced Build Options </h2>
+<div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div><div class="line">cmake ..</div><div class="line">make -j4</div><div class="line">ctest --output-on-failure</div><div class="line">sudo make install</div></div><!-- fragment --><p>Or use the following for userspace installation:</p>
+<div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div><div class="line">cmake -DCMAKE_INSTALL_PREFIX=~/.local ..</div><div class="line">make -j4</div><div class="line">ctest --output-on-failure</div><div class="line">make install</div></div><!-- fragment --><p>For userspace installation, don't forget to set the appropriate environmental variables, e.g., add the following to your <code>.bashrc</code> / <code>.zshrc</code>: </p><div class="fragment"><div class="line"># register ~/.local system hierarchy</div><div class="line">export PATH=&quot;${HOME}/.local/bin:$PATH&quot;</div><div class="line">export LIBRARY_PATH=&quot;${HOME}/.local/lib:$LIBRARY_PATH&quot;</div><div class="line">export LD_LIBRARY_PATH=&quot;${HOME}/.local/lib:$LD_LIBRARY_PATH&quot;</div><div class="line">export CPLUS_INCLUDE_PATH=&quot;${HOME}/.local/include:$CPLUS_INCLUDE_PATH&quot;</div></div><!-- fragment --><h2>Advanced Build Options </h2>
 <hr/>
 <p>There are multiple build options that can be set when configuring the project with CMake. For instance, if you don't want to build tests because it takes a lot of time, and you are also not interested in Python interoperability, you may use the <code>BUILD_TEST</code> and <code>BUILD_PYTHON</code> flags as follows:</p>
-<div class="fragment"><div class="line">cmake -DBUILD_TEST=OFF -DBUILD_PYTHON=OFF ..</div></div><!-- fragment --><p>The full list of supported options is the following:</p>
+<div class="fragment"><div class="line">cmake -DHIPIPE_BUILD_TEST=OFF -DHIPIPE_BUILD_PYTHON=OFF ..</div></div><!-- fragment --><p>The full list of supported options is the following:</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Option  </th><th class="markdownTableHeadNone">Description  </th><th class="markdownTableHeadNone">Default   </th></tr>
 <tr class="markdownTableBody" class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">BUILD_TEST  </td><td class="markdownTableBodyNone">Build tests.  </td><td class="markdownTableBodyNone">ON   </td></tr>
+<td class="markdownTableBodyNone">HIPIPE_BUILD_TEST  </td><td class="markdownTableBodyNone">Build tests.  </td><td class="markdownTableBodyNone">ON   </td></tr>
 <tr class="markdownTableBody" class="markdownTableRowEven">
-<td class="markdownTableBodyNone">BUILD_DOC  </td><td class="markdownTableBodyNone">Build documentation.  </td><td class="markdownTableBodyNone">OFF   </td></tr>
+<td class="markdownTableBodyNone">HIPIPE_BUILD_DOC  </td><td class="markdownTableBodyNone">Build documentation.  </td><td class="markdownTableBodyNone">OFF   </td></tr>
 <tr class="markdownTableBody" class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">BUILD_PYTHON  </td><td class="markdownTableBodyNone">Build Python functionality.  </td><td class="markdownTableBodyNone">ON   </td></tr>
+<td class="markdownTableBodyNone">HIPIPE_BUILD_PYTHON  </td><td class="markdownTableBodyNone">Build Python functionality.  </td><td class="markdownTableBodyNone">ON   </td></tr>
 <tr class="markdownTableBody" class="markdownTableRowEven">
-<td class="markdownTableBodyNone">BUILD_PYTHON_OPENCV  </td><td class="markdownTableBodyNone">Build Python OpenCV converters (requires BUILD_PYTHON).  </td><td class="markdownTableBodyNone">ON   </td></tr>
+<td class="markdownTableBodyNone">HIPIPE_BUILD_PYTHON_OPENCV  </td><td class="markdownTableBodyNone">Build Python OpenCV converters (requires HIPIPE_BUILD_PYTHON).  </td><td class="markdownTableBodyNone">ON   </td></tr>
 <tr class="markdownTableBody" class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">BUILD_TENSORFLOW  </td><td class="markdownTableBodyNone">Build TensorFlow functionality (unnecessary if you use TensorFlow in Python).  </td><td class="markdownTableBodyNone">OFF   </td></tr>
+<td class="markdownTableBodyNone">HIPIPE_BUILD_TENSORFLOW  </td><td class="markdownTableBodyNone">Build TensorFlow functionality (unnecessary if you use TensorFlow in Python).  </td><td class="markdownTableBodyNone">OFF   </td></tr>
 <tr class="markdownTableBody" class="markdownTableRowEven">
-<td class="markdownTableBodyNone">BUILTIN_RANGEV3  </td><td class="markdownTableBodyNone">Install and use the built-in Range-v3 library.  </td><td class="markdownTableBodyNone">ON   </td></tr>
+<td class="markdownTableBodyNone">HIPIPE_BUILTIN_RANGEV3  </td><td class="markdownTableBodyNone">Install and use the built-in Range-v3 library.  </td><td class="markdownTableBodyNone">ON   </td></tr>
 <tr class="markdownTableBody" class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">CMAKE_INSTALL_PREFIX  </td><td class="markdownTableBodyNone">The path where hipipe will be installed.  </td><td class="markdownTableBodyNone">OS-dependent   </td></tr>
 <tr class="markdownTableBody" class="markdownTableRowEven">
 <td class="markdownTableBodyNone">CMAKE_CXX_COMPILER  </td><td class="markdownTableBodyNone">The compiler command to be used, e.g., g++ or clang++.  </td><td class="markdownTableBodyNone">OS-dependent   </td></tr>
 </table>
+<h2>Development </h2>
+<hr/>
+<p>Are you missing a feature or have you found a bug? You can either fill an issue on our GitHub (<a href="https://github.com/iterait/hipipe">https://github.com/iterait/hipipe</a>) or even better, become a developer!</p>
+<p>There are no special requirements for development, just a few hints:</p><ul>
+<li>Header files are under <code>include/</code> directory.</li>
+<li>Source files are under <code>src/</code> directory.</li>
+<li>Unit tests are under <code>test/</code> directory.</li>
+<li>Any new functionality has to be accompanied by unit tests.</li>
+<li>If you add a new header, don't forget to add it to the corresponding accumulating header in parent folder. For instance, <code>include/core/stream.hpp</code> lists all the headers under <code>include/core/stream</code> directory.</li>
+<li>If you add a new test, don't forget to register it in <code>CMakeLists.txt</code> located in the same folder as the test.</li>
+<li>To build and run a single unit test, run e.g.,: <div class="fragment"><div class="line">make test.core.stream.drop</div><div class="line">ctest --output-on-failure -R test.core.stream.drop</div></div><!-- fragment --></li>
+<li>To build and run a single test that requires building a Python module, run e.g.,: <div class="fragment"><div class="line">make test.core.python.stream.converter_py_cpp  # note the py_cpp suffix</div><div class="line">ctest --output-on-failure -R test.core.python.stream.converter</div></div><!-- fragment --> </li>
+</ul>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

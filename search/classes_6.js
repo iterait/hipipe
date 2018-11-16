@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['stop_5fiteration_5fexception',['stop_iteration_exception',['../structhipipe_1_1python_1_1stop__iteration__exception.html',1,'hipipe::python']]]
+  ['ndim_5fcontainer',['ndim_container',['../structhipipe_1_1utility_1_1ndim__container.html',1,'hipipe::utility']]],
+  ['ndims',['ndims',['../structhipipe_1_1utility_1_1ndims.html',1,'hipipe::utility']]]
 ];

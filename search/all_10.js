@@ -1,22 +1,9 @@
 var searchData=
 [
-  ['tensorflow_20graph_20evaluation_2e',['TensorFlow graph evaluation.',['../group___tensorflow.html',1,'']]],
-  ['thread_5fpool',['thread_pool',['../classhipipe_1_1thread__pool.html',1,'hipipe::thread_pool'],['../classhipipe_1_1thread__pool.html#a6f466f8feb99d347e8a856ce4526060a',1,'hipipe::thread_pool::thread_pool()']]],
-  ['times_5fwith_5findex',['times_with_index',['../group___tuple.html#gaf25612b3411904b8473ac80d4c71903b',1,'hipipe::utility']]],
-  ['to_5fndarray',['to_ndarray',['../group___python.html#ga70141fe18cdffc51762ab2b790de38c4',1,'hipipe::python::utility']]],
-  ['to_5fpython',['to_python',['../group___python.html#ga704676b0629f72940366d89fdb87019d',1,'hipipe::python::stream::to_python()'],['../group___python.html#ga88dcae35a2c8fc73e1e408788e38c886',1,'hipipe::python::utility::to_python()']]],
-  ['to_5fstring',['to_string',['../group___string.html#ga6a0a836a966d5badfbda07e1673b0ffd',1,'hipipe::utility']]],
-  ['transform',['transform',['../group___stream.html#ga86eb72187b1b478933826aed7c5b8f52',1,'hipipe::stream::transform(from_t&lt; FromColumns... &gt; f, to_t&lt; ToColumns... &gt; t, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})'],['../group___stream.html#gaeab8f89c1686645bed7e61fb5f46f104',1,'hipipe::stream::transform(from_t&lt; FromColumns... &gt; f, to_t&lt; ToColumns... &gt; t, cond_t&lt; CondColumn &gt; c, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})'],['../group___stream.html#ga5933ec8bbd6d6d3c9f41cbd16690c774',1,'hipipe::stream::transform(from_t&lt; FromColumns... &gt; f, to_t&lt; ToColumns... &gt; t, double prob, Fun fun, Prng &amp;prng=utility::random_generator, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})']]],
-  ['try_5finsert',['try_insert',['../classhipipe_1_1index__mapper.html#a19ac5a7d94a9233aa1bf5fe47f571265',1,'hipipe::index_mapper::try_insert(T val)'],['../classhipipe_1_1index__mapper.html#a9bdf70d6213351ccaddee3c88b2f9ce1',1,'hipipe::index_mapper::try_insert(Rng rng)'],['../classhipipe_1_1index__mapper.html#a9bdf70d6213351ccaddee3c88b2f9ce1',1,'hipipe::index_mapper::try_insert(Rng rng)']]],
-  ['tuple_20and_20variadic_20template_20utilites_2e',['Tuple and variadic template utilites.',['../group___tuple.html',1,'']]],
-  ['tuple_5fcat_5funique',['tuple_cat_unique',['../group___tuple.html#ga18aea841218b06950f22dfed27c6945a',1,'hipipe::utility']]],
-  ['tuple_5fcontains',['tuple_contains',['../structhipipe_1_1utility_1_1tuple__contains.html',1,'hipipe::utility']]],
-  ['tuple_5ffor_5feach',['tuple_for_each',['../group___tuple.html#gaa9961c2170337d529968ce1041ab4c8f',1,'hipipe::utility']]],
-  ['tuple_5ffor_5feach_5fwith_5findex',['tuple_for_each_with_index',['../group___tuple.html#ga523ac02152dbf96252faa5e85dec8cba',1,'hipipe::utility']]],
-  ['tuple_5findex_5fview',['tuple_index_view',['../group___tuple.html#ga6f05bdef9844406a88c1f869857abec7',1,'hipipe::utility']]],
-  ['tuple_5fprint',['tuple_print',['../group___tuple.html#ga24fc86f8a8c646dcc2c00cc8e0776f05',1,'hipipe::utility']]],
-  ['tuple_5fremove',['tuple_remove',['../group___tuple.html#ga6c6c34f3c78e151fae8c00623129f7dc',1,'hipipe::utility']]],
-  ['tuple_5ftransform',['tuple_transform',['../group___tuple.html#ga7c87ffe36318ca892cd9f7780ff84391',1,'hipipe::utility']]],
-  ['tuple_5ftransform_5fwith_5findex',['tuple_transform_with_index',['../group___tuple.html#ga2dd73f88d60339287bf6f0df3357937d',1,'hipipe::utility']]],
-  ['tuple_5ftype_5fview',['tuple_type_view',['../group___tuple.html#ga0b8b329bd5da0bf8f692081ade95b459',1,'hipipe::utility']]]
+  ['same_5fsize',['same_size',['../group___n_dim.html#gab48a96f9a1aed89b4cabb88f1cff35bb',1,'ndim.hpp']]],
+  ['shape',['shape',['../group___n_dim.html#ga3f4d1baf14bf6bbb7abd9cffe00a8754',1,'shape(const Rng &amp;rng):&#160;ndim.hpp'],['../group___n_dim.html#ga93bdcca450514d24c5e30d7c9484b8a9',1,'shape(const Rng &amp;rng):&#160;ndim.hpp']]],
+  ['size',['size',['../classhipipe_1_1index__mapper.html#a7e706ca524acde3be2cd7c59aa2d4b53',1,'hipipe::index_mapper::size()'],['../classhipipe_1_1stream_1_1batch.html#a1c2e601800caa2b27cfb80e942179ab1',1,'hipipe::stream::batch::size()'],['../classhipipe_1_1stream_1_1abstract__column.html#a8f37eac0cc44cd79f8d48e3d01d2db8f',1,'hipipe::stream::abstract_column::size()'],['../classhipipe_1_1stream_1_1column__base.html#ab09d69e4c976263d61298025d0ad6b27',1,'hipipe::stream::column_base::size()']]],
+  ['stream_20modifiers_20and_20data_20types_2e',['Stream modifiers and data types.',['../group___stream.html',1,'']]],
+  ['string_20utilities_2e',['String utilities.',['../group___string.html',1,'']]],
+  ['string_5fto',['string_to',['../group___string.html#ga030d9a2206abdf8bb8121723ba7b8179',1,'hipipe::utility']]]
 ];

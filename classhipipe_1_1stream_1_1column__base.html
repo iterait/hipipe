@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>HiPipe: hipipe::stream::column_base&lt; T, bool &gt; Class Template Reference</title>
+<title>HiPipe: hipipe::stream::column_base&lt; ColumnName, ExampleType &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">HiPipe
-   &#160;<span id="projectnumber">0.5.1</span>
+   &#160;<span id="projectnumber">0.6.0</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
@@ -69,26 +69,213 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classhipipe_1_1stream_1_1column__base-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">hipipe::stream::column_base&lt; T, bool &gt; Class Template Reference<div class="ingroups"><a class="el" href="group___stream.html">Stream modifiers and data types.</a></div></div>  </div>
+<div class="title">hipipe::stream::column_base&lt; ColumnName, ExampleType &gt; Class Template Reference<div class="ingroups"><a class="el" href="group___stream.html">Stream modifiers and data types.</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Base class for hipipe columns.  
+<p>Implementation stub of a column defined by HIPIPE_DEFINE_COLUMN macro.  
  <a href="classhipipe_1_1stream_1_1column__base.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="column_8hpp_source.html">hipipe/core/stream/column.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="column__t_8hpp_source.html">hipipe/core/stream/column_t.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for hipipe::stream::column_base&lt; ColumnName, ExampleType &gt;:</div>
+<div class="dyncontent">
+<div class="center"><img src="classhipipe_1_1stream_1_1column__base__inherit__graph.png" border="0" usemap="#hipipe_1_1stream_1_1column__base_3_01_column_name_00_01_example_type_01_4_inherit__map" alt="Inheritance graph"/></div>
+<map name="hipipe_1_1stream_1_1column__base_3_01_column_name_00_01_example_type_01_4_inherit__map" id="hipipe_1_1stream_1_1column__base_3_01_column_name_00_01_example_type_01_4_inherit__map">
+<area shape="rect" id="node2" href="classhipipe_1_1stream_1_1abstract__column.html" title="Abstract base class for HiPipe columns. " alt="" coords="54,5,231,47"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for hipipe::stream::column_base&lt; ColumnName, ExampleType &gt;:</div>
+<div class="dyncontent">
+<div class="center"><img src="classhipipe_1_1stream_1_1column__base__coll__graph.png" border="0" usemap="#hipipe_1_1stream_1_1column__base_3_01_column_name_00_01_example_type_01_4_coll__map" alt="Collaboration graph"/></div>
+<map name="hipipe_1_1stream_1_1column__base_3_01_column_name_00_01_example_type_01_4_coll__map" id="hipipe_1_1stream_1_1column__base_3_01_column_name_00_01_example_type_01_4_coll__map">
+<area shape="rect" id="node2" href="classhipipe_1_1stream_1_1abstract__column.html" title="Abstract base class for HiPipe columns. " alt="" coords="54,5,231,47"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a4fc8633b4cf0c514b988e7d58de14181"><td class="memItemLeft" align="right" valign="top"><a id="a4fc8633b4cf0c514b988e7d58de14181"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1column__base.html#a4fc8633b4cf0c514b988e7d58de14181">example_type</a> = ExampleType</td></tr>
+<tr class="memdesc:a4fc8633b4cf0c514b988e7d58de14181"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of a single example. <br /></td></tr>
+<tr class="separator:a4fc8633b4cf0c514b988e7d58de14181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6a538feb8c14859973bcdacd141df7b"><td class="memItemLeft" align="right" valign="top"><a id="ab6a538feb8c14859973bcdacd141df7b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1column__base.html#ab6a538feb8c14859973bcdacd141df7b">data_type</a> = std::vector&lt; <a class="el" href="classhipipe_1_1stream_1_1column__base.html#a4fc8633b4cf0c514b988e7d58de14181">example_type</a> &gt;</td></tr>
+<tr class="memdesc:ab6a538feb8c14859973bcdacd141df7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of multiple examples. This is what the column actually stores. <br /></td></tr>
+<tr class="separator:ab6a538feb8c14859973bcdacd141df7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a65707e93d0711c1e09f528c6ee8d1678"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:a65707e93d0711c1e09f528c6ee8d1678"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1column__base.html#a65707e93d0711c1e09f528c6ee8d1678">column_base</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:a65707e93d0711c1e09f528c6ee8d1678"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor.  <a href="#a65707e93d0711c1e09f528c6ee8d1678">More...</a><br /></td></tr>
+<tr class="separator:a65707e93d0711c1e09f528c6ee8d1678"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab09d69e4c976263d61298025d0ad6b27"><td class="memItemLeft" align="right" valign="top"><a id="ab09d69e4c976263d61298025d0ad6b27"></a>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1column__base.html#ab09d69e4c976263d61298025d0ad6b27">size</a> () const override</td></tr>
+<tr class="memdesc:ab09d69e4c976263d61298025d0ad6b27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of examples in this column. <br /></td></tr>
+<tr class="separator:ab09d69e4c976263d61298025d0ad6b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74a470b17fb2d1c68818e2b1d45b6c52"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classhipipe_1_1stream_1_1abstract__column.html">abstract_column</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1column__base.html#a74a470b17fb2d1c68818e2b1d45b6c52">take</a> (std::size_t n) override</td></tr>
+<tr class="memdesc:a74a470b17fb2d1c68818e2b1d45b6c52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Steal the given number of examples from this column and create a new column out of those.  <a href="#a74a470b17fb2d1c68818e2b1d45b6c52">More...</a><br /></td></tr>
+<tr class="separator:a74a470b17fb2d1c68818e2b1d45b6c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a6f8fcdc2c88f721575b3a86e29b5f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1column__base.html#a9a6f8fcdc2c88f721575b3a86e29b5f2">push_back</a> (std::unique_ptr&lt; <a class="el" href="classhipipe_1_1stream_1_1abstract__column.html">abstract_column</a> &gt; rhs) override</td></tr>
+<tr class="memdesc:a9a6f8fcdc2c88f721575b3a86e29b5f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concatenate the examples from two columns of the same type.  <a href="#a9a6f8fcdc2c88f721575b3a86e29b5f2">More...</a><br /></td></tr>
+<tr class="separator:a9a6f8fcdc2c88f721575b3a86e29b5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2aca26c72b93266f74647d0b7287f5d"><td class="memItemLeft" align="right" valign="top"><a id="ad2aca26c72b93266f74647d0b7287f5d"></a>
+<a class="el" href="classhipipe_1_1stream_1_1column__base.html#ab6a538feb8c14859973bcdacd141df7b">data_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1column__base.html#ad2aca26c72b93266f74647d0b7287f5d">data</a> ()</td></tr>
+<tr class="memdesc:ad2aca26c72b93266f74647d0b7287f5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a reference to the stored vector of examples. <br /></td></tr>
+<tr class="separator:ad2aca26c72b93266f74647d0b7287f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff5d8c3eb381c3cb9d1991185cf1e4be"><td class="memItemLeft" align="right" valign="top"><a id="aff5d8c3eb381c3cb9d1991185cf1e4be"></a>
+const <a class="el" href="classhipipe_1_1stream_1_1column__base.html#ab6a538feb8c14859973bcdacd141df7b">data_type</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1column__base.html#aff5d8c3eb381c3cb9d1991185cf1e4be">data</a> () const</td></tr>
+<tr class="memdesc:aff5d8c3eb381c3cb9d1991185cf1e4be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a const reference to the stored vector of examples. <br /></td></tr>
+<tr class="separator:aff5d8c3eb381c3cb9d1991185cf1e4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classhipipe_1_1stream_1_1abstract__column"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classhipipe_1_1stream_1_1abstract__column')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classhipipe_1_1stream_1_1abstract__column.html">hipipe::stream::abstract_column</a></td></tr>
+<tr class="memitem:aceeb327c61c90fa8003fac01223d717e inherit pub_methods_classhipipe_1_1stream_1_1abstract__column"><td class="memTemplParams" colspan="2">template&lt;typename Column &gt; </td></tr>
+<tr class="memitem:aceeb327c61c90fa8003fac01223d717e inherit pub_methods_classhipipe_1_1stream_1_1abstract__column"><td class="memTemplItemLeft" align="right" valign="top">Column::data_type &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1abstract__column.html#aceeb327c61c90fa8003fac01223d717e">extract</a> ()</td></tr>
+<tr class="separator:aceeb327c61c90fa8003fac01223d717e inherit pub_methods_classhipipe_1_1stream_1_1abstract__column"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cceda54584cd661e30fdf485ed10769 inherit pub_methods_classhipipe_1_1stream_1_1abstract__column"><td class="memTemplParams" colspan="2">template&lt;typename Column &gt; </td></tr>
+<tr class="memitem:a8cceda54584cd661e30fdf485ed10769 inherit pub_methods_classhipipe_1_1stream_1_1abstract__column"><td class="memTemplItemLeft" align="right" valign="top">const Column::data_type &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1abstract__column.html#a8cceda54584cd661e30fdf485ed10769">extract</a> () const</td></tr>
+<tr class="separator:a8cceda54584cd661e30fdf485ed10769 inherit pub_methods_classhipipe_1_1stream_1_1abstract__column"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac597cb596daec9ed1724a4efd4188823 inherit pub_methods_classhipipe_1_1stream_1_1abstract__column"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1stream_1_1abstract__column.html#ac597cb596daec9ed1724a4efd4188823">name</a> () const =0</td></tr>
+<tr class="separator:ac597cb596daec9ed1724a4efd4188823 inherit pub_methods_classhipipe_1_1stream_1_1abstract__column"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename T, bool = std::is_copy_constructible&lt;T&gt;{}&gt;<br />
-class hipipe::stream::column_base&lt; T, bool &gt;</h3>
+<div class="textblock"><h3>template&lt;typename ColumnName, typename ExampleType&gt;<br />
+class hipipe::stream::column_base&lt; ColumnName, ExampleType &gt;</h3>
 
-<p>Base class for hipipe columns. </p>
-<p>Stores a vector of given types and provides convenient constructors. </p>
+<p>Implementation stub of a column defined by HIPIPE_DEFINE_COLUMN macro. </p>
 
-<p class="definition">Definition at line <a class="el" href="column_8hpp_source.html#l00025">25</a> of file <a class="el" href="column_8hpp_source.html">column.hpp</a>.</p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>hipipe/core/stream/<a class="el" href="column_8hpp_source.html">column.hpp</a></li>
+<p class="definition">Definition at line <a class="el" href="column__t_8hpp_source.html#l00121">121</a> of file <a class="el" href="column__t_8hpp_source.html">column_t.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a65707e93d0711c1e09f528c6ee8d1678"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65707e93d0711c1e09f528c6ee8d1678">&#9670;&nbsp;</a></span>column_base()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ColumnName , typename ExampleType &gt; </div>
+<div class="memtemplate">
+template&lt;typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a>&lt; ColumnName, ExampleType &gt;::<a class="el" href="classhipipe_1_1stream_1_1column__base.html">column_base</a> </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The constructor. </p>
+<p>The constructor forwards its arguments to the constructor of the data_type. </p>
+
+<p class="definition">Definition at line <a class="el" href="column__t_8hpp_source.html#l00146">146</a> of file <a class="el" href="column__t_8hpp_source.html">column_t.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a9a6f8fcdc2c88f721575b3a86e29b5f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a6f8fcdc2c88f721575b3a86e29b5f2">&#9670;&nbsp;</a></span>push_back()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ColumnName , typename ExampleType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a>&lt; ColumnName, ExampleType &gt;::push_back </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classhipipe_1_1stream_1_1abstract__column.html">abstract_column</a> &gt;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Concatenate the examples from two columns of the same type. </p>
+<p>Example: </p><div class="fragment"><div class="line"><a class="code" href="group___stream.html#ga762e4b9643b235eec42b86533e3302da">HIPIPE_DEFINE_COLUMN</a>(IntCol, <span class="keywordtype">int</span>)</div><div class="line"><span class="keyword">auto</span> col1 = std::make_unique&lt;IntCol&gt;();</div><div class="line">col1-&gt;data().assign({1, 2, 3});</div><div class="line"><span class="keyword">auto</span> col2 = std::make_unique&lt;IntCol&gt;();</div><div class="line">col2-&gt;data().assign({4, 5, 6});</div><div class="line">col1-&gt;push_back(std::move(col2));</div><div class="line"><span class="comment">// col1 contains {1, 2, 3, 4, 5, 6}</span></div><div class="line"><span class="comment">// col2 should not be used anymore </span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rhs</td><td>The column whose examples will be appended. It needs to be the same type (i.e., the same ColumnName) as this column. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classhipipe_1_1stream_1_1abstract__column.html#a3f8463248866ad6dc7036cbdd6fcf0e7">hipipe::stream::abstract_column</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="column__t_8hpp_source.html#l00205">205</a> of file <a class="el" href="column__t_8hpp_source.html">column_t.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a74a470b17fb2d1c68818e2b1d45b6c52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74a470b17fb2d1c68818e2b1d45b6c52">&#9670;&nbsp;</a></span>take()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ColumnName , typename ExampleType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classhipipe_1_1stream_1_1abstract__column.html">abstract_column</a>&gt; <a class="el" href="classhipipe_1_1stream_1_1column__base.html">hipipe::stream::column_base</a>&lt; ColumnName, ExampleType &gt;::take </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Steal the given number of examples from this column and create a new column out of those. </p>
+<p>Example: </p><div class="fragment"><div class="line"><a class="code" href="group___stream.html#ga762e4b9643b235eec42b86533e3302da">HIPIPE_DEFINE_COLUMN</a>(IntCol, <span class="keywordtype">int</span>)</div><div class="line">IntCol col1;</div><div class="line">col1.data().assign({1, 2, 3, 4, 5});</div><div class="line">std::unique_ptr&lt;abstract_column&gt; col2 = col1.take(3);</div><div class="line"><span class="comment">/// col2 contains {1, 2, 3}</span></div></div><!-- fragment --><p>Developer TODO: At the moment, this operation has linear complexity. Maybe we could store the data as a std::deque instead of std::vector.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>The number of examples to steal. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>If attempting to take more than there is. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classhipipe_1_1stream_1_1abstract__column.html#a1b5a94dc38e42f218f28cdd52d81e831">hipipe::stream::abstract_column</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="column__t_8hpp_source.html#l00176">176</a> of file <a class="el" href="column__t_8hpp_source.html">column_t.hpp</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>hipipe/core/stream/<a class="el" href="column__t_8hpp_source.html">column_t.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

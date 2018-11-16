@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">HiPipe
-   &#160;<span id="projectnumber">0.5.1</span>
+   &#160;<span id="projectnumber">0.6.0</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
@@ -71,23 +71,23 @@ $(function() {
   <div class="summary">
 <a href="structhipipe_1_1utility_1_1ndim__container-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">hipipe::utility::ndim_container&lt; T, Dims, Container &gt; Struct Template Reference<div class="ingroups"><a class="el" href="group___vector.html">Multidimensional container utilities.</a></div></div>  </div>
+<div class="title">hipipe::utility::ndim_container&lt; T, Dims, Container &gt; Struct Template Reference<div class="ingroups"><a class="el" href="group___n_dim.html">Multidimensional container utilities.</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p>Fast declaration of a multidimensional container.  
  <a href="structhipipe_1_1utility_1_1ndim__container.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="vector_8hpp_source.html">hipipe/core/utility/vector.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="ndim_8hpp_source.html">hipipe/core/utility/ndim.hpp</a>&gt;</code></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename T, long Dims, template&lt; typename... &gt; typename Container = std::vector&gt;<br />
 struct hipipe::utility::ndim_container&lt; T, Dims, Container &gt;</h3>
 
 <p>Fast declaration of a multidimensional container. </p>
 <p>Example: </p><div class="fragment"><div class="line">ndim_container_t&lt;double, 3&gt; vec_3d;</div><div class="line">static_assert(std::is_same&lt;decltype(vec_3d),</div><div class="line">                           std::vector&lt;std::vector&lt;std::vector&lt;double&gt;&gt;&gt;</div><div class="line">                           &gt;{});</div><div class="line"></div><div class="line">ndim_container_t&lt;int, 2, std::list&gt; list_2d;</div><div class="line">static_assert(std::is_same&lt;decltype(list_2d),</div><div class="line">                           std::list&lt;std::list&lt;int&gt;&gt;</div><div class="line">                           &gt;{});</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00076">76</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00095">95</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>hipipe/core/utility/<a class="el" href="vector_8hpp_source.html">vector.hpp</a></li>
+<li>hipipe/core/utility/<a class="el" href="ndim_8hpp_source.html">ndim.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

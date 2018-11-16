@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">HiPipe
-   &#160;<span id="projectnumber">0.5.1</span>
+   &#160;<span id="projectnumber">0.6.0</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
@@ -74,8 +74,11 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhipipe_1_1utility_1_1ndims.html">hipipe::utility::ndims&lt; T, IsRange &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhipipe_1_1utility_1_1ndims.html">hipipe::utility::ndims&lt; Rng, PrevRng, IsRange &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of dimensions of a multidimensional range.  <a href="structhipipe_1_1utility_1_1ndims.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhipipe_1_1utility_1_1is__specialization.html">hipipe::utility::is_specialization&lt; typename, typename &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect whether the given type is a specialization of the given container template.  <a href="structhipipe_1_1utility_1_1is__specialization.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhipipe_1_1utility_1_1ndim__container.html">hipipe::utility::ndim_container&lt; T, Dims, Container &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fast declaration of a multidimensional container.  <a href="structhipipe_1_1utility_1_1ndim__container.html#details">More...</a><br /></td></tr>
@@ -84,49 +87,49 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ga7422ffaa0af62e6cb163d3f9a46984d5"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng &gt; </td></tr>
-<tr class="memitem:ga7422ffaa0af62e6cb163d3f9a46984d5"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; long &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#ga7422ffaa0af62e6cb163d3f9a46984d5">ndim_size</a> (const Rng &amp;rng)</td></tr>
+<tr class="memitem:ga7422ffaa0af62e6cb163d3f9a46984d5"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; long &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#ga7422ffaa0af62e6cb163d3f9a46984d5">ndim_size</a> (const Rng &amp;rng)</td></tr>
 <tr class="memdesc:ga7422ffaa0af62e6cb163d3f9a46984d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the size of a multidimensional range.  <a href="#ga7422ffaa0af62e6cb163d3f9a46984d5">More...</a><br /></td></tr>
 <tr class="separator:ga7422ffaa0af62e6cb163d3f9a46984d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga22b5ec96dff9a62267c50bd1c1d437e5"><td class="memTemplParams" colspan="2">template&lt;typename Rng &gt; </td></tr>
-<tr class="memitem:ga22b5ec96dff9a62267c50bd1c1d437e5"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; long &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#ga22b5ec96dff9a62267c50bd1c1d437e5">ndim_size</a> (const Rng &amp;rng)</td></tr>
+<tr class="memitem:ga22b5ec96dff9a62267c50bd1c1d437e5"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; long &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#ga22b5ec96dff9a62267c50bd1c1d437e5">ndim_size</a> (const Rng &amp;rng)</td></tr>
 <tr class="memdesc:ga22b5ec96dff9a62267c50bd1c1d437e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the size of a multidimensional range.  <a href="#ga22b5ec96dff9a62267c50bd1c1d437e5">More...</a><br /></td></tr>
 <tr class="separator:ga22b5ec96dff9a62267c50bd1c1d437e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga06bdcd4d1148f5d8b90f26d4c9a3376c"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng , typename ValT  = ndim_type_t&lt;Rng, NDims&gt;&gt; </td></tr>
-<tr class="memitem:ga06bdcd4d1148f5d8b90f26d4c9a3376c"><td class="memTemplItemLeft" align="right" valign="top">Rng &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#ga06bdcd4d1148f5d8b90f26d4c9a3376c">ndim_resize</a> (Rng &amp;vec, const std::vector&lt; std::vector&lt; long &gt;&gt; &amp;vec_size, ValT val=ValT{})</td></tr>
+<tr class="memitem:ga06bdcd4d1148f5d8b90f26d4c9a3376c"><td class="memTemplItemLeft" align="right" valign="top">Rng &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#ga06bdcd4d1148f5d8b90f26d4c9a3376c">ndim_resize</a> (Rng &amp;vec, const std::vector&lt; std::vector&lt; long &gt;&gt; &amp;vec_size, ValT val=ValT{})</td></tr>
 <tr class="memdesc:ga06bdcd4d1148f5d8b90f26d4c9a3376c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes a multidimensional range to the given size.  <a href="#ga06bdcd4d1148f5d8b90f26d4c9a3376c">More...</a><br /></td></tr>
 <tr class="separator:ga06bdcd4d1148f5d8b90f26d4c9a3376c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacf969a6b1e95eec834e4a1028d2ea9cd"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng , typename ValT  = ndim_type_t&lt;Rng, NDims&gt;&gt; </td></tr>
-<tr class="memitem:gacf969a6b1e95eec834e4a1028d2ea9cd"><td class="memTemplItemLeft" align="right" valign="top">Rng &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#gacf969a6b1e95eec834e4a1028d2ea9cd">ndim_pad</a> (Rng &amp;vec, ValT val=ValT{})</td></tr>
+<tr class="memitem:gacf969a6b1e95eec834e4a1028d2ea9cd"><td class="memTemplItemLeft" align="right" valign="top">Rng &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#gacf969a6b1e95eec834e4a1028d2ea9cd">ndim_pad</a> (Rng &amp;vec, ValT val=ValT{})</td></tr>
 <tr class="memdesc:gacf969a6b1e95eec834e4a1028d2ea9cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pads a mutlidimensional range to a rectangular size.  <a href="#gacf969a6b1e95eec834e4a1028d2ea9cd">More...</a><br /></td></tr>
 <tr class="separator:gacf969a6b1e95eec834e4a1028d2ea9cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3f4d1baf14bf6bbb7abd9cffe00a8754"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng &gt; </td></tr>
-<tr class="memitem:ga3f4d1baf14bf6bbb7abd9cffe00a8754"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; long &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#ga3f4d1baf14bf6bbb7abd9cffe00a8754">shape</a> (const Rng &amp;rng)</td></tr>
+<tr class="memitem:ga3f4d1baf14bf6bbb7abd9cffe00a8754"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; long &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#ga3f4d1baf14bf6bbb7abd9cffe00a8754">shape</a> (const Rng &amp;rng)</td></tr>
 <tr class="memdesc:ga3f4d1baf14bf6bbb7abd9cffe00a8754"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the shape of a multidimensional range.  <a href="#ga3f4d1baf14bf6bbb7abd9cffe00a8754">More...</a><br /></td></tr>
 <tr class="separator:ga3f4d1baf14bf6bbb7abd9cffe00a8754"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga93bdcca450514d24c5e30d7c9484b8a9"><td class="memTemplParams" colspan="2">template&lt;typename Rng &gt; </td></tr>
-<tr class="memitem:ga93bdcca450514d24c5e30d7c9484b8a9"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; long &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#ga93bdcca450514d24c5e30d7c9484b8a9">shape</a> (const Rng &amp;rng)</td></tr>
+<tr class="memitem:ga93bdcca450514d24c5e30d7c9484b8a9"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; long &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#ga93bdcca450514d24c5e30d7c9484b8a9">shape</a> (const Rng &amp;rng)</td></tr>
 <tr class="memdesc:ga93bdcca450514d24c5e30d7c9484b8a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the shape of a multidimensional range.  <a href="#ga93bdcca450514d24c5e30d7c9484b8a9">More...</a><br /></td></tr>
 <tr class="separator:ga93bdcca450514d24c5e30d7c9484b8a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga758178ff9c237039327691bee3e43c1c"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng &gt; </td></tr>
-<tr class="memitem:ga758178ff9c237039327691bee3e43c1c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#ga758178ff9c237039327691bee3e43c1c">flat_view</a> (Rng &amp;rng)</td></tr>
+<tr class="memitem:ga758178ff9c237039327691bee3e43c1c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#ga758178ff9c237039327691bee3e43c1c">flat_view</a> (Rng &amp;rng)</td></tr>
 <tr class="memdesc:ga758178ff9c237039327691bee3e43c1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a flat view out of a multidimensional range.  <a href="#ga758178ff9c237039327691bee3e43c1c">More...</a><br /></td></tr>
 <tr class="separator:ga758178ff9c237039327691bee3e43c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga638fc5ea67fba496d178b2a866e65ca3"><td class="memTemplParams" colspan="2">template&lt;long N, typename Rng &gt; </td></tr>
-<tr class="memitem:ga638fc5ea67fba496d178b2a866e65ca3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#ga638fc5ea67fba496d178b2a866e65ca3">reshaped_view</a> (Rng &amp;rng, std::vector&lt; long &gt; <a class="el" href="group___vector.html#ga93bdcca450514d24c5e30d7c9484b8a9">shape</a>)</td></tr>
+<tr class="memitem:ga638fc5ea67fba496d178b2a866e65ca3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#ga638fc5ea67fba496d178b2a866e65ca3">reshaped_view</a> (Rng &amp;rng, std::vector&lt; long &gt; <a class="el" href="group___n_dim.html#ga93bdcca450514d24c5e30d7c9484b8a9">shape</a>)</td></tr>
 <tr class="memdesc:ga638fc5ea67fba496d178b2a866e65ca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a view of a multidimensional range with a specific shape.  <a href="#ga638fc5ea67fba496d178b2a866e65ca3">More...</a><br /></td></tr>
 <tr class="separator:ga638fc5ea67fba496d178b2a866e65ca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaac4d8a7d79ece0155f2667cc5c31662c"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng , typename Gen &gt; </td></tr>
-<tr class="memitem:gaac4d8a7d79ece0155f2667cc5c31662c"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">generate</a> (Rng &amp;&amp;rng, Gen &amp;&amp;gen, long gendims=std::numeric_limits&lt; long &gt;::max())</td></tr>
-<tr class="memdesc:gaac4d8a7d79ece0155f2667cc5c31662c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill a multidimensional range with values generated by a nullary function.  <a href="#gaac4d8a7d79ece0155f2667cc5c31662c">More...</a><br /></td></tr>
-<tr class="separator:gaac4d8a7d79ece0155f2667cc5c31662c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7002827c8f2bf0551767c6b5aa6a4e13"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng , typename Prng  = std::mt19937&amp;, typename Dist  = std::uniform_real_distribution&lt;double&gt;&gt; </td></tr>
-<tr class="memitem:ga7002827c8f2bf0551767c6b5aa6a4e13"><td class="memTemplItemLeft" align="right" valign="top">constexpr void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#ga7002827c8f2bf0551767c6b5aa6a4e13">random_fill</a> (Rng &amp;&amp;rng, Dist &amp;&amp;dist=Dist{0, 1}, Prng &amp;&amp;prng=utility::random_generator, long gendims=std::numeric_limits&lt; long &gt;::max())</td></tr>
-<tr class="memdesc:ga7002827c8f2bf0551767c6b5aa6a4e13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill a multidimensional range with random values.  <a href="#ga7002827c8f2bf0551767c6b5aa6a4e13">More...</a><br /></td></tr>
-<tr class="separator:ga7002827c8f2bf0551767c6b5aa6a4e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab2502f587535916a11dcfd65f9cdc13c"><td class="memTemplParams" colspan="2">template&lt;typename Tuple &gt; </td></tr>
-<tr class="memitem:gab2502f587535916a11dcfd65f9cdc13c"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___vector.html#gab2502f587535916a11dcfd65f9cdc13c">same_size</a> (Tuple &amp;&amp;rngs)</td></tr>
-<tr class="memdesc:gab2502f587535916a11dcfd65f9cdc13c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility function which checks that all the ranges in a tuple have the same size.  <a href="#gab2502f587535916a11dcfd65f9cdc13c">More...</a><br /></td></tr>
-<tr class="separator:gab2502f587535916a11dcfd65f9cdc13c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabfa6449411411f379d7022edd61ce36e"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng , typename Gen &gt; </td></tr>
+<tr class="memitem:gabfa6449411411f379d7022edd61ce36e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">generate</a> (Rng &amp;&amp;rng, Gen &amp;&amp;gen, long gendims=std::numeric_limits&lt; long &gt;::max())</td></tr>
+<tr class="memdesc:gabfa6449411411f379d7022edd61ce36e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill a multidimensional range with values generated by a nullary function.  <a href="#gabfa6449411411f379d7022edd61ce36e">More...</a><br /></td></tr>
+<tr class="separator:gabfa6449411411f379d7022edd61ce36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga51c9548f488dbbea24905fe7e9a66059"><td class="memTemplParams" colspan="2">template&lt;long NDims, typename Rng , typename Prng  = std::mt19937&amp;, typename Dist  = std::uniform_real_distribution&lt;double&gt;&gt; </td></tr>
+<tr class="memitem:ga51c9548f488dbbea24905fe7e9a66059"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#ga51c9548f488dbbea24905fe7e9a66059">random_fill</a> (Rng &amp;&amp;rng, Dist &amp;&amp;dist=Dist{0, 1}, Prng &amp;&amp;prng=utility::random_generator, long gendims=std::numeric_limits&lt; long &gt;::max())</td></tr>
+<tr class="memdesc:ga51c9548f488dbbea24905fe7e9a66059"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill a multidimensional range with random values.  <a href="#ga51c9548f488dbbea24905fe7e9a66059">More...</a><br /></td></tr>
+<tr class="separator:ga51c9548f488dbbea24905fe7e9a66059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab48a96f9a1aed89b4cabb88f1cff35bb"><td class="memTemplParams" colspan="2">template&lt;typename Tuple &gt; </td></tr>
+<tr class="memitem:gab48a96f9a1aed89b4cabb88f1cff35bb"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___n_dim.html#gab48a96f9a1aed89b4cabb88f1cff35bb">same_size</a> (Tuple &amp;&amp;rngs)</td></tr>
+<tr class="memdesc:gab48a96f9a1aed89b4cabb88f1cff35bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility function which checks that all the ranges in a tuple have the same size.  <a href="#gab48a96f9a1aed89b4cabb88f1cff35bb">More...</a><br /></td></tr>
+<tr class="separator:gab48a96f9a1aed89b4cabb88f1cff35bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
@@ -149,7 +152,7 @@ template&lt;long NDims, typename Rng &gt; </div>
 </div><div class="memdoc">
 
 <p>Makes a flat view out of a multidimensional range. </p>
-<div class="fragment"><div class="line">std::vector&lt;std::list&lt;int&gt;&gt; vec{{1, 2}, {3}, {}, {4, 5, 6}};</div><div class="line">std::vector&lt;int&gt; rvec = <a class="code" href="group___vector.html#ga758178ff9c237039327691bee3e43c1c">flat_view</a>(vec);</div><div class="line"><span class="comment">// rvec == {1, 2, 3, 4, 5, 6};</span></div><div class="line"></div><div class="line"><span class="comment">// the same with manually defined number of dimensions</span></div><div class="line">std::vector&lt;int&gt; rvec = flat_view&lt;2&gt;(vec);</div><div class="line"><span class="comment">// rvec == {1, 2, 3, 4, 5, 6};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<div class="fragment"><div class="line">std::vector&lt;std::list&lt;int&gt;&gt; vec{{1, 2}, {3}, {}, {4, 5, 6}};</div><div class="line">std::vector&lt;int&gt; rvec = <a class="code" href="group___n_dim.html#ga758178ff9c237039327691bee3e43c1c">flat_view</a>(vec);</div><div class="line"><span class="comment">// rvec == {1, 2, 3, 4, 5, 6};</span></div><div class="line"></div><div class="line"><span class="comment">// the same with manually defined number of dimensions</span></div><div class="line">std::vector&lt;int&gt; rvec = flat_view&lt;2&gt;(vec);</div><div class="line"><span class="comment">// rvec == {1, 2, 3, 4, 5, 6};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rng</td><td>The range to be flattened. </td></tr>
   </table>
@@ -163,12 +166,12 @@ template&lt;long NDims, typename Rng &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Flat view (InputRange) of the given range. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00428">428</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00447">447</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
-<a id="gaac4d8a7d79ece0155f2667cc5c31662c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaac4d8a7d79ece0155f2667cc5c31662c">&#9670;&nbsp;</a></span>generate()</h2>
+<a id="gabfa6449411411f379d7022edd61ce36e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabfa6449411411f379d7022edd61ce36e">&#9670;&nbsp;</a></span>generate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -176,7 +179,7 @@ template&lt;long NDims, typename Rng &gt; </div>
 template&lt;long NDims, typename Rng , typename Gen &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void generate </td>
+          <td class="memname">void generate </td>
           <td>(</td>
           <td class="paramtype">Rng &amp;&amp;&#160;</td>
           <td class="paramname"><em>rng</em>, </td>
@@ -203,7 +206,7 @@ template&lt;long NDims, typename Rng , typename Gen &gt; </div>
 
 <p>Fill a multidimensional range with values generated by a nullary function. </p>
 <p>If the vector is multidimensional, the generator will be used only up to the given dimension and the rest of the dimensions will be constant.</p>
-<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">struct </span>gen {</div><div class="line">    <span class="keywordtype">int</span> i = 0;</div><div class="line">    <span class="keywordtype">int</span> operator()() { <span class="keywordflow">return</span> i++; };</div><div class="line">};</div><div class="line">std::vector&lt;std::vector&lt;std::vector&lt;int&gt;&gt;&gt; data = {{{-1, -1, -1}, {-1}}, {{-1}, {-1, -1}}};</div><div class="line"><a class="code" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">generate</a>(data, gen{}, 0);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {0}}, {{0}, {0, 0}}};</span></div><div class="line"><a class="code" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">generate</a>(data, gen{}, 1);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {0}}, {{1}, {1, 1}}};</span></div><div class="line"><a class="code" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">generate</a>(data, gen{}, 2);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {1}}, {{2}, {3, 3}}};</span></div><div class="line"><a class="code" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">generate</a>(data, gen{}, 3);</div><div class="line"><span class="comment">// data == {{{0, 1, 2}, {3}}, {{4}, {5, 6}}};</span></div><div class="line"></div><div class="line"><span class="comment">// Note that the generator is called with every element in the</span></div><div class="line"><span class="comment">// filled dimension, even if there are no actual elements in</span></div><div class="line"><span class="comment">// higher dimensions! Example:</span></div><div class="line">data = {{{-1, -1, -1}, {-1}}, {{}, {}}, {{-1}, {-1, -1}}};</div><div class="line"><a class="code" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">generate</a>(data, gen{}, 1);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {0}}, {{}, {}}, {{2}, {2, 2}}};</span></div><div class="line"><a class="code" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">generate</a>(data, gen{}, 2);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {1}}, {{}, {}}, {{4}, {5, 5}}};</span></div><div class="line"><a class="code" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">generate</a>(data, gen{}, 3);</div><div class="line"><span class="comment">// data == {{{0, 1, 2}, {3}}, {{}, {}}, {{4}, {5, 6}}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">struct </span>gen {</div><div class="line">    <span class="keywordtype">int</span> i = 0;</div><div class="line">    <span class="keywordtype">int</span> operator()() { <span class="keywordflow">return</span> i++; };</div><div class="line">};</div><div class="line">std::vector&lt;std::vector&lt;std::vector&lt;int&gt;&gt;&gt; data = {{{-1, -1, -1}, {-1}}, {{-1}, {-1, -1}}};</div><div class="line"><a class="code" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">generate</a>(data, gen{}, 0);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {0}}, {{0}, {0, 0}}};</span></div><div class="line"><a class="code" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">generate</a>(data, gen{}, 1);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {0}}, {{1}, {1, 1}}};</span></div><div class="line"><a class="code" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">generate</a>(data, gen{}, 2);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {1}}, {{2}, {3, 3}}};</span></div><div class="line"><a class="code" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">generate</a>(data, gen{}, 3);</div><div class="line"><span class="comment">// data == {{{0, 1, 2}, {3}}, {{4}, {5, 6}}};</span></div><div class="line"></div><div class="line"><span class="comment">// Note that the generator is called with every element in the</span></div><div class="line"><span class="comment">// filled dimension, even if there are no actual elements in</span></div><div class="line"><span class="comment">// higher dimensions! Example:</span></div><div class="line">data = {{{-1, -1, -1}, {-1}}, {{}, {}}, {{-1}, {-1, -1}}};</div><div class="line"><a class="code" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">generate</a>(data, gen{}, 1);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {0}}, {{}, {}}, {{2}, {2, 2}}};</span></div><div class="line"><a class="code" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">generate</a>(data, gen{}, 2);</div><div class="line"><span class="comment">// data == {{{0, 0, 0}, {1}}, {{}, {}}, {{4}, {5, 5}}};</span></div><div class="line"><a class="code" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">generate</a>(data, gen{}, 3);</div><div class="line"><span class="comment">// data == {{{0, 1, 2}, {3}}, {{}, {}}, {{4}, {5, 6}}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rng</td><td>The range to be filled. </td></tr>
     <tr><td class="paramname">gen</td><td>The generator to be used. </td></tr>
@@ -218,7 +221,7 @@ template&lt;long NDims, typename Rng , typename Gen &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00606">606</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00625">625</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
@@ -252,7 +255,7 @@ template&lt;long NDims, typename Rng , typename ValT  = ndim_type_t&lt;Rng, NDim
 
 <p>Pads a mutlidimensional range to a rectangular size. </p>
 <p>The range has to support <code>.resize()</code> method up to the given dimension.</p>
-<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::vector&lt;int&gt;&gt; v1 = {{1, 2}, {3, 4, 5}, {}};</div><div class="line"><a class="code" href="group___vector.html#gacf969a6b1e95eec834e4a1028d2ea9cd">ndim_pad</a>(v1, -1);</div><div class="line"><span class="comment">// v1 == {{1, 2, -1}, {3, 4, 5}, {-1, -1, -1}};</span></div><div class="line">std::vector&lt;std::list&lt;std::vector&lt;int&gt;&gt;&gt; v2 = {{{1}, {2, 3}}, {{4, 5, 6}}};</div><div class="line">ndim_pad&lt;2&gt;(vec, {-1, -2, -3, -4});  <span class="comment">// pad only the first two dimensions</span></div><div class="line"><span class="comment">// v2 = {{{1}, {2, 3}}, {{4, 5, 6}, {-1, -2, -3, -4}}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::vector&lt;int&gt;&gt; v1 = {{1, 2}, {3, 4, 5}, {}};</div><div class="line"><a class="code" href="group___n_dim.html#gacf969a6b1e95eec834e4a1028d2ea9cd">ndim_pad</a>(v1, -1);</div><div class="line"><span class="comment">// v1 == {{1, 2, -1}, {3, 4, 5}, {-1, -1, -1}};</span></div><div class="line">std::vector&lt;std::list&lt;std::vector&lt;int&gt;&gt;&gt; v2 = {{{1}, {2, 3}}, {{4, 5, 6}}};</div><div class="line">ndim_pad&lt;2&gt;(vec, {-1, -2, -3, -4});  <span class="comment">// pad only the first two dimensions</span></div><div class="line"><span class="comment">// v2 = {{{1}, {2, 3}}, {{4, 5, 6}, {-1, -2, -3, -4}}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">vec</td><td>The range to be padded. </td></tr>
     <tr><td class="paramname">val</td><td>The value to pad with. </td></tr>
@@ -267,7 +270,7 @@ template&lt;long NDims, typename Rng , typename ValT  = ndim_type_t&lt;Rng, NDim
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The reference to the given vector after padding. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00287">287</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00306">306</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
@@ -307,7 +310,7 @@ template&lt;long NDims, typename Rng , typename ValT  = ndim_type_t&lt;Rng, NDim
 
 <p>Resizes a multidimensional range to the given size. </p>
 <p>i-th element of the given size vector are the sizes of the ranges in the i-th dimension. See ndim_size. The range has to support <code>.resize()</code> method up to the given dimension.</p>
-<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::vector&lt;int&gt;&gt; vec;</div><div class="line"><a class="code" href="group___vector.html#ga06bdcd4d1148f5d8b90f26d4c9a3376c">ndim_resize</a>(vec, {{2}, {3, 1}}, 2);</div><div class="line"><span class="comment">// vec == {{2, 2, 2}, {2}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::vector&lt;int&gt;&gt; vec;</div><div class="line"><a class="code" href="group___n_dim.html#ga06bdcd4d1148f5d8b90f26d4c9a3376c">ndim_resize</a>(vec, {{2}, {3, 1}}, 2);</div><div class="line"><span class="comment">// vec == {{2, 2, 2}, {2}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">vec</td><td>The range to be resized. </td></tr>
     <tr><td class="paramname">vec_size</td><td>The requested size created by ndim_size. </td></tr>
@@ -323,7 +326,7 @@ template&lt;long NDims, typename Rng , typename ValT  = ndim_type_t&lt;Rng, NDim
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The reference to the given vector after resizing. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00240">240</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00259">259</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
@@ -347,7 +350,7 @@ template&lt;long NDims, typename Rng &gt; </div>
 
 <p>Calculates the size of a multidimensional range. </p>
 <p>i-th element of the resulting vector are the sizes of the ranges in the i-th dimension.</p>
-<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::list&lt;int&gt;&gt; rng{{1, 2, 3}, {1}, {5, 6}, {7}};</div><div class="line">std::vector&lt;std::vector&lt;long&gt;&gt; rng_size = ndim_size&lt;2&gt;(rng);</div><div class="line"><span class="comment">// rng_size == {{4}, {3, 1, 2, 1}};</span></div><div class="line">rng_size = <a class="code" href="group___vector.html#ga7422ffaa0af62e6cb163d3f9a46984d5">ndim_size</a>(rng); <span class="comment">// default number of dimensions is the depth of nested ranges</span></div><div class="line"><span class="comment">// rng_size == {{4}, {3, 1, 2, 1}};</span></div><div class="line">rng_size = ndim_size&lt;1&gt;(rng);</div><div class="line"><span class="comment">// rng_size == {{4}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::list&lt;int&gt;&gt; rng{{1, 2, 3}, {1}, {5, 6}, {7}};</div><div class="line">std::vector&lt;std::vector&lt;long&gt;&gt; rng_size = ndim_size&lt;2&gt;(rng);</div><div class="line"><span class="comment">// rng_size == {{4}, {3, 1, 2, 1}};</span></div><div class="line">rng_size = <a class="code" href="group___n_dim.html#ga7422ffaa0af62e6cb163d3f9a46984d5">ndim_size</a>(rng); <span class="comment">// default number of dimensions is the depth of nested ranges</span></div><div class="line"><span class="comment">// rng_size == {{4}, {3, 1, 2, 1}};</span></div><div class="line">rng_size = ndim_size&lt;1&gt;(rng);</div><div class="line"><span class="comment">// rng_size == {{4}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rng</td><td>The multidimensional range whose size shall be calculated. </td></tr>
   </table>
@@ -361,7 +364,7 @@ template&lt;long NDims, typename Rng &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The sizes of the given range. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00169">169</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00188">188</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
@@ -386,12 +389,12 @@ template&lt;typename Rng &gt; </div>
 <p>Calculates the size of a multidimensional range. </p>
 <p>This overload automatically deduces the number of dimension using ndims&lt;Rng&gt;. </p>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00182">182</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00201">201</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
-<a id="ga7002827c8f2bf0551767c6b5aa6a4e13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga7002827c8f2bf0551767c6b5aa6a4e13">&#9670;&nbsp;</a></span>random_fill()</h2>
+<a id="ga51c9548f488dbbea24905fe7e9a66059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga51c9548f488dbbea24905fe7e9a66059">&#9670;&nbsp;</a></span>random_fill()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -399,7 +402,7 @@ template&lt;typename Rng &gt; </div>
 template&lt;long NDims, typename Rng , typename Prng  = std::mt19937&amp;, typename Dist  = std::uniform_real_distribution&lt;double&gt;&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">constexpr void random_fill </td>
+          <td class="memname">void random_fill </td>
           <td>(</td>
           <td class="paramtype">Rng &amp;&amp;&#160;</td>
           <td class="paramname"><em>rng</em>, </td>
@@ -432,8 +435,8 @@ template&lt;long NDims, typename Rng , typename Prng  = std::mt19937&amp;, typen
 
 <p>Fill a multidimensional range with random values. </p>
 <p>If the range is multidimensional, the random generator will be used only up to the given dimension and the rest of the dimensions will be constant.</p>
-<p>Note: This function internally uses <a class="el" href="group___vector.html#gaac4d8a7d79ece0155f2667cc5c31662c">utility::generate()</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line">std::mt19937 gen = ...;</div><div class="line">std::uniform_int_distribution dist = ...;</div><div class="line">std::vector&lt;std::vector&lt;std::vector&lt;int&gt;&gt;&gt; data = {{{0, 0, 0}, {0}}, {{0}, {0, 0}}};</div><div class="line"><a class="code" href="group___vector.html#ga7002827c8f2bf0551767c6b5aa6a4e13">random_fill</a>(data, dist, gen, 0);</div><div class="line"><span class="comment">// data == e.g., {{{4, 4, 4}, {4}}, {{4}, {4, 4}}};</span></div><div class="line"><a class="code" href="group___vector.html#ga7002827c8f2bf0551767c6b5aa6a4e13">random_fill</a>(data, dist, gen, 1);</div><div class="line"><span class="comment">// data == e.g., {{{8, 8, 8}, {8}}, {{2}, {2, 2}}};</span></div><div class="line"><a class="code" href="group___vector.html#ga7002827c8f2bf0551767c6b5aa6a4e13">random_fill</a>(data, dist, gen, 2);</div><div class="line"><span class="comment">// data == e.g., {{{8, 8, 8}, {6}}, {{7}, {3, 3}}};</span></div><div class="line"><a class="code" href="group___vector.html#ga7002827c8f2bf0551767c6b5aa6a4e13">random_fill</a>(data, dist, gen, 3);</div><div class="line"><span class="comment">// data == e.g., {{{8, 2, 3}, {1}}, {{2}, {4, 7}}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Note: This function internally uses <a class="el" href="group___n_dim.html#gabfa6449411411f379d7022edd61ce36e">utility::generate()</a>.</p>
+<p>Example: </p><div class="fragment"><div class="line">std::mt19937 gen = ...;</div><div class="line">std::uniform_int_distribution dist = ...;</div><div class="line">std::vector&lt;std::vector&lt;std::vector&lt;int&gt;&gt;&gt; data = {{{0, 0, 0}, {0}}, {{0}, {0, 0}}};</div><div class="line"><a class="code" href="group___n_dim.html#ga51c9548f488dbbea24905fe7e9a66059">random_fill</a>(data, dist, gen, 0);</div><div class="line"><span class="comment">// data == e.g., {{{4, 4, 4}, {4}}, {{4}, {4, 4}}};</span></div><div class="line"><a class="code" href="group___n_dim.html#ga51c9548f488dbbea24905fe7e9a66059">random_fill</a>(data, dist, gen, 1);</div><div class="line"><span class="comment">// data == e.g., {{{8, 8, 8}, {8}}, {{2}, {2, 2}}};</span></div><div class="line"><a class="code" href="group___n_dim.html#ga51c9548f488dbbea24905fe7e9a66059">random_fill</a>(data, dist, gen, 2);</div><div class="line"><span class="comment">// data == e.g., {{{8, 8, 8}, {6}}, {{7}, {3, 3}}};</span></div><div class="line"><a class="code" href="group___n_dim.html#ga51c9548f488dbbea24905fe7e9a66059">random_fill</a>(data, dist, gen, 3);</div><div class="line"><span class="comment">// data == e.g., {{{8, 2, 3}, {1}}, {{2}, {4, 7}}};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rng</td><td>The range to be filled. </td></tr>
     <tr><td class="paramname">dist</td><td>The distribution to be used. </td></tr>
@@ -449,7 +452,7 @@ template&lt;long NDims, typename Rng , typename Prng  = std::mt19937&amp;, typen
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00660">660</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00679">679</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
@@ -497,12 +500,12 @@ template&lt;long N, typename Rng &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>View (InputRange) of the original range with the given shape. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00518">518</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00537">537</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
-<a id="gab2502f587535916a11dcfd65f9cdc13c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab2502f587535916a11dcfd65f9cdc13c">&#9670;&nbsp;</a></span>same_size()</h2>
+<a id="gab48a96f9a1aed89b4cabb88f1cff35bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab48a96f9a1aed89b4cabb88f1cff35bb">&#9670;&nbsp;</a></span>same_size()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -510,7 +513,7 @@ template&lt;long N, typename Rng &gt; </div>
 template&lt;typename Tuple &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">constexpr bool same_size </td>
+          <td class="memname">bool same_size </td>
           <td>(</td>
           <td class="paramtype">Tuple &amp;&amp;&#160;</td>
           <td class="paramname"><em>rngs</em></td><td>)</td>
@@ -520,14 +523,14 @@ template&lt;typename Tuple &gt; </div>
 </div><div class="memdoc">
 
 <p>Utility function which checks that all the ranges in a tuple have the same size. </p>
-<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;int&gt; v1 = {1, 2, 3};</div><div class="line">std::vector&lt;double&gt; v2 = {1., 2., 3.};</div><div class="line">std::vector&lt;bool&gt; v3 = {<span class="keyword">true</span>};</div><div class="line">assert(<a class="code" href="group___vector.html#gab2502f587535916a11dcfd65f9cdc13c">same_size</a>(std::tie(v1, v2)) == <span class="keyword">true</span>);</div><div class="line">assert(<a class="code" href="group___vector.html#gab2502f587535916a11dcfd65f9cdc13c">same_size</a>(std::tie(v1, v3)) == <span class="keyword">false</span>);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;int&gt; v1 = {1, 2, 3};</div><div class="line">std::vector&lt;double&gt; v2 = {1., 2., 3.};</div><div class="line">std::vector&lt;bool&gt; v3 = {<span class="keyword">true</span>};</div><div class="line">assert(<a class="code" href="group___n_dim.html#gab48a96f9a1aed89b4cabb88f1cff35bb">same_size</a>(std::tie(v1, v2)) == <span class="keyword">true</span>);</div><div class="line">assert(<a class="code" href="group___n_dim.html#gab48a96f9a1aed89b4cabb88f1cff35bb">same_size</a>(std::tie(v1, v3)) == <span class="keyword">false</span>);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rngs</td><td>A tuple of ranges. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00713">713</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00732">732</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
@@ -550,7 +553,7 @@ template&lt;long NDims, typename Rng &gt; </div>
 </div><div class="memdoc">
 
 <p>Calculates the shape of a multidimensional range. </p>
-<div class="fragment"><div class="line">std::list&lt;std::vector&lt;int&gt;&gt; rng{{1, 2}, {3, 4}, {5, 6}, {5, 6}};</div><div class="line">std::vector&lt;long&gt; rng_shape = shape&lt;2&gt;(rng);</div><div class="line"><span class="comment">// rng_shape == {4, 2};</span></div><div class="line">rng_shape = shape&lt;1&gt;(rng);</div><div class="line"><span class="comment">// rng_shape == {4};</span></div><div class="line">rng_shape = <a class="code" href="group___vector.html#ga3f4d1baf14bf6bbb7abd9cffe00a8754">shape</a>(rng);  <span class="comment">// the number of dimensions defaults to ndims&lt;Rng&gt;</span></div><div class="line"><span class="comment">// rng_shape == {4, 2};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+<div class="fragment"><div class="line">std::list&lt;std::vector&lt;int&gt;&gt; rng{{1, 2}, {3, 4}, {5, 6}, {5, 6}};</div><div class="line">std::vector&lt;long&gt; rng_shape = shape&lt;2&gt;(rng);</div><div class="line"><span class="comment">// rng_shape == {4, 2};</span></div><div class="line">rng_shape = shape&lt;1&gt;(rng);</div><div class="line"><span class="comment">// rng_shape == {4};</span></div><div class="line">rng_shape = <a class="code" href="group___n_dim.html#ga3f4d1baf14bf6bbb7abd9cffe00a8754">shape</a>(rng);  <span class="comment">// the number of dimensions defaults to ndims&lt;Rng&gt;</span></div><div class="line"><span class="comment">// rng_shape == {4, 2};</span></div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rng</td><td>The range whose shape shall be calculated. All the subranges on the same dimension have to be of equal size. </td></tr>
   </table>
@@ -564,7 +567,7 @@ template&lt;long NDims, typename Rng &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The shape of the given range. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00365">365</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00384">384</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>
@@ -589,7 +592,7 @@ template&lt;typename Rng &gt; </div>
 <p>Calculates the shape of a multidimensional range. </p>
 <p>This overload automatically deduces the number of dimension using ndims&lt;Rng&gt;. </p>
 
-<p class="definition">Definition at line <a class="el" href="vector_8hpp_source.html#l00380">380</a> of file <a class="el" href="vector_8hpp_source.html">vector.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ndim_8hpp_source.html#l00399">399</a> of file <a class="el" href="ndim_8hpp_source.html">ndim.hpp</a>.</p>
 
 </div>
 </div>

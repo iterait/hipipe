@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">HiPipe
-   &#160;<span id="projectnumber">0.5.1</span>
+   &#160;<span id="projectnumber">0.6.0</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
@@ -64,153 +64,10 @@ $(function() {
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Python tools and bindings.</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhipipe_1_1python_1_1stop__iteration__exception.html">hipipe::python::stop_iteration_exception</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exception which is translated to Python's StopIteration when thrown.  <a href="structhipipe_1_1python_1_1stop__iteration__exception.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhipipe_1_1python_1_1range.html">hipipe::python::range&lt; Rng &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Python adapter for C++ ranges.  <a href="classhipipe_1_1python_1_1range.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:ga99aa2ec22ae3d3b04bd781c3699c0224"><td class="memItemLeft" align="right" valign="top"><a id="ga99aa2ec22ae3d3b04bd781c3699c0224"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___python.html#ga99aa2ec22ae3d3b04bd781c3699c0224">hipipe::python::initialize</a> ()</td></tr>
-<tr class="memdesc:ga99aa2ec22ae3d3b04bd781c3699c0224"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize Python module, register OpenCV converters, exceptions, etc. <br /></td></tr>
-<tr class="separator:ga99aa2ec22ae3d3b04bd781c3699c0224"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga704676b0629f72940366d89fdb87019d"><td class="memTemplParams" colspan="2">template&lt;typename Rng &gt; </td></tr>
-<tr class="memitem:ga704676b0629f72940366d89fdb87019d"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___python.html#ga704676b0629f72940366d89fdb87019d">hipipe::python::stream::to_python</a> (Rng &amp;&amp;rng)</td></tr>
-<tr class="memdesc:ga704676b0629f72940366d89fdb87019d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a Python <a class="el" href="classhipipe_1_1python_1_1range.html">range</a> from a stream (i.e, a range of tuples of hipipe columns).  <a href="group___python.html#ga704676b0629f72940366d89fdb87019d">More...</a><br /></td></tr>
-<tr class="separator:ga704676b0629f72940366d89fdb87019d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga88dcae35a2c8fc73e1e408788e38c886"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ga88dcae35a2c8fc73e1e408788e38c886"><td class="memTemplItemLeft" align="right" valign="top">boost::python::object&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___python.html#ga88dcae35a2c8fc73e1e408788e38c886">hipipe::python::utility::to_python</a> (std::vector&lt; T &gt; v)</td></tr>
-<tr class="memdesc:ga88dcae35a2c8fc73e1e408788e38c886"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a Python list-like object out of a multidimensional std::vector.  <a href="group___python.html#ga88dcae35a2c8fc73e1e408788e38c886">More...</a><br /></td></tr>
-<tr class="separator:ga88dcae35a2c8fc73e1e408788e38c886"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacfc1a8b57ceab75173df23054fafdc21"><td class="memTemplParams" colspan="2">template&lt;typename Tuple &gt; </td></tr>
-<tr class="memitem:gacfc1a8b57ceab75173df23054fafdc21"><td class="memTemplItemLeft" align="right" valign="top">boost::python::dict&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___python.html#gacfc1a8b57ceab75173df23054fafdc21">hipipe::python::utility::columns_to_python</a> (Tuple tuple)</td></tr>
-<tr class="memdesc:gacfc1a8b57ceab75173df23054fafdc21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a tuple of hipipe columns into a Python <code>dict</code>.  <a href="group___python.html#gacfc1a8b57ceab75173df23054fafdc21">More...</a><br /></td></tr>
-<tr class="separator:gacfc1a8b57ceab75173df23054fafdc21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac60806a8735d4b0061f9442c36b6a51b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:gac60806a8735d4b0061f9442c36b6a51b"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___python.html#gac60806a8735d4b0061f9442c36b6a51b">hipipe::python::utility::is_registered</a> ()</td></tr>
-<tr class="memdesc:gac60806a8735d4b0061f9442c36b6a51b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether a converter for the given C++ class is registered in boost::python.  <a href="group___python.html#gac60806a8735d4b0061f9442c36b6a51b">More...</a><br /></td></tr>
-<tr class="separator:gac60806a8735d4b0061f9442c36b6a51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga70141fe18cdffc51762ab2b790de38c4"><td class="memTemplParams" colspan="2"><a id="ga70141fe18cdffc51762ab2b790de38c4"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ga70141fe18cdffc51762ab2b790de38c4"><td class="memTemplItemLeft" align="right" valign="top">PyObject *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___python.html#ga70141fe18cdffc51762ab2b790de38c4">hipipe::python::utility::to_ndarray</a> (const std::vector&lt; T &gt; &amp;vec)</td></tr>
-<tr class="memdesc:ga70141fe18cdffc51762ab2b790de38c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build ndarray from a one dimensional std::vector. <br /></td></tr>
-<tr class="separator:ga70141fe18cdffc51762ab2b790de38c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="gacfc1a8b57ceab75173df23054fafdc21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gacfc1a8b57ceab75173df23054fafdc21">&#9670;&nbsp;</a></span>columns_to_python()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Tuple &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">boost::python::dict hipipe::python::utility::columns_to_python </td>
-          <td>(</td>
-          <td class="paramtype">Tuple&#160;</td>
-          <td class="paramname"><em>tuple</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Convert a tuple of hipipe columns into a Python <code>dict</code>. </p>
-<p>The dict is indexed by <code>column.name</code> and the value is <code>column.value</code>. The values (i.e, the batches) are converted to Python lists using <a class="el" href="group___python.html#ga88dcae35a2c8fc73e1e408788e38c886" title="Create a Python list-like object out of a multidimensional std::vector. ">to_python()</a>. If the batch is a multidimensional std::vector&lt;std::vector&lt;...&gt;&gt;, it is converted to multidimensional Python list. </p>
-
-<p class="definition">Definition at line <a class="el" href="pyboost__column__converter_8hpp_source.html#l00085">85</a> of file <a class="el" href="pyboost__column__converter_8hpp_source.html">pyboost_column_converter.hpp</a>.</p>
-
-</div>
-</div>
-<a id="gac60806a8735d4b0061f9442c36b6a51b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac60806a8735d4b0061f9442c36b6a51b">&#9670;&nbsp;</a></span>is_registered()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">bool hipipe::python::utility::is_registered </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Check whether a converter for the given C++ class is registered in boost::python. </p>
-<p>Beware that this function will report false for primitive types such as <code>int</code> or <code>double</code>. </p>
-
-<p class="definition">Definition at line <a class="el" href="pyboost__is__registered_8hpp_source.html#l00023">23</a> of file <a class="el" href="pyboost__is__registered_8hpp_source.html">pyboost_is_registered.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ga704676b0629f72940366d89fdb87019d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga704676b0629f72940366d89fdb87019d">&#9670;&nbsp;</a></span>to_python() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Rng &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">auto hipipe::python::stream::to_python </td>
-          <td>(</td>
-          <td class="paramtype">Rng &amp;&amp;&#160;</td>
-          <td class="paramname"><em>rng</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Make a Python <a class="el" href="classhipipe_1_1python_1_1range.html">range</a> from a stream (i.e, a range of tuples of hipipe columns). </p>
-<p>Only a view of the given range is created, therefore, the given range cannot be an rvalue of a container.</p>
-<p>Tuples of columns are converted using <a class="el" href="group___python.html#gacfc1a8b57ceab75173df23054fafdc21" title="Convert a tuple of hipipe columns into a Python dict. ">columns_to_python()</a>. </p>
-
-<p class="definition">Definition at line <a class="el" href="converter_8hpp_source.html#l00029">29</a> of file <a class="el" href="converter_8hpp_source.html">converter.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ga88dcae35a2c8fc73e1e408788e38c886"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga88dcae35a2c8fc73e1e408788e38c886">&#9670;&nbsp;</a></span>to_python() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">boost::python::object hipipe::python::utility::to_python </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; T &gt;&#160;</td>
-          <td class="paramname"><em>v</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Create a Python list-like object out of a multidimensional std::vector. </p>
-<p>If the vector is multidimensional, i.e., std::vector&lt;std::vector&lt;...&gt;&gt;, the resulting Python structure will be multidimensional as well. </p>
-
-<p class="definition">Definition at line <a class="el" href="pyboost__column__converter_8hpp_source.html#l00070">70</a> of file <a class="el" href="pyboost__column__converter_8hpp_source.html">pyboost_column_converter.hpp</a>.</p>
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

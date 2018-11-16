@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_7ethread_5fpool',['~thread_pool',['../classhipipe_1_1thread__pool.html#ab89803acc0fae9fbf4a8a5218d96830c',1,'hipipe::thread_pool']]]
+  ['write_5fcsv',['write_csv',['../group___c_s_v.html#gae9f175134bae5882f7e19942fd1a9ed9',1,'hipipe::write_csv(std::ostream &amp;out, const dataframe &amp;df, char separator=&apos;,&apos;, char quote=&apos;&quot;&apos;, char escape = &apos;\)'],['../group___c_s_v.html#ga6ffb81abc377c4d81039e1ceef252580',1,'hipipe::write_csv(const std::experimental::filesystem::path &amp;file, const dataframe &amp;df, char separator=&apos;,&apos;, char quote=&apos;&quot;&apos;, char escape = &apos;\)']]],
+  ['write_5fcsv_5frow',['write_csv_row',['../group___c_s_v.html#ga5ffd73c57391b585c89367f02d8150d4',1,'hipipe']]]
 ];

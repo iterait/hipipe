@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dataframe',['dataframe',['../classhipipe_1_1dataframe.html',1,'hipipe']]]
+  ['batch',['batch',['../classhipipe_1_1stream_1_1batch.html',1,'hipipe::stream']]]
 ];

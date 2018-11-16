@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['random_5fgenerator',['random_generator',['../group___random.html#ga7307318f50a6aceb0b52509e21124a97',1,'hipipe::utility']]]
+  ['keep',['keep',['../group___stream.html#ga2e0cef72ffbd8f645a067ddb4b98149b',1,'hipipe::stream']]]
 ];

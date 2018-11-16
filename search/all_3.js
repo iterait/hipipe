@@ -1,10 +1,11 @@
 var searchData=
 [
-  ['data',['data',['../classhipipe_1_1dataframe.html#a8b28e9496ddf479b7b3608038e686115',1,'hipipe::dataframe::data()'],['../classhipipe_1_1dataframe.html#ace24eeaccb48e95844d7086321d365ed',1,'hipipe::dataframe::data() const']]],
-  ['dataframe',['dataframe',['../classhipipe_1_1dataframe.html',1,'hipipe::dataframe&lt; DataTable &gt;'],['../classhipipe_1_1dataframe.html#a97bcc530f2afa85be01814eaac4a9ea4',1,'hipipe::dataframe::dataframe(std::vector&lt; std::vector&lt; T &gt;&gt; columns, std::vector&lt; std::string &gt; header={})'],['../classhipipe_1_1dataframe.html#a7e4e17e0a69e10948f88657c9b93d632',1,'hipipe::dataframe::dataframe(std::tuple&lt; std::vector&lt; Ts &gt;... &gt; columns, std::vector&lt; std::string &gt; header={})'],['../group___dataframe.html',1,'(Global Namespace)']]],
-  ['drop',['drop',['../group___stream.html#ga5649697e86eea6020c2035777f98c1be',1,'hipipe::stream']]],
-  ['drop_5fcol',['drop_col',['../classhipipe_1_1dataframe.html#a8075a81a859beaf9397c9eff12a09437',1,'hipipe::dataframe']]],
-  ['drop_5ficol',['drop_icol',['../classhipipe_1_1dataframe.html#a7fa002acf68a08caf07557cc6264118f',1,'hipipe::dataframe']]],
-  ['drop_5frow',['drop_row',['../classhipipe_1_1dataframe.html#ab3de98a46bf65b4b13b614142a1b759a',1,'hipipe::dataframe']]],
+  ['data',['data',['../classhipipe_1_1dataframe.html#a09a23f4b1a2ceaee8d5a24a3dcaa68ba',1,'hipipe::dataframe::data()'],['../classhipipe_1_1dataframe.html#ae0a092a8bfc267bff4fa35ae408ac7c0',1,'hipipe::dataframe::data() const'],['../classhipipe_1_1stream_1_1column__base.html#ad2aca26c72b93266f74647d0b7287f5d',1,'hipipe::stream::column_base::data()'],['../classhipipe_1_1stream_1_1column__base.html#aff5d8c3eb381c3cb9d1991185cf1e4be',1,'hipipe::stream::column_base::data() const']]],
+  ['data_5ftype',['data_type',['../classhipipe_1_1stream_1_1column__base.html#ab6a538feb8c14859973bcdacd141df7b',1,'hipipe::stream::column_base']]],
+  ['dataframe',['dataframe',['../classhipipe_1_1dataframe.html',1,'hipipe::dataframe'],['../classhipipe_1_1dataframe.html#a461dba88d4e272bb97f7f98af633cec7',1,'hipipe::dataframe::dataframe(std::vector&lt; std::vector&lt; T &gt;&gt; columns, std::vector&lt; std::string &gt; header={})'],['../classhipipe_1_1dataframe.html#a496b8e911072821536ca32049c076deb',1,'hipipe::dataframe::dataframe(std::tuple&lt; std::vector&lt; Ts &gt;... &gt; columns, std::vector&lt; std::string &gt; header={})'],['../group___dataframe.html',1,'(Global Namespace)']]],
+  ['drop',['drop',['../group___stream.html#ga7322d5bcc2c24a6b3537940c286ba8f5',1,'hipipe::stream']]],
+  ['drop_5fcol',['drop_col',['../classhipipe_1_1dataframe.html#a5fdce87ec3635620570880933cdae404',1,'hipipe::dataframe']]],
+  ['drop_5ficol',['drop_icol',['../classhipipe_1_1dataframe.html#aafc066e6331bdd5bdc74020bbc288601',1,'hipipe::dataframe']]],
+  ['drop_5frow',['drop_row',['../classhipipe_1_1dataframe.html#ac271bbfd361d3283dd91e46e93652be4',1,'hipipe::dataframe']]],
   ['data_20splitting_2e',['Data splitting.',['../group___groups.html',1,'']]]
 ];

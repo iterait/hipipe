@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">HiPipe
-   &#160;<span id="projectnumber">0.5.1</span>
+   &#160;<span id="projectnumber">0.6.0</span>
    </div>
    <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
@@ -106,18 +106,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga7c87ffe36318ca892cd9f7780ff84391"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#ga7c87ffe36318ca892cd9f7780ff84391">hipipe::utility::tuple_transform</a> (Tuple &amp;&amp;tuple, Fun &amp;&amp;fun)</td></tr>
 <tr class="memdesc:ga7c87ffe36318ca892cd9f7780ff84391"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform each element of a tuple.  <a href="group___tuple.html#ga7c87ffe36318ca892cd9f7780ff84391">More...</a><br /></td></tr>
 <tr class="separator:ga7c87ffe36318ca892cd9f7780ff84391"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0b8b329bd5da0bf8f692081ade95b459"><td class="memTemplParams" colspan="2">template&lt;typename... Types, typename Tuple &gt; </td></tr>
-<tr class="memitem:ga0b8b329bd5da0bf8f692081ade95b459"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#ga0b8b329bd5da0bf8f692081ade95b459">hipipe::utility::tuple_type_view</a> (Tuple &amp;tuple)</td></tr>
-<tr class="memdesc:ga0b8b329bd5da0bf8f692081ade95b459"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a sub-tuple made of references to the original tuple (selected by type).  <a href="group___tuple.html#ga0b8b329bd5da0bf8f692081ade95b459">More...</a><br /></td></tr>
-<tr class="separator:ga0b8b329bd5da0bf8f692081ade95b459"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6f05bdef9844406a88c1f869857abec7"><td class="memTemplParams" colspan="2">template&lt;std::size_t... Idxs, typename Tuple &gt; </td></tr>
-<tr class="memitem:ga6f05bdef9844406a88c1f869857abec7"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#ga6f05bdef9844406a88c1f869857abec7">hipipe::utility::tuple_index_view</a> (Tuple &amp;tuple, std::index_sequence&lt; Idxs... &gt;={})</td></tr>
-<tr class="memdesc:ga6f05bdef9844406a88c1f869857abec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a sub-tuple made of references to the original tuple (selected by index).  <a href="group___tuple.html#ga6f05bdef9844406a88c1f869857abec7">More...</a><br /></td></tr>
-<tr class="separator:ga6f05bdef9844406a88c1f869857abec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga18aea841218b06950f22dfed27c6945a"><td class="memTemplParams" colspan="2">template&lt;typename... Tuples&gt; </td></tr>
-<tr class="memitem:ga18aea841218b06950f22dfed27c6945a"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#ga18aea841218b06950f22dfed27c6945a">hipipe::utility::tuple_cat_unique</a> (Tuples &amp;&amp;... tuples)</td></tr>
-<tr class="memdesc:ga18aea841218b06950f22dfed27c6945a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concatenate two tuples and keep only the first element of each type.  <a href="group___tuple.html#ga18aea841218b06950f22dfed27c6945a">More...</a><br /></td></tr>
-<tr class="separator:ga18aea841218b06950f22dfed27c6945a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga24fc86f8a8c646dcc2c00cc8e0776f05"><td class="memTemplParams" colspan="2"><a id="ga24fc86f8a8c646dcc2c00cc8e0776f05"></a>
 template&lt;typename Tuple , size_t... Is&gt; </td></tr>
 <tr class="memitem:ga24fc86f8a8c646dcc2c00cc8e0776f05"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#ga24fc86f8a8c646dcc2c00cc8e0776f05">hipipe::utility::tuple_print</a> (std::ostream &amp;out, const Tuple &amp;tuple, std::index_sequence&lt; Is... &gt;)</td></tr>
@@ -128,10 +116,6 @@ template&lt;typename... Ts&gt; </td></tr>
 <tr class="memitem:gab0a677e1bc915bcaed98fc735d7c10a2"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#gab0a677e1bc915bcaed98fc735d7c10a2">hipipe::utility::operator&lt;&lt;</a> (std::ostream &amp;out, const std::tuple&lt; Ts... &gt; &amp;tuple)</td></tr>
 <tr class="memdesc:gab0a677e1bc915bcaed98fc735d7c10a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tuple pretty printing to std::ostream. <br /></td></tr>
 <tr class="separator:gab0a677e1bc915bcaed98fc735d7c10a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6c6c34f3c78e151fae8c00623129f7dc"><td class="memTemplParams" colspan="2">template&lt;typename... Rem, typename Tuple &gt; </td></tr>
-<tr class="memitem:ga6c6c34f3c78e151fae8c00623129f7dc"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#ga6c6c34f3c78e151fae8c00623129f7dc">hipipe::utility::tuple_remove</a> (Tuple tuple)</td></tr>
-<tr class="memdesc:ga6c6c34f3c78e151fae8c00623129f7dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove types from a tuple.  <a href="group___tuple.html#ga6c6c34f3c78e151fae8c00623129f7dc">More...</a><br /></td></tr>
-<tr class="separator:ga6c6c34f3c78e151fae8c00623129f7dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab5b8e032805197091c7ee80f9b17e770"><td class="memTemplParams" colspan="2">template&lt;typename Rng , CONCEPT_REQUIRES_(ranges::Range&lt; Rng &gt;() &amp;&amp;!ranges::View&lt; Rng &gt;()) &gt; </td></tr>
 <tr class="memitem:gab5b8e032805197091c7ee80f9b17e770"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#gab5b8e032805197091c7ee80f9b17e770">hipipe::utility::unzip</a> (Rng range_of_tuples)</td></tr>
 <tr class="memdesc:gab5b8e032805197091c7ee80f9b17e770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unzips a range of tuples to a tuple of ranges.  <a href="group___tuple.html#gab5b8e032805197091c7ee80f9b17e770">More...</a><br /></td></tr>
@@ -144,10 +128,6 @@ template&lt;typename... Ts&gt; </td></tr>
 <tr class="memitem:gaad3573c0a654808abfd1f23931381e46"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#gaad3573c0a654808abfd1f23931381e46">hipipe::utility::maybe_untuple</a> (Tuple &amp;&amp;tuple)</td></tr>
 <tr class="memdesc:gaad3573c0a654808abfd1f23931381e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract a value from a tuple if the tuple contains only a single value.  <a href="group___tuple.html#gaad3573c0a654808abfd1f23931381e46">More...</a><br /></td></tr>
 <tr class="separator:gaad3573c0a654808abfd1f23931381e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3565a20408ff2ac52a6bbf476ad51533"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename RARng &gt; </td></tr>
-<tr class="memitem:ga3565a20408ff2ac52a6bbf476ad51533"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#ga3565a20408ff2ac52a6bbf476ad51533">hipipe::utility::range_to_tuple</a> (RARng &amp;&amp;rng)</td></tr>
-<tr class="memdesc:ga3565a20408ff2ac52a6bbf476ad51533"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a range to a tuple.  <a href="group___tuple.html#ga3565a20408ff2ac52a6bbf476ad51533">More...</a><br /></td></tr>
-<tr class="separator:ga3565a20408ff2ac52a6bbf476ad51533"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf25612b3411904b8473ac80d4c71903b"><td class="memTemplParams" colspan="2">template&lt;std::size_t N, typename Fun &gt; </td></tr>
 <tr class="memitem:gaf25612b3411904b8473ac80d4c71903b"><td class="memTemplItemLeft" align="right" valign="top">constexpr Fun&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___tuple.html#gaf25612b3411904b8473ac80d4c71903b">hipipe::utility::times_with_index</a> (Fun &amp;&amp;fun)</td></tr>
 <tr class="memdesc:gaf25612b3411904b8473ac80d4c71903b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Repeat a function N times in compile time.  <a href="group___tuple.html#gaf25612b3411904b8473ac80d4c71903b">More...</a><br /></td></tr>
@@ -179,7 +159,7 @@ template&lt;std::size_t Offset, std::size_t N&gt; </div>
 
 <p>Make std::index_sequence with the given offset. </p>
 <p>Example: </p><div class="fragment"><div class="line">std::is_same&lt;decltype(make_offset_index_sequence&lt;3, 4&gt;()),</div><div class="line">                      std::index_sequence&lt;3, 4, 5, 6&gt;&gt;;</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00093">93</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00091">91</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -205,7 +185,7 @@ template&lt;typename Tuple &gt; </div>
 <p>Extract a value from a tuple if the tuple contains only a single value. </p>
 <p>If the tuple contains zero or more than one element, this is an identity.</p>
 <p>Example: </p><div class="fragment"><div class="line">std::tuple&lt;int, double&gt; t1{1, 3.};</div><div class="line"><span class="keyword">auto</span> t2 = <a class="code" href="group___tuple.html#gaad3573c0a654808abfd1f23931381e46">maybe_untuple</a>(t1);</div><div class="line">static_assert(std::is_same_v&lt;decltype(t2), std::tuple&lt;int, double&gt;&gt;);</div><div class="line"></div><div class="line">std::tuple&lt;int&gt; t3{1};</div><div class="line"><span class="keyword">auto</span> t4 = <a class="code" href="group___tuple.html#gaad3573c0a654808abfd1f23931381e46">maybe_untuple</a>(t3);</div><div class="line">static_assert(std::is_same_v&lt;decltype(t4), <span class="keywordtype">int</span>&gt;);</div><div class="line"></div><div class="line"><span class="keywordtype">int</span> i = 1;</div><div class="line">std::tuple&lt;int&amp;&gt; t5{i};</div><div class="line"><span class="keyword">auto</span>&amp; t6 = <a class="code" href="group___tuple.html#gaad3573c0a654808abfd1f23931381e46">maybe_untuple</a>(t5);</div><div class="line">static_assert(std::is_same_v&lt;decltype(t6), <span class="keywordtype">int</span>&amp;&gt;);</div><div class="line">t6 = 2;</div><div class="line">BOOST_TEST(i == 2);</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00523">523</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00371">371</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -229,31 +209,7 @@ template&lt;std::size_t Value, std::size_t... Is&gt; </div>
 
 <p>Add a number to all values in std::index_sequence. </p>
 <p>Example: </p><div class="fragment"><div class="line">std::is_same&lt;decltype(plus&lt;2&gt;(std::index_sequence&lt;1, 3, 4&gt;{})),</div><div class="line">                              std::index_sequence&lt;3, 5, 6&gt;&gt;;</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00079">79</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ga3565a20408ff2ac52a6bbf476ad51533"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3565a20408ff2ac52a6bbf476ad51533">&#9670;&nbsp;</a></span>range_to_tuple()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;std::size_t N, typename RARng &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto hipipe::utility::range_to_tuple </td>
-          <td>(</td>
-          <td class="paramtype">RARng &amp;&amp;&#160;</td>
-          <td class="paramname"><em>rng</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Converts a range to a tuple. </p>
-<p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::unique_ptr&lt;int&gt;&gt; data;</div><div class="line">data.emplace_back(std::make_unique&lt;int&gt;(5));</div><div class="line">data.emplace_back(std::make_unique&lt;int&gt;(6));</div><div class="line">data.emplace_back(std::make_unique&lt;int&gt;(7));</div><div class="line"></div><div class="line"><span class="keyword">auto</span> tpl = range_to_tuple&lt;3&gt;(std::move(data));</div><div class="line">assert(tpl == std::make_tuple(5, 6, 7));</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00555">555</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00077">77</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -277,32 +233,7 @@ template&lt;std::size_t N, typename Fun &gt; </div>
 
 <p>Repeat a function N times in compile time. </p>
 <p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> tpl = std::make_tuple(1, 0.25, <span class="charliteral">&#39;a&#39;</span>);</div><div class="line"></div><div class="line">times_with_index&lt;3&gt;([&amp;tpl](<span class="keyword">auto</span> index) {</div><div class="line">    ++std::get&lt;index&gt;(tpl);</div><div class="line">});</div><div class="line">assert(tpl == std::make_tuple(2, 1.25, <span class="charliteral">&#39;b&#39;</span>));</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00587">587</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ga18aea841218b06950f22dfed27c6945a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga18aea841218b06950f22dfed27c6945a">&#9670;&nbsp;</a></span>tuple_cat_unique()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Tuples&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto hipipe::utility::tuple_cat_unique </td>
-          <td>(</td>
-          <td class="paramtype">Tuples &amp;&amp;...&#160;</td>
-          <td class="paramname"><em>tuples</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Concatenate two tuples and keep only the first element of each type. </p>
-<p>Note: All the reference types are decayed during this operation.</p>
-<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> t1 = std::make_tuple(0, <span class="charliteral">&#39;1&#39;</span>);</div><div class="line"><span class="keyword">auto</span> t2 = std::make_tuple(2, <span class="charliteral">&#39;3&#39;</span>, 5.);</div><div class="line"><span class="keyword">auto</span> t3 = <a class="code" href="group___tuple.html#ga18aea841218b06950f22dfed27c6945a">tuple_cat_unique</a>(t1, t2);</div><div class="line">static_assert(std::is_same&lt;std::tuple&lt;int, char, double&gt;, decltype(t3)&gt;{});</div><div class="line">assert(t2 == std::make_tuple(0, <span class="charliteral">&#39;1&#39;</span>, 5.));</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00292">292</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00403">403</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -338,7 +269,7 @@ template&lt;typename Tuple , typename Fun &gt; </div>
 <p>The order of application is from the first to the last element.</p>
 <p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> tpl = std::make_tuple(5, 2.);</div><div class="line"><a class="code" href="group___tuple.html#gaa9961c2170337d529968ce1041ab4c8f">tuple_for_each</a>(tpl, [](<span class="keyword">auto</span>&amp; val) { std::cout &lt;&lt; val &lt;&lt; <span class="charliteral">&#39;\n&#39;</span>; });</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>The function after application. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00121">121</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00119">119</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -372,67 +303,7 @@ template&lt;typename Tuple , typename Fun &gt; </div>
 
 <p>Similar to <a class="el" href="group___tuple.html#gaa9961c2170337d529968ce1041ab4c8f" title="Apply a function on each element of a tuple. ">tuple_for_each()</a>, but with index available. </p>
 <p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> tpl = std::make_tuple(1, 2.);</div><div class="line"></div><div class="line"><a class="code" href="group___tuple.html#ga523ac02152dbf96252faa5e85dec8cba">tuple_for_each_with_index</a>(tpl, [](<span class="keyword">auto</span>&amp; val, <span class="keyword">auto</span> index) {</div><div class="line">    val += index;</div><div class="line">});</div><div class="line"></div><div class="line">assert(tpl == std::make_tuple(1, 3.));</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00606">606</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ga6f05bdef9844406a88c1f869857abec7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6f05bdef9844406a88c1f869857abec7">&#9670;&nbsp;</a></span>tuple_index_view()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;std::size_t... Idxs, typename Tuple &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto hipipe::utility::tuple_index_view </td>
-          <td>(</td>
-          <td class="paramtype">Tuple &amp;&#160;</td>
-          <td class="paramname"><em>tuple</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::index_sequence&lt; Idxs... &gt;&#160;</td>
-          <td class="paramname"> = <code>{}</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Makes a sub-tuple made of references to the original tuple (selected by index). </p>
-<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> tpl = std::make_tuple(0, 5., <span class="charliteral">&#39;c&#39;</span>);</div><div class="line"><span class="keyword">auto</span> subtpl = tuple_index_view&lt;2, 0&gt;(t1);</div><div class="line"><span class="comment">// or equivalently: auto subtpl = tuple_index_view(t1, std::index_sequence&lt;2, 0&gt;{});</span></div><div class="line">static_assert(std::is_same&lt;std::tuple&lt;char&amp;, int&amp;&gt;, decltype(subtpl)&gt;{});</div><div class="line">assert(subtpl == std::tuple&lt;char, int&gt;{<span class="charliteral">&#39;c&#39;</span>, 0});</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>The view of the original tuple. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00206">206</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ga6c6c34f3c78e151fae8c00623129f7dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6c6c34f3c78e151fae8c00623129f7dc">&#9670;&nbsp;</a></span>tuple_remove()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Rem, typename Tuple &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto hipipe::utility::tuple_remove </td>
-          <td>(</td>
-          <td class="paramtype">Tuple&#160;</td>
-          <td class="paramname"><em>tuple</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Remove types from a tuple. </p>
-<p>Note: All the reference types are decayed during this operation.</p>
-<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> t1 = std::make_tuple(0, <span class="charliteral">&#39;1&#39;</span>);</div><div class="line"><span class="keyword">auto</span> t2 = tuple_remove&lt;int&gt;(t1);</div><div class="line">static_assert(std::is_same&lt;std::tuple&lt;char&gt;, decltype(t2)&gt;{});</div><div class="line">assert(t2 == std::make_tuple(<span class="charliteral">&#39;1&#39;</span>));</div><div class="line"><span class="keyword">auto</span> t3 = tuple_remove&lt;int, char&gt;(std::make_tuple(0, <span class="charliteral">&#39;a&#39;</span>, 3L, <span class="charliteral">&#39;b&#39;</span>));</div><div class="line">static_assert(std::is_same&lt;std::tuple&lt;long&gt;, decltype(t3)&gt;{});</div><div class="line">assert(t3 == std::make_tuple(3L));</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00335">335</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00422">422</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -468,7 +339,7 @@ template&lt;typename Tuple , typename Fun &gt; </div>
 <p>The order of application is unspecified.</p>
 <p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> t1 = std::make_tuple(0, 10L, 5.);</div><div class="line"><span class="keyword">auto</span> t2 = <a class="code" href="group___tuple.html#ga7c87ffe36318ca892cd9f7780ff84391">tuple_transform</a>(t1, [](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;v) { <span class="keywordflow">return</span> v + 1; });</div><div class="line">static_assert(std::is_same&lt;std::tuple&lt;int, long, double&gt;, decltype(t2)&gt;{});</div><div class="line">assert(t2 == std::make_tuple(0 + 1, 10L + 1, 5. + 1));</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>The transformed tuple. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00156">156</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00154">154</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -502,32 +373,7 @@ template&lt;typename Tuple , typename Fun &gt; </div>
 
 <p>Similar to <a class="el" href="group___tuple.html#ga7c87ffe36318ca892cd9f7780ff84391" title="Transform each element of a tuple. ">tuple_transform()</a>, but with index available. </p>
 <p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> tpl = std::make_tuple(1, 0.25, <span class="charliteral">&#39;a&#39;</span>);</div><div class="line"></div><div class="line"><span class="keyword">auto</span> tpl2 = <a class="code" href="group___tuple.html#ga2dd73f88d60339287bf6f0df3357937d">tuple_transform_with_index</a>(tpl, [](<span class="keyword">auto</span>&amp;&amp; elem, <span class="keyword">auto</span> index) {</div><div class="line">    <span class="keywordflow">return</span> elem + index;</div><div class="line">});</div><div class="line"></div><div class="line">assert(tpl2 == std::make_tuple(1, 1.25, <span class="charliteral">&#39;c&#39;</span>));</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00642">642</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
-
-</div>
-</div>
-<a id="ga0b8b329bd5da0bf8f692081ade95b459"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga0b8b329bd5da0bf8f692081ade95b459">&#9670;&nbsp;</a></span>tuple_type_view()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Types, typename Tuple &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr auto hipipe::utility::tuple_type_view </td>
-          <td>(</td>
-          <td class="paramtype">Tuple &amp;&#160;</td>
-          <td class="paramname"><em>tuple</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Makes a sub-tuple made of references to the original tuple (selected by type). </p>
-<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> tpl = std::make_tuple(0, 5., <span class="charliteral">&#39;c&#39;</span>);</div><div class="line"><span class="keyword">auto</span> subtpl = tuple_type_view&lt;char, int&gt;(t1);</div><div class="line">static_assert(std::is_same&lt;std::tuple&lt;char&amp;, int&amp;&gt;, decltype(subtpl)&gt;{});</div><div class="line">assert(subtpl == std::tuple&lt;char, int&gt;{<span class="charliteral">&#39;c&#39;</span>, 0});</div></div><!-- fragment --><dl class="section return"><dt>Returns</dt><dd>The view of the original tuple. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00187">187</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00458">458</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -552,7 +398,7 @@ template&lt;typename Rng , CONCEPT_REQUIRES_(ranges::Range&lt; Rng &gt;() &amp;&
 <p>Unzips a range of tuples to a tuple of ranges. </p>
 <p>Specialization of unzip function for views.</p>
 <p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::tuple&lt;int, double&gt;&gt; data{};</div><div class="line">data.emplace_back(1, 5.);</div><div class="line">data.emplace_back(2, 6.);</div><div class="line">data.emplace_back(3, 7.);</div><div class="line"></div><div class="line">std::vector&lt;int&gt; va;</div><div class="line">std::vector&lt;double&gt; vb;</div><div class="line">std::tie(va, vb) = <a class="code" href="group___tuple.html#gab5b8e032805197091c7ee80f9b17e770">unzip</a>(data);</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00409">409</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00257">257</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>
@@ -577,7 +423,7 @@ template&lt;bool Enable, typename RangeT &gt; </div>
 <p>Unzips a range of tuples to a tuple of ranges if a constexpr condition holds. </p>
 <p>This method is enabled or disabled by its first template parameter. If disabled, it returns identity. If enabled, it returns the same thing as <a class="el" href="group___tuple.html#gab5b8e032805197091c7ee80f9b17e770" title="Unzips a range of tuples to a tuple of ranges. ">unzip()</a> would return.</p>
 <p>Example: </p><div class="fragment"><div class="line">std::vector&lt;std::tuple&lt;int, double&gt;&gt; data{};</div><div class="line">data.emplace_back(1, 5.);</div><div class="line">data.emplace_back(2, 6.);</div><div class="line">data.emplace_back(3, 7.);</div><div class="line"></div><div class="line">std::vector&lt;int&gt; va;</div><div class="line">std::vector&lt;double&gt; vb;</div><div class="line">std::tie(va, vb) = unzip_if&lt;true&gt;(data);</div><div class="line"></div><div class="line">std::vector&lt;int&gt; vc = unzip_if&lt;false&gt;(va);</div></div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00469">469</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tuple_8hpp_source.html#l00317">317</a> of file <a class="el" href="tuple_8hpp_source.html">tuple.hpp</a>.</p>
 
 </div>
 </div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['create',['create',['../group___stream.html#gae56891f9101f14ac09d0d247f6b79c24',1,'hipipe::stream']]]
+  ['create',['create',['../group___stream.html#gad05dc07f4ec4ef94a891ab95c5939dc0',1,'hipipe::stream']]]
 ];
