@@ -22,12 +22,7 @@
 
 namespace hipipe::python::utility {
 
-// standalone converter functions //
-
-PyObject* fromMatToNDArray(const cv::Mat& m);
-cv::Mat fromNDArrayToMat(PyObject* o);
-
-// boost converters //
+// boost mat converters //
 
 struct matToNDArrayBoostConverter {
     static PyObject* convert(cv::Mat const& m);
