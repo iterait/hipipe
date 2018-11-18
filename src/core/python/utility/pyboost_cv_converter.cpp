@@ -11,7 +11,6 @@
 #if defined HIPIPE_BUILD_PYTHON && defined HIPIPE_BUILD_PYTHON_OPENCV
 
 #include <opencv2/core/core.hpp>
-#if CV_VERSION_MAJOR == 3
 
 #include <hipipe/core/python/utility/pyboost_cv_converter.hpp>
 
@@ -286,5 +285,4 @@ void matFromNDArrayBoostConverter::construct(
 
 }  // namespace hipipe::python::utility
 
-#endif // CV_VERSION_MAJOR == 3
 #endif // defined HIPIPE_BUILD_PYTHON && defined HIPIPE_BUILD_PYTHON_OPENCV
