@@ -13,7 +13,8 @@
 #ifdef HIPIPE_BUILD_PYTHON
 
 #include <hipipe/core/python/utility/ndim_vector_converter.hpp>
-#include <hipipe/core/python/utility/pyboost_cv_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_cv_mat_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_cv_point_converter.hpp>
 #include <hipipe/core/python/utility/pyboost_fs_path_converter.hpp>
 #include <hipipe/core/python/utility/pyboost_is_registered.hpp>
 #include <hipipe/core/python/utility/vector_converter.hpp>

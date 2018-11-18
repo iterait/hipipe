@@ -1,7 +1,7 @@
 /****************************************************************************
  *  hipipe library
  *  Copyright (c) 2014, Gregory Kramida
- *  Modified by Filip Matzner
+ *  Modified by Filip Matzner, Adam Blazek
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
@@ -21,8 +21,6 @@
 #include <cstdio>
 
 namespace hipipe::python::utility {
-
-// boost mat converters //
 
 struct matToNDArrayBoostConverter {
     static PyObject* convert(cv::Mat const& m);

@@ -2,7 +2,7 @@
  *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Copyright (c) 2018, Iterait a.s.
- *  Author(s) Filip Matzner
+ *  Author(s) Filip Matzner, Adam Blazek
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
@@ -63,7 +63,7 @@ bool check_rgb_sample(cv::Mat mat)
     return std::equal(mat.begin<float>(), mat.end<float>(), gold.begin<float>());
 }
 
-BOOST_PYTHON_MODULE(pyboost_cv_converter_py_cpp)
+BOOST_PYTHON_MODULE(pyboost_cv_mat_converter_py_cpp)
 {
     // initialize hipipe OpenCV converters, exceptions, etc.
     hipipe::python::initialize();

@@ -2,7 +2,7 @@
  *  hipipe library
  *  Copyright (c) 2017, Cognexa Solutions s.r.o.
  *  Copyright (c) 2018, Iterait a.s.
- *  Author(s) Filip Matzner
+ *  Author(s) Filip Matzner, Adam Blazek
  *
  *  This file is distributed under the MIT License.
  *  See the accompanying file LICENSE.txt for the complete license agreement.
@@ -23,7 +23,8 @@
 #include <numpy/ndarrayobject.h>
 
 #ifdef HIPIPE_BUILD_PYTHON_OPENCV
-#include <hipipe/core/python/utility/pyboost_cv_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_cv_mat_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_cv_point_converter.hpp>
 #endif
 #include <hipipe/core/python/utility/pyboost_fs_path_converter.hpp>
 
@@ -48,9 +49,13 @@ void initialize()
     py::register_exception_translator<stop_iteration_exception>(stop_iteration_translator);
 
 #ifdef HIPIPE_BUILD_PYTHON_OPENCV
-    // register OpenCV converters
+    // register cv::Mat converters
     py::to_python_converter<cv::Mat, utility::matToNDArrayBoostConverter>();
     utility::matFromNDArrayBoostConverter();
+
+    // register cv::Point2f converters
+    py::to_python_converter<cv::Point2f, utility::pointToTupleBoostConverter>();
+    utility::pointFromTupleBoostConverter();
 #endif
 
     // register fs::path converter

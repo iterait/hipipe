@@ -10,9 +10,7 @@
 #include <hipipe/build_config.hpp>
 #if defined HIPIPE_BUILD_PYTHON && defined HIPIPE_BUILD_PYTHON_OPENCV
 
-#include <opencv2/core/core.hpp>
-
-#include <hipipe/core/python/utility/pyboost_cv_converter.hpp>
+#include <hipipe/core/python/utility/pyboost_cv_mat_converter.hpp>
 
 namespace hipipe::python::utility {
 
