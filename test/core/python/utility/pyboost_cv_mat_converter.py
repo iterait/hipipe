@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import pyboost_cv_converter_py_cpp as pycpp
+import pyboost_cv_mat_converter_py_cpp as pycpp
 
 CHESSBOARD = np.array([[1, 0, 1],
                        [0, 1, 0],
@@ -20,6 +20,7 @@ def main():
     # check c++ -> python
     np.testing.assert_array_equal(pycpp.chessboard(), CHESSBOARD)
     np.testing.assert_array_almost_equal(pycpp.rgb_sample(), RGB_SAMPLE)
+
     # check python -> c++
     assert(pycpp.check_chessboard(CHESSBOARD))
     assert(pycpp.check_rgb_sample(RGB_SAMPLE))
