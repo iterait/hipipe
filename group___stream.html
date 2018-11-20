@@ -104,6 +104,10 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga41c2acf41cda5437ee5d73cac67266cf"><td class="memTemplParams" colspan="2">template&lt;typename... FromColumns, typename... ToColumns&gt; </td></tr>
+<tr class="memitem:ga41c2acf41cda5437ee5d73cac67266cf"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___stream.html#ga41c2acf41cda5437ee5d73cac67266cf">hipipe::stream::copy</a> (from_t&lt; FromColumns... &gt; from_cols, to_t&lt; ToColumns... &gt; to_cols)</td></tr>
+<tr class="memdesc:ga41c2acf41cda5437ee5d73cac67266cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the data from FromColumns to the respective ToColumns.  <a href="group___stream.html#ga41c2acf41cda5437ee5d73cac67266cf">More...</a><br /></td></tr>
+<tr class="separator:ga41c2acf41cda5437ee5d73cac67266cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gada9623ff6d664422fb96e7fedd47c1cf"><td class="memTemplParams" colspan="2">template&lt;typename... FromColumns, typename... ByColumns, typename Fun , int Dim = 1&gt; </td></tr>
 <tr class="memitem:gada9623ff6d664422fb96e7fedd47c1cf"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___stream.html#gada9623ff6d664422fb96e7fedd47c1cf">hipipe::stream::filter</a> (from_t&lt; FromColumns... &gt; f, by_t&lt; ByColumns... &gt; b, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</td></tr>
 <tr class="memdesc:gada9623ff6d664422fb96e7fedd47c1cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter stream data.  <a href="group___stream.html#gada9623ff6d664422fb96e7fedd47c1cf">More...</a><br /></td></tr>
@@ -239,6 +243,48 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ga41c2acf41cda5437ee5d73cac67266cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga41c2acf41cda5437ee5d73cac67266cf">&#9670;&nbsp;</a></span>copy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... FromColumns, typename... ToColumns&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">auto hipipe::stream::copy </td>
+          <td>(</td>
+          <td class="paramtype">from_t&lt; FromColumns... &gt;&#160;</td>
+          <td class="paramname"><em>from_cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">to_t&lt; ToColumns... &gt;&#160;</td>
+          <td class="paramname"><em>to_cols</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy the data from FromColumns to the respective ToColumns. </p>
+<p>The data from i-th FromColumn are copied to i-th ToColumn. Note that the ToColumns examples must be constructible from their FromColumns counterparts.</p>
+<p>Example: </p><div class="fragment"><div class="line"><a class="code" href="group___stream.html#ga762e4b9643b235eec42b86533e3302da">HIPIPE_DEFINE_COLUMN</a>(i, <span class="keywordtype">int</span>)</div><div class="line"><a class="code" href="group___stream.html#ga762e4b9643b235eec42b86533e3302da">HIPIPE_DEFINE_COLUMN</a>(i2, <span class="keywordtype">int</span>)</div><div class="line"><a class="code" href="group___stream.html#ga762e4b9643b235eec42b86533e3302da">HIPIPE_DEFINE_COLUMN</a>(i3, <span class="keywordtype">int</span>)</div><div class="line"><a class="code" href="group___stream.html#ga762e4b9643b235eec42b86533e3302da">HIPIPE_DEFINE_COLUMN</a>(l, <span class="keywordtype">long</span>)</div><div class="line"></div><div class="line"><span class="comment">// rng is a stream with four identical columns</span></div><div class="line"><span class="keyword">auto</span> rng = view::iota(0, 10) | create&lt;i&gt;() |</div><div class="line">  <a class="code" href="group___stream.html#ga41c2acf41cda5437ee5d73cac67266cf">copy</a>(from&lt;i&gt;, to&lt;i2&gt;) | <a class="code" href="group___stream.html#ga41c2acf41cda5437ee5d73cac67266cf">copy</a>(from&lt;i, i2&gt;, to&lt;i3, l&gt;);</div></div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from_cols</td><td>The source columns. </td></tr>
+    <tr><td class="paramname">to_cols</td><td>The target columns. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="copy_8hpp_source.html#l00038">38</a> of file <a class="el" href="copy_8hpp_source.html">copy.hpp</a>.</p>
+
+</div>
+</div>
 <a id="gada9623ff6d664422fb96e7fedd47c1cf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gada9623ff6d664422fb96e7fedd47c1cf">&#9670;&nbsp;</a></span>filter()</h2>
 
