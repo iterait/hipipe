@@ -4,6 +4,8 @@ add_boost_test("test.core.stream.buffer" "buffer.cpp" "")
 
 add_boost_test("test.core.stream.column_t" "column_t.cpp" "")
 
+add_boost_test("test.core.stream.copy" "copy.cpp" "")
+
 add_boost_test("test.core.stream.create" "create.cpp" "")
 
 add_boost_test("test.core.stream.drop" "drop.cpp" "")
