@@ -14,6 +14,12 @@
 
 namespace hipipe::python::utility {
 
+#if CV_VERSION_MAJOR == 4
+typedef cv::AccessFlag cv_access_flag_t;
+#else
+typedef int cv_access_flag_t;
+#endif
+
 //===================   ERROR HANDLING     =========================================================
 
 static PyObject* opencv_error = 0;
@@ -84,7 +90,7 @@ public:
     }
 
     cv::UMatData* allocate(int dims0, const int* sizes, int type, void* data, size_t* step,
-                           int flags, cv::UMatUsageFlags usageFlags) const
+                           cv_access_flag_t flags, cv::UMatUsageFlags usageFlags) const
     {
         if (data != 0) {
             CV_Error(cv::Error::StsAssert, "The data should normally be NULL!");
@@ -117,7 +123,7 @@ public:
         return allocate(o, dims0, sizes, type, step);
     }
 
-    bool allocate(cv::UMatData* u, int accessFlags, cv::UMatUsageFlags usageFlags) const
+    bool allocate(cv::UMatData* u, cv_access_flag_t accessFlags, cv::UMatUsageFlags usageFlags) const
     {
         return stdAllocator->allocate(u, accessFlags, usageFlags);
     }
