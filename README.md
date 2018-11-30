@@ -7,7 +7,7 @@
 **This project is under heavy development. The API is continuously changing without regard to backward compatibility.**
 
 __HiPipe__ is a C++ library for efficient data processing. Its main purpose is to simplify
-and acclelerate data preparation for deep learning models, but it is generic enough to be used
+and accelerate data preparation for deep learning models, but it is generic enough to be used
 in many other areas.
 
 __HiPipe__ lets the programmer build intuitive data streams that transform,
