@@ -17,15 +17,17 @@
 #include <hipipe/core/stream/column_t.hpp>
 #include <hipipe/core/stream/stream_t.hpp>
 
-#include <hipipe/core/stream/rebatch.hpp>
 #include <hipipe/core/stream/buffer.hpp>
+#include <hipipe/core/stream/copy.hpp>
 #include <hipipe/core/stream/create.hpp>
 #include <hipipe/core/stream/drop.hpp>
 #include <hipipe/core/stream/filter.hpp>
 #include <hipipe/core/stream/for_each.hpp>
 #include <hipipe/core/stream/generate.hpp>
+#include <hipipe/core/stream/keep.hpp>
 #include <hipipe/core/stream/pad.hpp>
 #include <hipipe/core/stream/random_fill.hpp>
+#include <hipipe/core/stream/rebatch.hpp>
 #include <hipipe/core/stream/transform.hpp>
 #include <hipipe/core/stream/unpack.hpp>
 
