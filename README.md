@@ -1,7 +1,7 @@
 # HiPipe
 [![CircleCI](https://circleci.com/gh/iterait/hipipe/tree/dev.svg?style=shield)](https://circleci.com/gh/iterait/hipipe/tree/master)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
-[![Development Status](https://img.shields.io/badge/status-CX%20Regular-brightgreen.svg?style=flat)]()
+[![Development Status](https://img.shields.io/badge/status-Regular-brightgreen.svg?style=flat)]()
 [![Master Developer](https://img.shields.io/badge/master-Filip%20Matzner-lightgrey.svg?style=flat)]()
 
 **This project is under heavy development. The API is continuously changing without regard to backward compatibility.**
