@@ -4,7 +4,6 @@
 [![Development Status](https://img.shields.io/badge/status-Regular-brightgreen.svg?style=flat)]()
 [![Master Developer](https://img.shields.io/badge/master-Filip%20Matzner-lightgrey.svg?style=flat)]()
 
-**This project is under heavy development. The API is continuously changing without regard to backward compatibility.**
 
 __HiPipe__ is a C++ library for efficient data processing. Its main purpose is to simplify
 and accelerate data preparation for deep learning models, but it is generic enough to be used
