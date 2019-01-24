@@ -137,14 +137,14 @@ HIPIPE_DEFINE_COLUMN(login, std::string)
 
   // This transformation is applied in dimension 2, which for std::string means
   // that it is applied on each letter.
-  | hps::transform(from<login>, to<login>, dim<2>, [](char c) { return c + 1; })
+  | hps::transform(from<login>, to<login>, [](char c) { return c + 1; }, dim<2>)
 
   // And this transformation is applied in dimension 0, which denotes that the function
   // expects the whole batch.
-  | hps::transform(from<login>, to<login>, dim<0>, [](std::vector<std::string> login_batch) {
+  | hps::transform(from<login>, to<login>, [](std::vector<std::string> login_batch) {
         login_batch.push_back("new_login");  // this inserts a new login to the current batch
         return login_batch;
-    })
+    }, dim<0>)
 ```
 
 In __HiPipe__, there are no constraints on the shape of the columns. Batch
