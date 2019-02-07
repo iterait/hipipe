@@ -80,7 +80,7 @@ jobs:
 
   test_archlinux_gcc:
     docker:
-      - image: archimg/base-devel
+      - image: archlinux/base
     working_directory: ~/hipipe
     steps:
       - *arch_deps
@@ -91,7 +91,7 @@ jobs:
 
   test_archlinux_clang:
     docker:
-      - image: archimg/base-devel
+      - image: archlinux/base
     working_directory: ~/hipipe
     steps:
       - *arch_deps
