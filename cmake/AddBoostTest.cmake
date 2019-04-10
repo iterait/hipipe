@@ -19,14 +19,14 @@ function(add_boost_test EXECUTABLE_FILE_NAME SOURCE_FILE_NAME LIBRARIES)
   # find all BOOST_AUTO_TEST_CASE(*) lines
   file(READ "${SOURCE_FILE_NAME}" _source_file_content)
   string(
-    REGEX MATCHALL "BOOST_AUTO_TEST_CASE\\( *([A-Za-z_0-9]+) *\\)" 
+    REGEX MATCHALL "BOOST_AUTO_TEST_CASE\\( *([A-Za-z_0-9]+)[, \\)]*"
     _boost_tests ${_source_file_content}
   )
 
   foreach(_test_raw_name ${_boost_tests})
     # take the name of the test
     string(
-      REGEX REPLACE ".*\\( *([A-Za-z_0-9]+) *\\).*" "\\1"
+      REGEX REPLACE ".*\\( *([A-Za-z_0-9]+)[, \\)]*" "\\1"
       _test_name ${_test_raw_name}
     )
     # register the test
