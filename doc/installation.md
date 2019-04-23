@@ -1,6 +1,17 @@
 Installation {#installation}
 ============
 
+Package Manager
+---------------
+---
+
+The easiest way to install __HiPipe__ is via one of the supported package managers:
+
+- Arch linux: `trizen -S hipipe`
+
+Support for other package managers is comming soon. If your system is not in the
+list, __HiPipe__ has to be installed manually as described in the following sections.
+
 Requirements
 ------------
 ---
