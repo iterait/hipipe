@@ -100,6 +100,13 @@ private:
             pop_buffer();
             fill_buffer();
         }
+
+        ~cursor()
+        {
+            for (auto& future : buffer_) {
+                if (future.valid()) future.wait();
+            }
+        }
     };  // class buffer_view
 
     cursor begin_cursor()
