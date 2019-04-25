@@ -1,3 +1,4 @@
 <map id="hipipe::stream::abstract_column" name="hipipe::stream::abstract_column">
-<area shape="rect" id="node2" href="$classhipipe_1_1stream_1_1column__base.html" title="Implementation stub of a column defined by HIPIPE_DEFINE_COLUMN macro. " alt="" coords="5,95,280,136"/>
+<area shape="rect" id="node1" title="Abstract base class for HiPipe columns." alt="" coords="54,5,231,47"/>
+<area shape="rect" id="node2" href="$classhipipe_1_1stream_1_1column__base.html" title="Implementation stub of a column defined by HIPIPE_DEFINE_COLUMN macro." alt="" coords="5,95,280,136"/>
 </map>
