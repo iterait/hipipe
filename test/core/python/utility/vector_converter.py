@@ -18,8 +18,11 @@ def main():
              (np.int64,      "std::int64_t"),
              (np.uint64,     "std::uint64_t"),
              (np.float32,    "float"),
-             (np.float64,    "double"),
-             (np.float128,   "long double")]
+             (np.float64,    "double")]
+
+    # Some architectures (e.g., ARM) do not support float128.
+    if hasattr(np, 'float128'):
+        types.append((np.float128, "long double"))
 
     # check all the arrays with the arithmetic value types
     for np_type, cpp_type in types:
