@@ -20,6 +20,7 @@
 #include <range/v3/algorithm/find.hpp>
 #include <range/v3/algorithm/max.hpp>
 #include <range/v3/numeric/accumulate.hpp>
+#include <range/v3/numeric/partial_sum.hpp>
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/chunk.hpp>
 #include <range/v3/view/for_each.hpp>
@@ -43,7 +44,7 @@ namespace hipipe::utility {
 ///     std::size_t rng_ndims = ndims<std::vector<std::list<int>>>{};
 ///     // rng_ndims == 2;
 /// \endcode
-template<typename Rng, typename PrevRng = void, bool IsRange = ranges::Range<Rng>()>
+template<typename Rng, typename PrevRng = void, bool IsRange = ranges::Range<Rng>>
 struct ndims {
 };
 

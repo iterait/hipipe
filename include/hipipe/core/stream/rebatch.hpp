@@ -91,7 +91,7 @@ private:
             return std::move(*batch_);
         }
 
-        bool equal(ranges::default_sentinel) const
+        bool equal(ranges::default_sentinel_t) const
         {
             return done_;
         }
@@ -137,7 +137,7 @@ private:
     }
 
 public:
-    template <typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
+    CPP_template(class Rng)(requires ranges::InputRange<Rng>)
     rebatch_view<ranges::view::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
     {
         return {ranges::view::all(std::forward<Rng>(rng)), n};

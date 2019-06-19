@@ -63,23 +63,23 @@ private:
     std::shared_ptr<Rng> rng_ptr_;
 
     // register __len__ function if it is supported
-    CONCEPT_REQUIRES(ranges::SizedRange<const Rng>())
+    CPP_template(int dummy = 0)(requires ranges::SizedRange<const Rng>)
     static void register_len(boost::python::class_<range<Rng>>& cls)
     {
         cls.def("__len__", &range<Rng>::len<>);
     }
-    CONCEPT_REQUIRES(!ranges::SizedRange<const Rng>())
+    CPP_template(int dummy = 0)(requires !ranges::SizedRange<const Rng>)
     static void register_len(boost::python::class_<range<Rng>>&)
     {
     }
 
     // register __getitem__ function if it is supported
-    CONCEPT_REQUIRES(ranges::RandomAccessRange<const Rng>())
+    CPP_template(int dummy = 0)(requires ranges::RandomAccessRange<const Rng>)
     static void register_getitem(boost::python::class_<range<Rng>>& cls)
     {
         cls.def("__getitem__", &range<Rng>::getitem<>);
     }
-    CONCEPT_REQUIRES(!ranges::RandomAccessRange<const Rng>())
+    CPP_template(int dummy = 0)(requires !ranges::RandomAccessRange<const Rng>)
     static void register_getitem(boost::python::class_<range<Rng>>&)
     {
     }
@@ -166,7 +166,7 @@ public:
     // Get an item or a slice.
     //
     // Note that when slicing, the data get copied.
-    CONCEPT_REQUIRES(ranges::RandomAccessRange<const Rng>())
+    CPP_template(int dummy = 0)(requires ranges::SizedRange<const Rng>)
     boost::python::object getitem(PyObject* idx_py) const
     {
         // handle slices
@@ -205,7 +205,7 @@ public:
     }
 
     // Get the size of the range.
-    CONCEPT_REQUIRES(ranges::SizedRange<const Rng>())
+    CPP_template(int dummy = 0)(requires ranges::SizedRange<const Rng>)
     long len() const
     {
         return ranges::size(*rng_ptr_);

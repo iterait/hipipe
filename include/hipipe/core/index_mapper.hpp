@@ -123,14 +123,14 @@ public:
     ///
     /// \param rng The range of values to be inserted.
     /// \throws std::invalid_argument if any of the elements is already present in the mapper.
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::Container<Rng>())>
+    CPP_template(class Rng)(requires ranges::Container<Rng>)
     void insert(Rng rng)
     {
         for (auto& val : rng) insert(std::move(val));
     }
 
     /// Specialization of range insertion for views.
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::View<Rng>())>
+    CPP_template(typename Rng)(requires ranges::View<Rng>)
     void insert(Rng rng)
     {
         for (auto&& val : rng) insert(std::forward<decltype(val)>(val));
@@ -153,14 +153,14 @@ public:
     /// Insert elements to index mapper while skipping duplicates.
     ///
     /// \param rng The range of values to be inserted.
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::Container<Rng>())>
+    CPP_template(class Rng)(requires ranges::Container<Rng>)
     void try_insert(Rng rng)
     {
         for (auto& val : rng) try_insert(std::move(val));
     }
 
     /// Specialization of try_insert for views.
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::View<Rng>())>
+    CPP_template(class Rng)(requires ranges::View<Rng>)
     void try_insert(Rng rng)
     {
         for (auto&& val : rng) try_insert(std::forward<decltype(val)>(val));

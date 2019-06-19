@@ -16,7 +16,7 @@
 #include <hipipe/core/stream/for_each.hpp>
 
 #include <boost/test/unit_test.hpp>
-#include <range/v3/to_container.hpp>
+#include <range/v3/range/conversion.hpp>
 
 
 BOOST_AUTO_TEST_CASE(test_for_each_of_two)

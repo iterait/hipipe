@@ -29,7 +29,7 @@ namespace detail {
         }
 
     public:
-        template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
+        CPP_template(typename Rng)(requires ranges::InputRange<Rng>)
         forward_stream_t operator()(Rng&& rng) const
         {
             return ranges::view::transform(std::forward<Rng>(rng),
@@ -41,7 +41,7 @@ namespace detail {
         }
 
         /// \cond
-        template<typename Rng, CONCEPT_REQUIRES_(!ranges::InputRange<Rng>())>
+        CPP_template(typename Rng)(requires !ranges::InputRange<Rng>)
         void operator()(Rng&&) const
         {
             CONCEPT_ASSERT_MSG(ranges::InputRange<Rng>(),

@@ -84,7 +84,7 @@ private:
             return std::move(*buffer_.front().get());
         }
 
-        bool equal(ranges::default_sentinel) const
+        bool equal(ranges::default_sentinel_t) const
         {
             return buffer_.empty() && it_ == ranges::end(rng_->rng_);
         }
@@ -123,13 +123,13 @@ public:
     {
     }
 
-    CONCEPT_REQUIRES(ranges::SizedRange<Rng const>())
+    CPP_template(int dummy = 0)(requires ranges::SizedRange<const Rng>)
     constexpr ranges::range_size_type_t<Rng> size() const
     {
         return ranges::size(rng_);
     }
 
-    CONCEPT_REQUIRES(ranges::SizedRange<Rng>())
+    CPP_template(int dummy = 0)(requires ranges::SizedRange<const Rng>)
     constexpr ranges::range_size_type_t<Rng> size()
     {
         return ranges::size(rng_);
@@ -148,7 +148,7 @@ private:
     }
 
 public:
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
+    CPP_template(typename Rng)(requires ranges::ForwardRange<Rng>)
     buffer_view<ranges::view::all_t<Rng>>
     operator()(Rng&& rng, std::size_t n = std::numeric_limits<std::size_t>::max()) const
     {
@@ -156,7 +156,7 @@ public:
     }
 
     /// \cond
-    template<typename Rng, CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+    CPP_template(typename Rng)(requires !ranges::ForwardRange<Rng>)
     void operator()(Rng&&, std::size_t n = 0) const
     {
         CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),

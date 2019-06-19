@@ -64,7 +64,7 @@ namespace detail {
             return ranges::make_pipeable(std::bind(fun, std::placeholders::_1, batch_size));
         }
     public:
-        template<typename Rng, CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
+        CPP_template(class Rng)(requires ranges::ForwardRange<Rng>)
         forward_stream_t operator()(Rng&& rng, std::size_t batch_size = 1) const
         {
             return ranges::view::transform(
@@ -73,7 +73,7 @@ namespace detail {
         }
 
         /// \cond
-        template<typename Rng, CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+        CPP_template(class Rng)(requires !ranges::ForwardRange<Rng>)
         void operator()(Rng&&, std::size_t batch_size = 1) const
         {
             CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),

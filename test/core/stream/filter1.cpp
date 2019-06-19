@@ -18,7 +18,7 @@
 #include <hipipe/core/stream/filter.hpp>
 #include <hipipe/core/stream/for_each.hpp>
 
-#include <range/v3/to_container.hpp>
+#include <range/v3/range/conversion.hpp>
 
 BOOST_AUTO_TEST_CASE(test_dim0)
 {

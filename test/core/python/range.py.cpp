@@ -37,7 +37,7 @@ vec_iter_t vector_range()
 }
 
 const std::vector<long> data = {1, 1, 2, 3, 5, 8};
-using view_iter_t = hpy::range<ranges::view::all_t<const std::vector<long>>>;
+using view_iter_t = hpy::range<ranges::view::all_t<const std::vector<long>&>>;
 view_iter_t view_range()
 {
     return view_iter_t{ranges::view::all(data)};

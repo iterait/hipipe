@@ -13,6 +13,8 @@
 
 #include <hipipe/core/dataframe.hpp>
 
+#include <range/v3/iterator/default_sentinel.hpp>
+
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
@@ -76,7 +78,7 @@ private:
             return std::move(rng_->row_);
         }
 
-        bool equal(ranges::default_sentinel) const noexcept
+        bool equal(ranges::default_sentinel_t) const noexcept
         {
             return rng_->row_position_ == RowPosition::End;
         }

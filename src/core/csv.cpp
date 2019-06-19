@@ -16,6 +16,7 @@
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/move.hpp>
 
+#include <array>
 #include <cctype>
 #include <climits>
 #include <deque>
@@ -209,8 +210,8 @@ std::ostream& write_csv_row(
         const std::string& field = row[i];
         // output quoted string if it contains separator, double quote, newline or
         // starts or ends with a whitespace
-        if (ranges::find_first_of(field, {separator, quote, '\n'}) != ranges::end(field)
-            || trimmable(field)) {
+        std::array<char, 3> must_quote = {separator, quote, '\n'};
+        if (ranges::find_first_of(field, must_quote) != ranges::end(field) || trimmable(field)) {
             out << std::quoted(field, quote, escape);
         } else {
             out << field;

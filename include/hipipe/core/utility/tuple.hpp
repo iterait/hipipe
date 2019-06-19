@@ -13,8 +13,8 @@
 #define HIPIPE_CORE_TUPLE_UTILS_HPP
 
 #include <range/v3/core.hpp>
-#include <range/v3/size.hpp>
-#include <range/v3/to_container.hpp>
+#include <range/v3/range/conversion.hpp>
+#include <range/v3/range/primitives.hpp>
 
 #include <experimental/tuple>
 #include <ostream>
@@ -207,12 +207,12 @@ namespace detail {
     }
 
     // if the size of the given range is known, return it, otherwise return 0
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::SizedRange<Rng>())>
+    CPP_template(class Rng)(requires ranges::SizedRange<Rng>)
     std::size_t safe_reserve_size(Rng&& rng)
     {
         return ranges::size(rng);
     }
-    template<typename Rng, CONCEPT_REQUIRES_(!ranges::SizedRange<Rng>())>
+    CPP_template(class Rng)(requires !ranges::SizedRange<Rng>)
     std::size_t safe_reserve_size(Rng&& rng)
     {
         return 0;
@@ -253,7 +253,7 @@ namespace detail {
 ///     std::vector<double> vb;
 ///     std::tie(va, vb) = unzip(data);
 /// \endcode
-template<typename Rng, CONCEPT_REQUIRES_(ranges::Range<Rng>() && !ranges::View<Rng>())>
+CPP_template(class Rng)(requires ranges::Range<Rng> && !ranges::View<Rng>)
 auto unzip(Rng range_of_tuples)
 {
     // copy the given container and move elements out of it
@@ -261,7 +261,7 @@ auto unzip(Rng range_of_tuples)
 }
 
 /// Specialization of unzip function for views.
-template<typename Rng, CONCEPT_REQUIRES_(ranges::View<Rng>())>
+CPP_template(class Rng)(requires ranges::View<Rng>)
 auto unzip(Rng view_of_tuples)
 {
     return utility::unzip(ranges::to_vector(view_of_tuples));
