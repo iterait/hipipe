@@ -27,7 +27,7 @@ namespace hipipe::stream {
 ///
 /// This is the value type of the stream.
 class batch {
-private:
+public:
 
     /// The stored columns.
     std::unordered_map<std::type_index, std::unique_ptr<abstract_column>> columns_;

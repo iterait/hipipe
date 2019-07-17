@@ -1,7 +1,16 @@
 function(add_boost_test EXECUTABLE_FILE_NAME SOURCE_FILE_NAME LIBRARIES)
+
   add_executable(
     ${EXECUTABLE_FILE_NAME}
     ${SOURCE_FILE_NAME}
+#    "/home/beda/packages/hipipe/src/core/csv.cpp"
+#    "/home/beda/packages/hipipe/src/core/base64.cpp"
+#    "/home/beda/packages/hipipe/src/core/python/initialize.cpp"
+#    "/home/beda/packages/hipipe/src/core/python/utility/pyboost_cv_mat_converter.cpp"
+#    "/home/beda/packages/hipipe/src/core/python/utility/pyboost_cv_point_converter.cpp"
+#    "/home/beda/packages/hipipe/src/core/python/utility/pyboost_fs_path_converter.cpp"
+#    "/home/beda/packages/hipipe/src/core/dataframe.cpp"
+#    "/home/beda/packages/hipipe/src/core/utility/filesystem.cpp"
   )
 
   target_link_libraries(

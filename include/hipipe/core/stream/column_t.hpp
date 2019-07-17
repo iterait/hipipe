@@ -13,6 +13,9 @@
 
 #ifdef HIPIPE_BUILD_PYTHON
 #include <hipipe/core/python/utility/ndim_vector_converter.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+
 #endif
 
 #include <initializer_list>
@@ -107,6 +110,8 @@ public:
     ///
     /// See the corresponding function in \ref column_base class for more info.
     virtual boost::python::object to_python() = 0;
+
+    virtual pybind11::array to_python_pybind() = 0;
     #endif
 
     // virtual destructor //
@@ -238,6 +243,14 @@ public:
     {
         return hipipe::python::utility::to_python(std::move(data_));
     }
+
+
+    pybind11::array to_python_pybind() override
+    {
+       //return pybind11::array(data_.size(), data_.data());
+       return hipipe::python::utility::to_python_pybind(std::move(data_));
+    }
+
     #endif
 };
 

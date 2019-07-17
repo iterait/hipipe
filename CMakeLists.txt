@@ -14,7 +14,7 @@ option(HIPIPE_BUILD_DOC "Build documentation" OFF)
 option(HIPIPE_BUILD_PYTHON "Build C++ <-> Python converters" ON)
 option(HIPIPE_BUILD_PYTHON_OPENCV "Build C++ <-> Python OpenCV converters (requires HIPIPE_BUILD_PYTHON)" ON)
 option(HIPIPE_BUILD_TENSORFLOW "Build TensorFlow functionality" OFF)
-option(HIPIPE_BUILTIN_RANGEV3 "Use built-in Range-v3 library" ON)
+option(HIPIPE_BUILTIN_RANGEV3 "Use built-in Range-v3 library" OFF)
 
 # -------------
 # CMake Options
@@ -41,7 +41,7 @@ configure_file(
 # Compiler Flags
 # --------------
 
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -pedantic ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -pedantic -flto ${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g1")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 
@@ -61,11 +61,19 @@ endif()
 # Find Common Libraries
 # ---------------------
 
+set(PYBIND11_CPP_STANDARD "-std=c++17")
+
 if(HIPIPE_BUILD_PYTHON)
   find_package(PythonInterp 3 REQUIRED)
   find_package(PythonLibs 3 REQUIRED)
   find_package(PythonNumPy REQUIRED)
   find_package(BoostPython3 REQUIRED)
+  find_package(pybind11 REQUIRED)
+
+  set_target_properties(pybind11::module PROPERTIES
+    INTERFACE_COMPILE_OPTIONS "-fvisibility=default"
+    INTERFACE_LINK_LIBRARIES "pybind11::pybind11"
+  )
 
   if(HIPIPE_BUILD_PYTHON_OPENCV)
     find_package(OpenCV COMPONENTS core REQUIRED)
@@ -106,6 +114,7 @@ target_link_libraries(
   PUBLIC ${Boost_LIBRARIES}
   PUBLIC pthread
   PUBLIC stdc++fs
+  PUBLIC pybind11::module
 )
 target_include_directories(
   hipipe_core
