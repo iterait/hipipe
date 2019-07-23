@@ -31,12 +31,6 @@ namespace hipipe::python::utility {
 // recursive transformation from a multidimensional vector to python //
 
 namespace detail {
-    // Workaround for T=fs::path, because template specialization causes internal compiler error
-    template<typename T>
-    pybind11::object convert_path(T val) {
-        return pybind11::cast(val.string());
-    }
-
     template <typename T>
     pybind11::object impl(T val);
 
@@ -46,9 +40,6 @@ namespace detail {
     template <typename T>
     pybind11::object impl(T val)
     {
-        if constexpr (std::is_same<T, std::filesystem::path>::value) {
-            return convert_path(val);
-        }
         pybind11::object obj = pybind11::cast(val);
         return obj;
     }
@@ -76,7 +67,14 @@ namespace detail {
     }
 
     template <>
-    inline pybind11::object impl(std::vector<bool> vec) {
+    inline pybind11::object impl(std::filesystem::path p)
+    {
+        return pybind11::cast(p.string());
+    }
+
+    template <>
+    inline pybind11::object impl(std::vector<bool> vec)
+    {
         pybind11::array_t<bool> arr(vec.size());
         bool* arr_data = (bool*)(arr.request().ptr);
         for (std::size_t i=0; i<vec.size(); ++i) {
