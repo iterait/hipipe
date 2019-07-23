@@ -45,7 +45,8 @@ namespace detail {
     }
 
     template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, int> = 0>
-    pybind11::object impl(std::vector<T> vec) {
+    pybind11::object impl(std::vector<T> vec)
+    {
         pybind11::object obj = pybind11::array_t<T>(vec.size(), vec.data());
         return obj;
     }
