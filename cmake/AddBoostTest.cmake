@@ -1,5 +1,4 @@
 function(add_boost_test EXECUTABLE_FILE_NAME SOURCE_FILE_NAME LIBRARIES)
-
   add_executable(
     ${EXECUTABLE_FILE_NAME}
     ${SOURCE_FILE_NAME}

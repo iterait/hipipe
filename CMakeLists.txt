@@ -14,7 +14,7 @@ option(HIPIPE_BUILD_DOC "Build documentation" OFF)
 option(HIPIPE_BUILD_PYTHON "Build C++ <-> Python converters" ON)
 option(HIPIPE_BUILD_PYTHON_OPENCV "Build C++ <-> Python OpenCV converters (requires HIPIPE_BUILD_PYTHON)" ON)
 option(HIPIPE_BUILD_TENSORFLOW "Build TensorFlow functionality" OFF)
-option(HIPIPE_BUILTIN_RANGEV3 "Use built-in Range-v3 library" OFF)
+option(HIPIPE_BUILTIN_RANGEV3 "Use built-in Range-v3 library" ON)
 
 # -------------
 # CMake Options

@@ -18,7 +18,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <iostream>
-#include <typeinfo>
 #include <opencv2/core/core.hpp>
 #include <filesystem>
 
@@ -36,7 +35,6 @@ namespace detail {
     // Workaround for T=fs::path, because template specialization causes internal compiler error
     template<typename T>
     pybind11::object convert_path(T val) {
-        std::cout << "Converting fs::path" << std::endl;
         return pybind11::cast(val.string());
     }
 
@@ -52,14 +50,12 @@ namespace detail {
         if constexpr (std::is_same<T, std::filesystem::path>::value) {
             return convert_path(val);
         }
-        std::cout << "Converting base of type: " <<  typeid(val).name() << std::endl;
         pybind11::object obj = pybind11::cast(val);
         return obj;
     }
 
     template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, int> = 0>
     pybind11::object impl(std::vector<T> vec) {
-        std::cout << "Converting to numpy array" << std::endl;
         pybind11::object obj = pybind11::array_t<T>(vec.size(), vec.data());
         return obj;
     }
@@ -67,10 +63,8 @@ namespace detail {
     template <typename T, std::enable_if_t<!std::is_arithmetic<T>::value, int> = 0>
     pybind11::object impl(std::vector<T> vec)
     {
-        std::cout << "Converting list" << std::endl;
         pybind11::list l;
         for (std::size_t i=0; i<vec.size(); ++i) {
-            std::cout << "Converting list element" << std::endl;
             l.append(detail::impl(std::move(vec[i])));
         }
         return l;
@@ -79,18 +73,8 @@ namespace detail {
     template <typename T>
     pybind11::object impl(std::unique_ptr<T> ptr)
     {
-        std::cout << "Converting unique_ptr" << std::endl;
         return detail::impl(*ptr);
     }
-
-//TODO: this causes internal compiler error
-/*
-    template <>
-    inline pybind11::object impl(std::filesystem::path p) {
-        std::cout << "Converting filesystem::path" << std::endl;
-        return pybind11::cast(p.string());
-    }
-*/
 
     template <>
     inline pybind11::object impl(std::vector<bool> vec) {
@@ -104,14 +88,11 @@ namespace detail {
 
     template <>
     inline pybind11::object impl(cv::Point2f pt) {
-        std::cout << "Converting cv::Point" << std::endl;
         return pybind11::make_tuple(pt.x, pt.y);
     }
 
     template <>
     inline pybind11::object impl(cv::Mat m) {   
-        std::cout << "Converting cv::Mat" << std::endl;
-
         /// copy of https://github.com/pybind/pybind11/issues/538
 
         std::string format = pybind11::format_descriptor<unsigned char>::format();
@@ -166,9 +147,7 @@ namespace detail {
 template<typename T>
 pybind11::object to_python(std::vector<T> v)
 {
-    std::cout << "Converting vector of type: " << typeid(v).name() << std::endl;
     pybind11::object obj = detail::impl(std::move(v));
-    std::cout << "Conversion done" << std::endl;
     return obj;
 }
 
