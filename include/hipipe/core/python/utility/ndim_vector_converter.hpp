@@ -40,14 +40,14 @@ namespace detail {
     template <typename T>
     pybind11::object impl(T val)
     {
-        pybind11::object obj = pybind11::cast(val);
+        pybind11::object obj = pybind11::cast(std::move(val));
         return obj;
     }
 
     template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, int> = 0>
     pybind11::object impl(std::vector<T> vec)
     {
-        pybind11::object obj = pybind11::array_t<T>(vec.size(), vec.data());
+        pybind11::object obj = pybind11::array_t<T>(vec.size(), std::move(vec.data()));
         return obj;
     }
 
@@ -64,7 +64,7 @@ namespace detail {
     template <typename T>
     pybind11::object impl(std::unique_ptr<T> ptr)
     {
-        return detail::impl(*ptr);
+        return detail::impl(std::move(*ptr));
     }
 
     template <>
