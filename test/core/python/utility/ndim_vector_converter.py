@@ -38,6 +38,8 @@ def main():
     assert(pycpp.py_vectorbool().dtype == np.bool)
     assert(np.array_equal(pycpp.py_vectorbool(), [True, False, True]))
 
+    # test fs::path vector - 1d
+
     # test slicing
     assert(np.array_equal(pycpp.py_vector1d()[ 0: 3], [1, 2, 3]))
     assert(np.array_equal(pycpp.py_vector1d()[ 1: 3], [2, 3]))

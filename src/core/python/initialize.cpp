@@ -40,7 +40,7 @@ void initialize()
 {
     Py_Initialize();
 
-    
+/*    
     namespace py = boost::python;
 
     // initialize python module
@@ -64,6 +64,7 @@ void initialize()
     // register fs::path converter
     py::to_python_converter<std::experimental::filesystem::path, utility::fs_path_to_python_str>();
     utility::fs_path_from_python_str();
+    */
 }
 
 }  // namespace hipipe::python

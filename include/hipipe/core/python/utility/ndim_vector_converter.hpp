@@ -20,6 +20,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <opencv2/core/core.hpp>
+#include <filesystem>
 
 #include <boost/python.hpp>
 
@@ -32,6 +33,12 @@ namespace hipipe::python::utility {
 // recursive transformation from a multidimensional vector to python //
 
 namespace detail {
+    // Workaround for T=fs::path, because template specialization causes internal compiler error
+    template<typename T>
+    pybind11::object convert_path(T val) {
+        std::cout << "Converting fs::path" << std::endl;
+        return pybind11::cast(val.string());
+    }
 
     template <typename T>
     pybind11::object impl(T val);
@@ -41,7 +48,10 @@ namespace detail {
 
     template <typename T>
     pybind11::object impl(T val)
-    {   
+    {
+        if constexpr (std::is_same<T, std::filesystem::path>::value) {
+            return convert_path(val);
+        }
         std::cout << "Converting base of type: " <<  typeid(val).name() << std::endl;
         pybind11::object obj = pybind11::cast(val);
         return obj;
@@ -72,6 +82,15 @@ namespace detail {
         std::cout << "Converting unique_ptr" << std::endl;
         return detail::impl(*ptr);
     }
+
+//TODO: this causes internal compiler error
+/*
+    template <>
+    inline pybind11::object impl(std::filesystem::path p) {
+        std::cout << "Converting filesystem::path" << std::endl;
+        return pybind11::cast(p.string());
+    }
+*/
 
     template <>
     inline pybind11::object impl(std::vector<bool> vec) {

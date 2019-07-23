@@ -12,6 +12,8 @@
 #include <hipipe/core/python/initialize.hpp>
 #include <hipipe/core/python/utility/ndim_vector_converter.hpp>
 
+#include <filesystem>
+
 #include <pybind11/pybind11.h>
 
 #include <tuple>
@@ -23,6 +25,7 @@ std::vector<std::int32_t> vec1d = {1, 2, 3};
 std::vector<std::vector<std::int32_t>> vec2d = {vec1d, vec1d, vec1d};
 std::vector<std::vector<std::vector<std::int32_t>>> vec3d = {vec2d, vec2d, vec2d};
 std::vector<bool> vecbool = {true, false, true};
+std::vector<std::filesystem::path> vecpath = {"/home/nothing", "/var/faces"};
 
 // test to_python //
 
@@ -51,6 +54,11 @@ auto py_vectorbool()
     return hipipe::python::utility::to_python(vecbool);
 }
 
+auto py_vectorpath()
+{
+    return hipipe::python::utility::to_python(vecpath);
+}
+
 PYBIND11_MODULE(ndim_vector_converter_py_cpp, m)
 {
     // initialize hipipe OpenCV converters, exceptions, etc.
@@ -62,4 +70,5 @@ PYBIND11_MODULE(ndim_vector_converter_py_cpp, m)
     m.def("py_vector2d", py_vector2d);
     m.def("py_vector3d", py_vector3d);
     m.def("py_vectorbool", py_vectorbool);
+    m.def("py_vectorpath", py_vectorpath);
 }
