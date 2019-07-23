@@ -239,7 +239,7 @@ public:
     #ifdef HIPIPE_BUILD_PYTHON
     pybind11::object to_python() override
     {
-       return hipipe::python::utility::to_python(std::move(data_));
+        return hipipe::python::utility::to_python(std::move(data_));
     }
 
     #endif

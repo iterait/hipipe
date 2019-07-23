@@ -17,7 +17,6 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <filesystem>
 
@@ -141,9 +140,14 @@ namespace detail {
             strides         /* Strides (in bytes) for each index */
             ));
     }
-}
+}  // namespace detail
 
 
+/// \ingroup Python	
+/// \brief Create a Python list-like object out of a multidimensional std::vector.	
+///	
+/// If the vector is multidimensional, i.e., std::vector<std::vector<...>>,	
+/// the resulting Python structure will be multidimensional as well.
 template<typename T>
 pybind11::object to_python(std::vector<T> v)
 {

@@ -39,32 +39,6 @@ static void* init_array()
 void initialize()
 {
     Py_Initialize();
-
-/*    
-    namespace py = boost::python;
-
-    // initialize python module
-    Py_Initialize();
-    // initialize numpy array
-    init_array();
-
-    // register stop_iteration_exception
-    py::register_exception_translator<stop_iteration_exception>(stop_iteration_translator);
-
-#ifdef HIPIPE_BUILD_PYTHON_OPENCV
-    // register cv::Mat converters
-    py::to_python_converter<cv::Mat, utility::matToNDArrayBoostConverter>();
-    utility::matFromNDArrayBoostConverter();
-
-    // register cv::Point2f converters
-    py::to_python_converter<cv::Point2f, utility::pointToTupleBoostConverter>();
-    utility::pointFromTupleBoostConverter();
-#endif
-
-    // register fs::path converter
-    py::to_python_converter<std::experimental::filesystem::path, utility::fs_path_to_python_str>();
-    utility::fs_path_from_python_str();
-    */
 }
 
 }  // namespace hipipe::python

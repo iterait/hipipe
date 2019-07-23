@@ -29,7 +29,7 @@ namespace hipipe::stream {
 ///
 /// This is the value type of the stream.
 class batch {
-public:
+private:
 
     /// The stored columns.
     std::unordered_map<std::type_index, std::unique_ptr<abstract_column>> columns_;
@@ -249,10 +249,8 @@ public:
     /// will result in an undefined behavior.
     #ifdef HIPIPE_BUILD_PYTHON
     pybind11::dict to_python() {
-        std::cout << "Converting batch to python" << std::endl;
         pybind11::dict res;
         for (auto it = columns_.begin(); it != columns_.end(); ++it) {
-            std::cout << "Converting column to python" << std::endl;
             res[it->second->name().c_str()] = it->second->to_python();
         }
         columns_.clear();
