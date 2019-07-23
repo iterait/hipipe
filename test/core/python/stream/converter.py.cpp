@@ -14,10 +14,13 @@
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/move.hpp>
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <list>
 #include <vector>
 
-namespace py = boost::python;
+namespace py = pybind11;
 namespace hpy = hipipe::python;
 
 HIPIPE_DEFINE_COLUMN(Int, int)
@@ -56,13 +59,13 @@ auto number_stream()
 }
 
 
-BOOST_PYTHON_MODULE(converter_py_cpp)
+PYBIND11_MODULE(converter_py_cpp, m)
 {
     // initialize hipipe OpenCV converters, exceptions, etc.
     hipipe::python::initialize();
 
     // expose the functions
-    py::def("empty_stream", empty_stream);
-    py::def("empty_batch_stream", empty_batch_stream);
-    py::def("number_stream", number_stream);
+    m.def("empty_stream", empty_stream);
+    m.def("empty_batch_stream", empty_batch_stream);
+    m.def("number_stream", number_stream);
 }

@@ -20,6 +20,8 @@
 #include <typeinfo>
 #include <unordered_map>
 
+#include <pybind11/pybind11.h>
+
 namespace hipipe::stream {
 
 /// \ingroup Stream
@@ -246,11 +248,12 @@ public:
     /// WARNING: The data are moved out of this objects and using this object further
     /// will result in an undefined behavior.
     #ifdef HIPIPE_BUILD_PYTHON
-    boost::python::dict to_python()
-    {
-        boost::python::dict res;
+    pybind11::dict to_python() {
+        std::cout << "Converting batch to python" << std::endl;
+        pybind11::dict res;
         for (auto it = columns_.begin(); it != columns_.end(); ++it) {
-            res[it->second->name()] = it->second->to_python();
+            std::cout << "Converting column to python" << std::endl;
+            res[it->second->name().c_str()] = it->second->to_python();
         }
         columns_.clear();
         return res;

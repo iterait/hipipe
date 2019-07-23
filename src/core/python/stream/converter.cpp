@@ -18,16 +18,29 @@
 
 namespace hipipe::python::stream {
 
+template<typename CONTAINER>
+class owning_iterator : public decltype(CONTAINER().begin()) {
+private:
+    std::shared_ptr<CONTAINER> container;
 
-range<ranges::any_view<boost::python::dict>> to_python(hipipe::stream::input_stream_t stream)
-{
-    ranges::any_view<boost::python::dict> range_of_dicts =
-      ranges::view::transform(std::move(stream), &hipipe::stream::batch_t::to_python);
+public:
+    owning_iterator() = default;
+    owning_iterator(std::shared_ptr<CONTAINER> c) : decltype(CONTAINER().begin())(c->begin()), container(c) { };
+};
 
-    // make python iterator out of the range of python types
-    return range<ranges::any_view<boost::python::dict>>{std::move(range_of_dicts)};
+
+__attribute__((visibility("default"))) pybind11::object to_python(hipipe::stream::input_stream_t stream) {
+    std::cout << "Converting stream" << std::endl;
+    ranges::any_view<pybind11::dict> range_of_dicts =
+      ranges::view::transform(stream, &hipipe::stream::batch_t::to_python);
+    
+    std::shared_ptr<ranges::any_view<pybind11::dict>> range_ptr = std::make_shared<ranges::any_view<pybind11::dict>>(range_of_dicts);
+    owning_iterator<ranges::any_view<pybind11::dict>> begin(range_ptr);
+
+    std::cout << "Converting stream end" << std::endl;
+    
+    return pybind11::make_iterator(begin, range_ptr->end());
 }
-
 
 }  // end namespace hipipe::python::stream
 

@@ -12,10 +12,12 @@
 #include <hipipe/core/python/initialize.hpp>
 #include <hipipe/core/python/utility/ndim_vector_converter.hpp>
 
+#include <pybind11/pybind11.h>
+
 #include <tuple>
 #include <vector>
 
-namespace py = boost::python;
+namespace py = pybind11;
 
 std::vector<std::int32_t> vec1d = {1, 2, 3};
 std::vector<std::vector<std::int32_t>> vec2d = {vec1d, vec1d, vec1d};
@@ -49,15 +51,15 @@ auto py_vectorbool()
     return hipipe::python::utility::to_python(vecbool);
 }
 
-BOOST_PYTHON_MODULE(ndim_vector_converter_py_cpp)
+PYBIND11_MODULE(ndim_vector_converter_py_cpp, m)
 {
     // initialize hipipe OpenCV converters, exceptions, etc.
     hipipe::python::initialize();
 
     // expose the functions
-    py::def("py_vector1d_empty", py_vector1d_empty);
-    py::def("py_vector1d", py_vector1d);
-    py::def("py_vector2d", py_vector2d);
-    py::def("py_vector3d", py_vector3d);
-    py::def("py_vectorbool", py_vectorbool);
+    m.def("py_vector1d_empty", py_vector1d_empty);
+    m.def("py_vector1d", py_vector1d);
+    m.def("py_vector2d", py_vector2d);
+    m.def("py_vector3d", py_vector3d);
+    m.def("py_vectorbool", py_vectorbool);
 }

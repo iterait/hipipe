@@ -23,7 +23,7 @@ namespace hipipe::python::stream {
 /// \brief Make a Python \ref range from a stream (i.e, a view of batches).
 ///
 /// This turns a view of batches to a Python's generator of dicts.
-range<ranges::any_view<boost::python::dict>> to_python(hipipe::stream::input_stream_t stream);
+__attribute__((visibility("default"))) pybind11::object to_python(hipipe::stream::input_stream_t stream);
 
 
 }  // end namespace hipipe::python::stream

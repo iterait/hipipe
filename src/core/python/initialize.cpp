@@ -38,6 +38,9 @@ static void* init_array()
 
 void initialize()
 {
+    Py_Initialize();
+
+    
     namespace py = boost::python;
 
     // initialize python module

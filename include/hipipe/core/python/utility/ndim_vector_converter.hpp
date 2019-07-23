@@ -18,6 +18,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <iostream>
+#include <typeinfo>
+#include <opencv2/core/core.hpp>
 
 #include <boost/python.hpp>
 
@@ -31,94 +33,124 @@ namespace hipipe::python::utility {
 
 namespace detail {
 
-    // conversion of std::vector to a Python list-like type //
-    // Vectors of builtin primitive types (e.g., int, bool, ...) are converted
-    // to numpy ndarrays. Vector of other types are converted to lists and
-    // their elements are converted using boost::python::object
+    template <typename T>
+    pybind11::object impl(T val);
 
-    template<typename T>
-    struct vector_to_python_impl {
-        static PyObject* impl(T val)
-        {
-            boost::python::object obj{std::move(val)};
-            Py_INCREF(obj.ptr());
-            return obj.ptr();
-        }
-    };
-
-    template<typename T>
-    struct vector_to_python_impl<std::vector<T>> {
-        static PyObject* impl(std::vector<T> vec)
-        {
-            if (std::is_arithmetic<T>{}) {
-                return utility::to_ndarray(std::move(vec));
-            }
-
-            PyObject* list{PyList_New(vec.size())};
-            if (!list) throw std::runtime_error{"Unable to create Python list."};
-            for (std::size_t i = 0; i < vec.size(); ++i) {
-                PyList_SET_ITEM(list, i, vector_to_python_impl<T>::impl(std::move(vec[i])));
-            }
-            return list;
-        }
-    };
-
-}  // namespace detail
-
-/// \ingroup Python
-/// \brief Create a Python list-like object out of a multidimensional std::vector.
-///
-/// If the vector is multidimensional, i.e., std::vector<std::vector<...>>,
-/// the resulting Python structure will be multidimensional as well.
-template<typename T>
-boost::python::object to_python(std::vector<T> v)
-{
-    namespace py = boost::python;
-    py::handle<> py_obj_handle{detail::vector_to_python_impl<std::vector<T>>::impl(std::move(v))};
-    return py::object{py_obj_handle};
-}
-
-
-namespace pybind_detail {
+    template <typename T>
+    pybind11::object impl(std::unique_ptr<T> ptr);
 
     template <typename T>
     pybind11::object impl(T val)
-    {
+    {   
+        std::cout << "Converting base of type: " <<  typeid(val).name() << std::endl;
         pybind11::object obj = pybind11::cast(val);
         return obj;
     }
 
-    template <typename T>
-    pybind11::object impl(std::unique_ptr<T> ptr)
-    {
-        return pybind_detail::impl(*ptr);
+    template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, int> = 0>
+    pybind11::object impl(std::vector<T> vec) {
+        std::cout << "Converting to numpy array" << std::endl;
+        pybind11::object obj = pybind11::array_t<T>(vec.size(), vec.data());
+        return obj;
     }
 
     template <typename T, std::enable_if_t<!std::is_arithmetic<T>::value, int> = 0>
     pybind11::object impl(std::vector<T> vec)
     {
+        std::cout << "Converting list" << std::endl;
         pybind11::list l;
-        for (T& e : vec) {
-            l.append(pybind_detail::impl(std::move(e)));
+        for (std::size_t i=0; i<vec.size(); ++i) {
+            std::cout << "Converting list element" << std::endl;
+            l.append(detail::impl(std::move(vec[i])));
         }
         return l;
     }
 
-    template <typename T, std::enable_if_t<std::is_arithmetic<T>::value, int> = 0>
-    pybind11::object impl(std::vector<T> vec)
+    template <typename T>
+    pybind11::object impl(std::unique_ptr<T> ptr)
     {
-        return pybind11::array_t<T>(vec.size(), vec.data());
+        std::cout << "Converting unique_ptr" << std::endl;
+        return detail::impl(*ptr);
+    }
+
+    template <>
+    inline pybind11::object impl(std::vector<bool> vec) {
+        pybind11::array_t<bool> arr(vec.size());
+        bool* arr_data = (bool*)(arr.request().ptr);
+        for (std::size_t i=0; i<vec.size(); ++i) {
+            arr_data[i] = vec[i];
+        }
+        return arr;
+    }
+
+    template <>
+    inline pybind11::object impl(cv::Point2f pt) {
+        std::cout << "Converting cv::Point" << std::endl;
+        return pybind11::make_tuple(pt.x, pt.y);
+    }
+
+    template <>
+    inline pybind11::object impl(cv::Mat m) {   
+        std::cout << "Converting cv::Mat" << std::endl;
+
+        /// copy of https://github.com/pybind/pybind11/issues/538
+
+        std::string format = pybind11::format_descriptor<unsigned char>::format();
+        size_t elemsize = sizeof(unsigned char);
+        int dim;
+        switch(m.type()) {
+            case CV_8U:
+                format = pybind11::format_descriptor<unsigned char>::format();
+                elemsize = sizeof(unsigned char);
+                dim = 2;
+                break;
+            case CV_8UC3:
+                format = pybind11::format_descriptor<unsigned char>::format();
+                elemsize = sizeof(unsigned char);
+                dim = 3;
+                break;
+            case CV_32F:
+                format = pybind11::format_descriptor<float>::format();
+                elemsize = sizeof(float);
+                dim = 2;
+                break;
+            case CV_64F:
+                format = pybind11::format_descriptor<double>::format();
+                elemsize = sizeof(double);
+                dim = 2;
+                break;
+            default:
+                throw std::logic_error("Unsupported type");
+        }
+
+        std::vector<size_t> bufferdim;
+        std::vector<size_t> strides;
+        if (dim == 2) {
+            bufferdim = {(size_t) m.rows, (size_t) m.cols};
+            strides = {elemsize * (size_t) m.cols, elemsize};
+        } else if (dim == 3) {
+            bufferdim = {(size_t) m.rows, (size_t) m.cols, (size_t) 3};
+            strides = {(size_t) elemsize * m.cols * 3, (size_t) elemsize * 3, (size_t) elemsize};
+        }
+        return pybind11::array(pybind11::buffer_info(
+            m.data,         /* Pointer to buffer */
+            elemsize,       /* Size of one scalar */
+            format,         /* Python struct-style format descriptor */
+            dim,            /* Number of dimensions */
+            bufferdim,      /* Buffer dimensions */
+            strides         /* Strides (in bytes) for each index */
+            ));
     }
 }
 
 
 template<typename T>
-pybind11::object to_python_pybind(std::vector<T> v)
+pybind11::object to_python(std::vector<T> v)
 {
-    pybind11::object obj = pybind11::cast(v);
+    std::cout << "Converting vector of type: " << typeid(v).name() << std::endl;
+    pybind11::object obj = detail::impl(std::move(v));
+    std::cout << "Conversion done" << std::endl;
     return obj;
-
-    //return pybind_detail::impl<T>(std::move(v));
 }
 
 

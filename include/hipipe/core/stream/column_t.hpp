@@ -109,9 +109,7 @@ public:
     /// Convert the column data to a python object.
     ///
     /// See the corresponding function in \ref column_base class for more info.
-    virtual boost::python::object to_python() = 0;
-
-    virtual pybind11::array to_python_pybind() = 0;
+    virtual pybind11::object to_python() = 0;
     #endif
 
     // virtual destructor //
@@ -239,16 +237,9 @@ public:
     /// WARNING: The data are moved out of this object. Using this object further
     /// results in undefined behavior.
     #ifdef HIPIPE_BUILD_PYTHON
-    boost::python::object to_python() override
+    pybind11::object to_python() override
     {
-        return hipipe::python::utility::to_python(std::move(data_));
-    }
-
-
-    pybind11::array to_python_pybind() override
-    {
-       //return pybind11::array(data_.size(), data_.data());
-       return hipipe::python::utility::to_python_pybind(std::move(data_));
+       return hipipe::python::utility::to_python(std::move(data_));
     }
 
     #endif
