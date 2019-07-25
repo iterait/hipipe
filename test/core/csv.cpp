@@ -108,6 +108,13 @@ const std::vector<std::string> invalid_csvs{
 
 // tests //
 
+BOOST_AUTO_TEST_CASE(test_csv_istream_range_empty_csv)
+{
+    std::istringstream empty_csv_ss;
+    auto csv_rows = csv_istream_range{empty_csv_ss};
+    BOOST_CHECK(csv_rows.begin() == csv_rows.end());
+}
+
 BOOST_AUTO_TEST_CASE(test_csv_istream_range_simple_csv)
 {
     std::istringstream simple_csv_ss{simple_csv};

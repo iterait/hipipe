@@ -105,6 +105,7 @@ csv_istream_range::csv_istream_range(
   , quote_{quote}
   , escape_{escape}
 {
+    in_->peek();
     next();
 }
 
