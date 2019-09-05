@@ -42,16 +42,21 @@ namespace detail {
             // the following is much nicer when written as a pipeline, but this
             // is more compilation time friendly
             auto range_of_tuples =
-              ranges::view::move(
-                ranges::view::filter(
-                  ranges::view::zip(cols...),
-                  [this](const auto& tuple) -> bool {
-                      return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
-                  }
-                )
-              );
-                
-            return utility::maybe_untuple(utility::unzip(std::move(range_of_tuples)));
+              ranges::view::filter(
+                ranges::view::zip(cols...),
+                [this](const auto& tuple) -> bool {
+                    return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
+                }
+            );
+            // If std::vector::assign() gets a pair of forward iterators, it first iterates
+            // through the range and calculates the distance to allocate the memory
+            // and afterwards iterates through the range once over and assigns
+            // the values. To avoid this double iteration, we convert the
+            // filter_view to a vector manually and let it exponentially
+            // reallocate.
+            std::vector<ranges::range_value_type_t<decltype(range_of_tuples)>> ts;
+            for (auto&& t : ranges::view::move(range_of_tuples)) ts.push_back(std::move(t));
+            return utility::maybe_untuple(utility::unzip(ranges::view::move(ts)));
         }
     };
 
