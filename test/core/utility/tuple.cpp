@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(test_unzip_view)
 
     std::vector<int> va1;
     std::vector<std::shared_ptr<int>> vb1;
-    std::tie(va1, vb1) = unzip(ranges::view::all(data));
+    std::tie(va1, vb1) = unzip(ranges::views::all(data));
     for (std::size_t i = 0; i < 3; ++i) {
         BOOST_TEST(vb1[i].use_count() == 2);
     }
@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE(test_unzip_view)
     std::vector<int> va2;
     std::vector<std::shared_ptr<int>> vb2;
     // test unzip on lvalue view
-    auto view = ranges::view::zip(ranges::view::iota(0, 3), vb1);
+    auto view = ranges::views::zip(ranges::views::iota(0, 3), vb1);
     std::tie(va2, vb2) = unzip(view);
     for (std::size_t i = 0; i < 3; ++i) {
         BOOST_TEST(va2[i] == (int)i);
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE(test_maybe_untuple)
     std::tuple<int> t3{1};
     auto t4 = maybe_untuple(t3);
     static_assert(std::is_same<decltype(t4), int>{});
- 
+
     int i = 1;
     std::tuple<int&> t5{i};
     auto& t6 = maybe_untuple(t5);

@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only)
     std::vector<batch_t> data = generate_move_only_data_2d();
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::transform(from<UniqueVec>, to<UniqueVec>,
           [](std::unique_ptr<int>& ptr) -> std::unique_ptr<int> {
               return std::make_unique<int>(*ptr + 1);

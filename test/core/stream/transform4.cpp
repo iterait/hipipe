@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(test_conditional_simple)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::transform(from<dogs>, to<dogs>, cond<do_trans>,
           [](int dog) { return -1; }
         );
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_conditional_with_random_fill)
     std::bernoulli_distribution dist{0.5};
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::random_fill(from<dogs>, to<do_trans>, 1, dist, prng)
       | hipipe::stream::transform(from<dogs>, to<dogs>, cond<do_trans>,
           [](int dog) { return dog - 1; }
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_simple)
     std::mt19937 prng{1000003};
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::transform(from<dogs>, to<dogs>, 1.0, [](int dog) { return 1; }, prng)
       | hipipe::stream::transform(from<dogs>, to<dogs>, 0.5, [](int dog) { return 2; }, prng)
       | hipipe::stream::transform(from<dogs>, to<dogs>, 0.0, [](int dog) { return 3; }, prng);

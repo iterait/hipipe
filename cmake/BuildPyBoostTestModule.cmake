@@ -12,7 +12,7 @@ function(build_pyboost_test_module TARGET_PREFIX MODULE_NAME SOURCE_FILE)
     DEBUG_POSTFIX ""
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   )
-  
+
   target_link_libraries(
     "${TARGET_PREFIX}.${MODULE_NAME}"
     PRIVATE hipipe_core

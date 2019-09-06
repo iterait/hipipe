@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(test_mutable)
 
     std::size_t i = 0;
     auto generated = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::filter(from<Int, IntVec>, by<Int>,
           [i = 0](int v) mutable { return i++ % 2 == 0; })
       | hipipe::stream::for_each(from<Int, IntVec>, [&i](auto& ints, auto& intvecs) {
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_dim2_partial)
 
     std::size_t i = 0;
     auto generated = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::filter(from<IntVec>, by<IntVec>, [](int v) { return v >= 4; }, dim<2>)
       | hipipe::stream::for_each(from<Int, IntVec>, [&i](auto& ints, auto& intvecs) {
             switch (i++) {
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only)
 
     std::size_t i = 0;
     data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::filter(from<UniqueVec>, by<UniqueVec>,
           [](auto& ptr) { return *ptr >= 4.; }, dim<2>)
       | hipipe::stream::for_each(from<UniqueVec>, [&i](auto& unique_vec) {

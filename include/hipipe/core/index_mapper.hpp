@@ -38,7 +38,7 @@ public:
     /// Behaves as if the values were inserted to the mapper using insert().
     index_mapper(std::initializer_list<T> values)
     {
-        insert(ranges::view::all(values));
+        insert(ranges::views::all(values));
     }
 
     // index_for //
@@ -65,7 +65,7 @@ public:
     /// \throws std::out_of_range If any of the values does not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals) const
     {
-        return ranges::view::transform(vals, [this](const T& val) {
+        return ranges::views::transform(vals, [this](const T& val) {
             return this->index_for(val);
         });
     }
@@ -73,7 +73,7 @@ public:
     /// Returns the indexes of the given values or a default value if they do not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals, std::size_t defval) const
     {
-        return ranges::view::transform(vals, [this, defval](const T& val) {
+        return ranges::views::transform(vals, [this, defval](const T& val) {
             return this->index_for(val, defval);
         });
     }
@@ -96,7 +96,7 @@ public:
     /// \throws std::out_of_range If any of the indexes does not exist in the mapper.
     std::vector<T> at(const std::vector<std::size_t>& idxs) const
     {
-        return ranges::view::transform(idxs, [this](std::size_t idx) {
+        return ranges::views::transform(idxs, [this](std::size_t idx) {
             return this->at(idx);
         });
     }
@@ -123,14 +123,14 @@ public:
     ///
     /// \param rng The range of values to be inserted.
     /// \throws std::invalid_argument if any of the elements is already present in the mapper.
-    CPP_template(class Rng)(requires ranges::Container<Rng>)
+    CPP_template(class Rng)(requires ranges::container<Rng>)
     void insert(Rng rng)
     {
         for (auto& val : rng) insert(std::move(val));
     }
 
     /// Specialization of range insertion for views.
-    CPP_template(typename Rng)(requires ranges::View<Rng>)
+    CPP_template(class Rng)(requires ranges::view_<Rng>)
     void insert(Rng rng)
     {
         for (auto&& val : rng) insert(std::forward<decltype(val)>(val));
@@ -153,14 +153,14 @@ public:
     /// Insert elements to index mapper while skipping duplicates.
     ///
     /// \param rng The range of values to be inserted.
-    CPP_template(class Rng)(requires ranges::Container<Rng>)
+    CPP_template(class Rng)(requires ranges::container<Rng>)
     void try_insert(Rng rng)
     {
         for (auto& val : rng) try_insert(std::move(val));
     }
 
     /// Specialization of try_insert for views.
-    CPP_template(class Rng)(requires ranges::View<Rng>)
+    CPP_template(class Rng)(requires ranges::view_<Rng>)
     void try_insert(Rng rng)
     {
         for (auto&& val : rng) try_insert(std::forward<decltype(val)>(val));

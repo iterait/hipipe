@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_get_column_size)
 BOOST_AUTO_TEST_CASE(test_take_column)
 {
     using hipipe::stream::abstract_column;
-    
+
     std::unique_ptr<Int> col1 = std::make_unique<Int>();
     col1->data().assign({1, 2, 3, 4, 5});
     std::unique_ptr<abstract_column> col2 = col1->take(2);
@@ -89,13 +89,13 @@ BOOST_AUTO_TEST_CASE(test_take_column)
 BOOST_AUTO_TEST_CASE(test_take_move_only_column)
 {
     using hipipe::stream::abstract_column;
-    
+
     std::unique_ptr<Unique> col1 = std::make_unique<Unique>();
     col1->data().push_back(std::make_unique<int>(1));
     col1->data().push_back(std::make_unique<int>(2));
     col1->data().push_back(std::make_unique<int>(3));
     std::unique_ptr<abstract_column> col2 = col1->take(2);
-    
+
     BOOST_TEST(col1->size() == 1);
     BOOST_TEST(col2->size() == 2);
     BOOST_TEST(*(col1->extract<Unique>().at(0)) == 3);
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(test_take_throws_error)
 BOOST_AUTO_TEST_CASE(test_push_back_column)
 {
     using hipipe::stream::abstract_column;
-    
+
     std::unique_ptr<Int> col1 = std::make_unique<Int>();
     col1->data().assign({1, 2, 3, 4, 5});
     std::unique_ptr<Int> col2 = std::make_unique<Int>();
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_push_back_column)
 BOOST_AUTO_TEST_CASE(test_push_back_move_only_column)
 {
     using hipipe::stream::abstract_column;
-    
+
     std::unique_ptr<Unique> col1 = std::make_unique<Unique>();
     col1->data().push_back(std::make_unique<int>(1));
     col1->data().push_back(std::make_unique<int>(2));
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(test_push_back_move_only_column)
 BOOST_AUTO_TEST_CASE(test_push_back_throws_error)
 {
     using hipipe::stream::abstract_column;
-    
+
     std::unique_ptr<Unique> col1 = std::make_unique<Unique>();
     std::unique_ptr<Int> col2 = std::make_unique<Int>();
     std::unique_ptr<Int> col3 = std::make_unique<Int>();

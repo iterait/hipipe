@@ -17,7 +17,7 @@ Requirements
 ---
 
 Officially supported systems are Ubuntu 18.04+ and Arch Linux, although __hipipe__ should
-work on any recent enough system. The __hipipe core__ is a pure C++ library that by default 
+work on any recent enough system. The __hipipe core__ is a pure C++ library that by default
 depends on [Boost C++ Libraries](http://www.boost.org/) (v1.61+ with Boost::Python
 is required) and [OpenCV](http://opencv.org/) for image conversion between C++ and Python.
 Python bindings and OpenCV support can be disabled, see Advanced Build Options section below.

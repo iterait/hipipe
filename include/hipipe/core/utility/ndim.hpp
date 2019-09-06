@@ -44,7 +44,7 @@ namespace hipipe::utility {
 ///     std::size_t rng_ndims = ndims<std::vector<std::list<int>>>{};
 ///     // rng_ndims == 2;
 /// \endcode
-template<typename Rng, typename PrevRng = void, bool IsRange = ranges::Range<Rng>>
+template<typename Rng, typename PrevRng = void, bool IsRange = ranges::range<Rng>>
 struct ndims {
 };
 
@@ -411,7 +411,7 @@ namespace detail {
     struct flat_view_impl {
         static auto impl()
         {
-            return ranges::view::for_each([](auto& subrng) {
+            return ranges::views::for_each([](auto& subrng) {
                 return flat_view_impl<Dim-1>::impl()(subrng);
             });
         }
@@ -422,7 +422,7 @@ namespace detail {
     struct flat_view_impl<1> {
         static auto impl()
         {
-            return ranges::view::all;
+            return ranges::views::all;
         }
     };
 
@@ -443,7 +443,7 @@ namespace detail {
 ///
 /// \param rng The range to be flattened.
 /// \tparam NDims The number of dimensions that should be flattened into one.
-/// \returns Flat view (InputRange) of the given range.
+/// \returns Flat view (input_range) of the given range.
 template<long NDims, typename Rng>
 auto flat_view(Rng& rng)
 {
@@ -474,8 +474,8 @@ namespace detail {
     struct reshaped_view_impl_go {
         static auto impl(const std::shared_ptr<std::vector<long>>& shape_ptr)
         {
-            return ranges::view::chunk((*shape_ptr)[N-2])
-              | ranges::view::transform([shape_ptr](auto subview) {
+            return ranges::views::chunk((*shape_ptr)[N-2])
+              | ranges::views::transform([shape_ptr](auto subview) {
                     return reshaped_view_impl_go<N-1>::impl(shape_ptr)(std::move(subview));
             });
         }
@@ -485,7 +485,7 @@ namespace detail {
     struct reshaped_view_impl_go<1> {
         static auto impl(const std::shared_ptr<std::vector<long>>&)
         {
-            return ranges::view::all;
+            return ranges::views::all;
         }
     };
 
@@ -509,7 +509,7 @@ namespace detail {
         // check that the user requests the same number of elements as there really is
         assert(ranges::distance(flat) == ranges::accumulate(shape, 1, std::multiplies<>{}));
         // calculate the cummulative product of the shape list in reverse order
-        shape |= ranges::action::reverse;
+        shape |= ranges::actions::reverse;
         ranges::partial_sum(shape, shape, std::multiplies<>{});
         // the recursive chunks will share a single copy of the shape list (performance)
         auto shape_ptr = std::make_shared<std::vector<long>>(std::move(shape));
@@ -533,7 +533,7 @@ namespace detail {
 ///              that the dimension size shall be automatically deduced. All the other values
 ///              have to be positive.
 /// \tparam N The number of dimensions. Has to be equal to shape.size().
-/// \returns View (InputRange) of the original range with the given shape.
+/// \returns View (input_range) of the original range with the given shape.
 template<long N, typename Rng>
 auto reshaped_view(Rng& rng, std::vector<long> shape)
 {

@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(test_sequences_mask)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::pad(from<Sequences>, mask<Mask>, -1);
 
     for (std::size_t i = 0; i < stream.size(); ++i) {
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(test_sequences_2d_mask)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::pad(from<Sequences2d>, mask<Mask>, {-1., -1.});
 
     for (std::size_t i = 0; i < stream.size(); ++i) {

@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only_mutable)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::transform(from<UniqueVec>, to<UniqueVec>,
           [i = 4](std::unique_ptr<int>&) mutable -> std::unique_ptr<int> {
               return std::make_unique<int>(i++);

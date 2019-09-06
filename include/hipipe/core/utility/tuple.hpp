@@ -207,12 +207,12 @@ namespace detail {
     }
 
     // if the size of the given range is known, return it, otherwise return 0
-    CPP_template(class Rng)(requires ranges::SizedRange<Rng>)
+    CPP_template(class Rng)(requires ranges::sized_range<Rng>)
     std::size_t safe_reserve_size(Rng&& rng)
     {
         return ranges::size(rng);
     }
-    CPP_template(class Rng)(requires !ranges::SizedRange<Rng>)
+    CPP_template(class Rng)(requires !ranges::sized_range<Rng>)
     std::size_t safe_reserve_size(Rng&& rng)
     {
         return 0;
@@ -253,7 +253,7 @@ namespace detail {
 ///     std::vector<double> vb;
 ///     std::tie(va, vb) = unzip(data);
 /// \endcode
-CPP_template(class Rng)(requires ranges::Range<Rng> && !ranges::View<Rng>)
+CPP_template(class Rng)(requires ranges::range<Rng> && !ranges::view_<Rng>)
 auto unzip(Rng range_of_tuples)
 {
     // copy the given container and move elements out of it
@@ -261,7 +261,7 @@ auto unzip(Rng range_of_tuples)
 }
 
 /// Specialization of unzip function for views.
-CPP_template(class Rng)(requires ranges::View<Rng>)
+CPP_template(class Rng)(requires ranges::view_<Rng>)
 auto unzip(Rng view_of_tuples)
 {
     return utility::unzip(ranges::to_vector(view_of_tuples));
@@ -355,11 +355,11 @@ namespace detail {
 ///     std::tuple<int, double> t1{1, 3.};
 ///     auto t2 = maybe_untuple(t1);
 ///     static_assert(std::is_same_v<decltype(t2), std::tuple<int, double>>);
-/// 
+///
 ///     std::tuple<int> t3{1};
 ///     auto t4 = maybe_untuple(t3);
 ///     static_assert(std::is_same_v<decltype(t4), int>);
-///  
+///
 ///     int i = 1;
 ///     std::tuple<int&> t5{i};
 ///     auto& t6 = maybe_untuple(t5);
@@ -393,7 +393,7 @@ namespace detail {
 /// Example:
 /// \code
 ///     auto tpl = std::make_tuple(1, 0.25, 'a');
-///   
+///
 ///     times_with_index<3>([&tpl](auto index) {
 ///         ++std::get<index>(tpl);
 ///     });
@@ -411,11 +411,11 @@ constexpr Fun times_with_index(Fun&& fun)
 /// Example:
 /// \code
 ///     auto tpl = std::make_tuple(1, 2.);
-///   
+///
 ///     tuple_for_each_with_index(tpl, [](auto& val, auto index) {
 ///         val += index;
 ///     });
-///   
+///
 ///     assert(tpl == std::make_tuple(1, 3.));
 /// \endcode
 template <typename Tuple, typename Fun>
@@ -447,11 +447,11 @@ namespace detail {
 /// Example:
 /// \code
 ///     auto tpl = std::make_tuple(1, 0.25, 'a');
-///   
+///
 ///     auto tpl2 = tuple_transform_with_index(tpl, [](auto&& elem, auto index) {
 ///         return elem + index;
 ///     });
-///   
+///
 ///     assert(tpl2 == std::make_tuple(1, 1.25, 'c'));
 /// \endcode
 template <typename Tuple, typename Fun>

@@ -57,27 +57,27 @@ namespace detail {
     template<typename... Columns>
     class create_fn {
     private:
-        friend ranges::view::view_access;
+        friend ranges::views::view_access;
 
         static auto bind(create_fn<Columns...> fun, std::size_t batch_size = 1)
         {
             return ranges::make_pipeable(std::bind(fun, std::placeholders::_1, batch_size));
         }
     public:
-        CPP_template(class Rng)(requires ranges::ForwardRange<Rng>)
+        CPP_template(class Rng)(requires ranges::forward_range<Rng>)
         forward_stream_t operator()(Rng&& rng, std::size_t batch_size = 1) const
         {
-            return ranges::view::transform(
-              ranges::view::chunk(std::forward<Rng>(rng), batch_size),
+            return ranges::views::transform(
+              ranges::views::chunk(std::forward<Rng>(rng), batch_size),
               create_impl<Columns...>{});
         }
 
         /// \cond
-        CPP_template(class Rng)(requires !ranges::ForwardRange<Rng>)
+        CPP_template(class Rng)(requires !ranges::forward_range<Rng>)
         void operator()(Rng&&, std::size_t batch_size = 1) const
         {
-            CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
-              "stream::create only works on ranges satisfying the ForwardRange concept.");
+            CONCEPT_ASSERT_MSG(ranges::forward_range<Rng>(),
+              "stream::create only works on ranges satisfying the forward_range concept.");
         }
         /// \endcond
     };
@@ -97,17 +97,17 @@ namespace detail {
 ///     HIPIPE_DEFINE_COLUMN(age, int)
 ///
 ///     // rng is a stream where each batch is a single element from 0..9
-///     auto rng = view::iota(0, 10) | create<id>();
+///     auto rng = views::iota(0, 10) | create<id>();
 ///
 ///     // batched_rng is a stream with a single batch with numbers 0..9
-///     auto rng = view::iota(0, 10) | create<id>(50);
+///     auto rng = views::iota(0, 10) | create<id>(50);
 ///
 ///     // also multiple columns can be created at once
-///     auto rng = view::zip(view::iota(0, 10), view::iota(30, 50)) | create<id, age>();
+///     auto rng = views::zip(views::iota(0, 10), views::iota(30, 50)) | create<id, age>();
 /// \endcode
 ///
 /// \param batch_size The requested batch size of the new stream.
 template<typename... Columns>
-ranges::view::view<detail::create_fn<Columns...>> create{};
+ranges::views::view<detail::create_fn<Columns...>> create{};
 
 } // end namespace hipipe::stream

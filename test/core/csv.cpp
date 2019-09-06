@@ -136,9 +136,9 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream)
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     test_ranges_equal(df.header(), simple_csv_rows[0]);
-    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | ranges::view::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | ranges::view::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | ranges::view::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | ranges::views::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | ranges::views::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | ranges::views::slice(1, ranges::end));
 }
 
 BOOST_AUTO_TEST_CASE(test_read_csv_from_no_file)
@@ -153,9 +153,9 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     BOOST_TEST(df.header().empty());
-    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | ranges::view::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | ranges::view::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | ranges::view::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | ranges::views::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | ranges::views::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | ranges::views::slice(1, ranges::end));
 }
 
 BOOST_AUTO_TEST_CASE(test_read_quoted_csv_from_istream)
@@ -173,10 +173,10 @@ BOOST_AUTO_TEST_CASE(test_write_quoted_to_ostream)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
     const dataframe df = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
-  
+
     std::ostringstream oss;
     write_csv(oss, df, '|', '*', '+');
-    BOOST_TEST(oss.str() == 
+    BOOST_TEST(oss.str() ==
       "*Column| 1*|*Column| 2*|* Column +*3+* *\n"
       "Field 1|*Field|\n 2*|* Field 3 *\n"
       "*Field\n1*|*Field| 2 *|* Field 3 *\n"
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE(test_compare_after_write_and_read)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
     const dataframe df1 = read_csv(quoted_csv_ss);
-  
+
     std::stringstream oss;
     write_csv(oss, df1, '|', '*', '+');
     const dataframe df2 = read_csv(oss, 0, true, '|', '*', '+');

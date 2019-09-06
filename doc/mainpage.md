@@ -71,7 +71,7 @@ HIPIPE_DEFINE_COLUMN(age, int)
 std::vector<std::string> logins = {"marry", "ted", "anna", "josh"};
 std::vector<int>           ages = {     24,    41,     16,     59};
 
-auto stream = ranges::view::zip(logins, ages)
+auto stream = ranges::views::zip(logins, ages)
 
   // create a batched stream out of the raw data
   | hps::create<login, age>(2)

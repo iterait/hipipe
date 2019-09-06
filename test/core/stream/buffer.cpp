@@ -58,14 +58,14 @@ BOOST_AUTO_TEST_CASE(test_simple_traverse)
 BOOST_AUTO_TEST_CASE(test_move_only_data)
 {
     // check move only type buffering
-    auto rng = ranges::view::iota(1, 6)
-      | ranges::view::transform([](int i) {
+    auto rng = ranges::views::iota(1, 6)
+      | ranges::views::transform([](int i) {
           return std::make_unique<int>(i);
         })
       | hipipe::stream::buffer(2)
-      | ranges::view::indirect;
+      | ranges::views::indirect;
 
-    BOOST_TEST(ranges::to_vector(rng) == ranges::to_vector(ranges::view::iota(1, 6)));
+    BOOST_TEST(ranges::to_vector(rng) == ranges::to_vector(ranges::views::iota(1, 6)));
 }
 
 
@@ -113,8 +113,8 @@ BOOST_AUTO_TEST_CASE(test_check_if_buffered)
     test_use_count(data, {2, 3, 2, 1, 1});
     static_assert(std::is_same<std::shared_ptr<int>&&, decltype(*it)>{});
 
-    BOOST_TEST(ranges::to_vector(ranges::view::indirect(rng)) ==
-               ranges::to_vector(ranges::view::iota(0, 5)));
+    BOOST_TEST(ranges::to_vector(ranges::views::indirect(rng)) ==
+               ranges::to_vector(ranges::views::iota(0, 5)));
 }
 
 
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(test_buffer_transformed_stream)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::transform(from<Int, Unique>, to<Int>,
           [](int i, std::unique_ptr<int>& p) -> int {
             return i + *p;

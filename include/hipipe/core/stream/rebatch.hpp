@@ -128,7 +128,7 @@ public:
 class rebatch_fn {
 private:
     /// \cond
-    friend ranges::view::view_access;
+    friend ranges::views::view_access;
     /// \endcond
 
     static auto bind(rebatch_fn rebatch, std::size_t n)
@@ -137,10 +137,10 @@ private:
     }
 
 public:
-    CPP_template(class Rng)(requires ranges::InputRange<Rng>)
-    rebatch_view<ranges::view::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
+    CPP_template(class Rng)(requires ranges::input_range<Rng>)
+    rebatch_view<ranges::views::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
     {
-        return {ranges::view::all(std::forward<Rng>(rng)), n};
+        return {ranges::views::all(std::forward<Rng>(rng)), n};
     }
 };  // class rebatch_fn
 
@@ -155,16 +155,16 @@ public:
 /// the batches computed by the previous stream pipeline and reorganizes the
 /// evaluated data to batches of a different size. To avoid recalculation of the
 /// entire stream whenever e.g., std::distance is called, this transformer
-/// intentionally changes the stream type to InputRange. The downside is that no
+/// intentionally changes the stream type to input_range. The downside is that no
 /// further transformations or buffering can be appended and everything has to be
 /// prepared before the application of this transformer.
 ///
 /// \code
 ///     HIPIPE_DEFINE_COLUMN(value, int)
-///     auto rng = view::iota(0, 10)
+///     auto rng = views::iota(0, 10)
 ///       | create<value>(2)  // batches the data by two examples
 ///       | rebatch(3);       // changes the batch size to three examples
 /// \endcode
-inline ranges::view::view<rebatch_fn> rebatch{};
+inline ranges::views::view<rebatch_fn> rebatch{};
 
 }  // namespace hipipe::stream

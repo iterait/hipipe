@@ -21,7 +21,7 @@ namespace detail {
     template<typename... Columns>
     class keep_fn {
     private:
-        friend ranges::view::view_access;
+        friend ranges::views::view_access;
 
         static auto bind(keep_fn<Columns...> fun)
         {
@@ -29,10 +29,10 @@ namespace detail {
         }
 
     public:
-        CPP_template(typename Rng)(requires ranges::InputRange<Rng>)
+        CPP_template(typename Rng)(requires ranges::input_range<Rng>)
         forward_stream_t operator()(Rng&& rng) const
         {
-            return ranges::view::transform(std::forward<Rng>(rng),
+            return ranges::views::transform(std::forward<Rng>(rng),
               [](batch_t batch) -> batch_t {
                   batch_t result;
                   (result.raw_insert_or_assign<Columns>(std::move(batch.at<Columns>())), ...);
@@ -41,11 +41,11 @@ namespace detail {
         }
 
         /// \cond
-        CPP_template(typename Rng)(requires !ranges::InputRange<Rng>)
+        CPP_template(typename Rng)(requires !ranges::input_range<Rng>)
         void operator()(Rng&&) const
         {
-            CONCEPT_ASSERT_MSG(ranges::InputRange<Rng>(),
-              "stream::keep only works on ranges satisfying the InputRange concept.");
+            CONCEPT_ASSERT_MSG(ranges::input_range<Rng>(),
+              "stream::keep only works on ranges satisfying the input_range concept.");
         }
         /// \endcond
     };
@@ -64,6 +64,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | keep<value>;  // now it has only the value column
 /// \endcode
 template <typename... Columns>
-ranges::view::view<detail::keep_fn<Columns...>> keep{};
+ranges::views::view<detail::keep_fn<Columns...>> keep{};
 
 }  // end namespace hipipe::stream

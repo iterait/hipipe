@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(test_keep_int_column)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::keep<Int>;
 
     BOOST_TEST(stream.size() == 2);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_keep_unique_column)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::keep<Unique>;
 
     BOOST_TEST(stream.size() == 2);
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(test_keep_multiple_columns)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       | hipipe::stream::keep<Int, Unique>;
 
     BOOST_TEST(stream.size() == 2);

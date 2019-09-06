@@ -197,7 +197,7 @@ public:
     ///     col2->data().assign({4, 5, 6});
     ///     col1->push_back(std::move(col2));
     ///     // col1 contains {1, 2, 3, 4, 5, 6}
-    ///     // col2 should not be used anymore 
+    ///     // col2 should not be used anymore
     /// \endcode
     ///
     /// \param rhs The column whose examples will be appended. It needs to be

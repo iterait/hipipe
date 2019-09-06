@@ -28,7 +28,7 @@ namespace hipipe::stream {
 ///     HIPIPE_DEFINE_COLUMN(l, long)
 ///
 ///     // rng is a stream with four identical columns
-///     auto rng = view::iota(0, 10) | create<i>() |
+///     auto rng = views::iota(0, 10) | create<i>() |
 ///       copy(from<i>, to<i2>) | copy(from<i, i2>, to<i3, l>);
 /// \endcode
 ///

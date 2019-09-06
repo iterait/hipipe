@@ -37,10 +37,10 @@ vec_iter_t vector_range()
 }
 
 const std::vector<long> data = {1, 1, 2, 3, 5, 8};
-using view_iter_t = hpy::range<ranges::view::all_t<const std::vector<long>&>>;
+using view_iter_t = hpy::range<ranges::views::all_t<const std::vector<long>&>>;
 view_iter_t view_range()
 {
-    return view_iter_t{ranges::view::all(data)};
+    return view_iter_t{ranges::views::all(data)};
 }
 
 BOOST_PYTHON_MODULE(range_py_cpp)

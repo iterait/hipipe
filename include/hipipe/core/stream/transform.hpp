@@ -66,7 +66,7 @@ namespace detail {
 
     class partial_transform_fn {
     private:
-        friend ranges::view::view_access;
+        friend ranges::views::view_access;
 
         template <typename From, typename To, typename Fun>
         static auto bind(partial_transform_fn transformer, From f, To t, Fun fun)
@@ -86,7 +86,7 @@ namespace detail {
             detail::partial_transform_impl<Fun, from_t<FromTypes...>, to_t<ToTypes...>>
               trans_fun{std::move(fun)};
 
-            return ranges::view::transform(std::move(rng), std::move(trans_fun));
+            return ranges::views::transform(std::move(rng), std::move(trans_fun));
         }
     };
 
@@ -101,7 +101,7 @@ namespace detail {
 //
 // This transformer is used internally by stream::transform and should not
 // be used directly by the end user of the library.
-inline ranges::view::view<detail::partial_transform_fn> partial_transform{};
+inline ranges::views::view<detail::partial_transform_fn> partial_transform{};
 
 // transform //
 
@@ -127,8 +127,8 @@ namespace detail {
                 fun_wrapper{std::ref(fun)};
             // transform
             auto range_of_tuples =
-              ranges::view::transform(
-                std::apply(ranges::view::zip, std::move(tuple_of_ranges)),
+              ranges::views::transform(
+                std::apply(ranges::views::zip, std::move(tuple_of_ranges)),
                 std::move(fun_wrapper));
             return utility::unzip_if<(sizeof...(ToTypes) > 1)>(std::move(range_of_tuples));
         }
@@ -276,13 +276,13 @@ namespace detail {
 ///
 ///     // hardcoded usage
 ///     std::vector<int> data_cond = {true, true, false, false};
-///     auto rng = ranges::view::zip(data_int, data_cond)
+///     auto rng = ranges::views::zip(data_int, data_cond)
 ///       | create<dogs, do_trans>()
 ///       // this transforms only the first two examples and does nothing for the last two
 ///       | transform(from<dogs>, to<dogs>, cond<do_trans>, [](int dog) { return dog + 1; })
 ///       // this transformation reverts the previous one
 ///       | transform(from<dogs>, to<dogs>, cond<do_trans>, [](int dog) { return dog - 1; });
-///     
+///
 ///     // random_fill usage
 ///     std::bernoulli_distribution dist{0.5};
 ///     auto rng2 = data_int

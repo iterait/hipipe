@@ -135,7 +135,7 @@ dataframe read_csv(
 
 /// \ingroup CSV
 /// \brief Write a single csv row to an std::ostream.
-/// 
+///
 /// Fields containing a quote, a newline, or a separator are quoted automatically.
 ///
 /// \throws std::ios_base::failure if badbit is triggered.
@@ -149,7 +149,7 @@ std::ostream& write_csv_row(
 
 /// \ingroup CSV
 /// \brief Write a dataframe to an std::ostream.
-/// 
+///
 /// Fields containing a quote, a newline, or a separator are quoted automatically.
 ///
 /// \throws std::ios_base::failure if badbit is triggered.

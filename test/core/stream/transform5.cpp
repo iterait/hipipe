@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_dim2_move_only)
     std::mt19937 prng{1000003};
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | ranges::views::move
       // create IntVec column
       | hipipe::stream::transform(from<UniqueVec>, to<IntVec>,
          [](std::unique_ptr<int>&) -> int {

@@ -42,8 +42,8 @@ namespace detail {
             // the following is much nicer when written as a pipeline, but this
             // is more compilation time friendly
             auto range_of_tuples =
-              ranges::view::filter(
-                ranges::view::zip(cols...),
+              ranges::views::filter(
+                ranges::views::zip(cols...),
                 [this](const auto& tuple) -> bool {
                     return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
                 }
@@ -55,8 +55,8 @@ namespace detail {
             // filter_view to a vector manually and let it exponentially
             // reallocate.
             std::vector<ranges::range_value_type_t<decltype(range_of_tuples)>> ts;
-            for (auto&& t : ranges::view::move(range_of_tuples)) ts.push_back(std::move(t));
-            return utility::maybe_untuple(utility::unzip(ranges::view::move(ts)));
+            for (auto&& t : ranges::views::move(range_of_tuples)) ts.push_back(std::move(t));
+            return utility::maybe_untuple(utility::unzip(ranges::views::move(ts)));
         }
     };
 
@@ -117,7 +117,7 @@ namespace detail {
         static auto impl(From, by_t<ByColumns...>, Fun fun)
         {
             apply_filter_fun_to_columns<Fun, ByColumns...> fun_wrapper{std::move(fun)};
-            return ranges::view::filter(std::move(fun_wrapper));
+            return ranges::views::filter(std::move(fun_wrapper));
         }
     };
 

@@ -125,8 +125,8 @@ dataframe read_csv(
     // load csv line by line
     auto csv_rows =
       csv_istream_range(in, separator, quote, escape)
-      | ranges::view::drop(drop)
-      | ranges::view::move;
+      | ranges::views::drop(drop)
+      | ranges::views::move;
     auto csv_row_it = ranges::begin(csv_rows);
     // load header if requested
     std::size_t n_cols = -1;

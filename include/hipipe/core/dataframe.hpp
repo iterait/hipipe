@@ -125,12 +125,12 @@ private:
     template <typename This>
     static auto raw_irows_impl(This this_ptr, std::vector<std::size_t> col_indexes)
     {
-        namespace view = ranges::view;
-        return view::iota(0UL, this_ptr->n_rows())
-          | view::transform([this_ptr, col_indexes=std::move(col_indexes)](std::size_t i) {
+        namespace views = ranges::views;
+        return views::iota(0UL, this_ptr->n_rows())
+          | views::transform([this_ptr, col_indexes=std::move(col_indexes)](std::size_t i) {
                 return this_ptr->raw_icols(col_indexes)
                   // decltype(auto) to make sure a reference is returned
-                  | view::transform([i](auto&& col) -> decltype(auto) {
+                  | views::transform([i](auto&& col) -> decltype(auto) {
                         return col[i];
                     });
             });
@@ -139,12 +139,12 @@ private:
       template<typename This>
       static auto raw_rows_impl(This this_ptr)
       {
-        namespace view = ranges::view;
-        return view::iota(0UL, this_ptr->n_rows())
-          | view::transform([this_ptr](std::size_t i) {
-                return view::iota(0UL, this_ptr->n_cols())
+        namespace views = ranges::views;
+        return views::iota(0UL, this_ptr->n_rows())
+          | views::transform([this_ptr](std::size_t i) {
+                return views::iota(0UL, this_ptr->n_cols())
                   // decltype(auto) to make sure a reference is returned
-                  | view::transform([this_ptr, i](std::size_t j) -> decltype(auto) {
+                  | views::transform([this_ptr, i](std::size_t j) -> decltype(auto) {
                         return this_ptr->raw_cols()[j][i];
                     });
             });
@@ -154,8 +154,8 @@ private:
       static auto raw_icols_impl(This this_ptr, std::vector<std::size_t> col_indexes)
       {
         return std::move(col_indexes)
-          | ranges::experimental::view::shared
-          | ranges::view::transform([this_ptr](std::size_t idx) {
+          | ranges::experimental::views::shared
+          | ranges::views::transform([this_ptr](std::size_t idx) {
                 return this_ptr->raw_cols()[idx];
             });
       }
@@ -187,7 +187,7 @@ public:
         throw_check_new_header(columns.size(), header);
         for (std::size_t i = 0; i < columns.size(); ++i) {
             std::string col_name = header.empty() ? "" : std::move(header[i]);
-            insert_col(ranges::view::move(columns[i]), std::move(col_name));
+            insert_col(ranges::views::move(columns[i]), std::move(col_name));
         }
     }
 
@@ -219,7 +219,7 @@ public:
         utility::tuple_for_each_with_index(std::move(columns),
           [this, &header](auto& column, auto index) {
               std::string col_name = header.empty() ? "" : std::move(header[index]);
-              this->insert_col(ranges::view::move(column), std::move(col_name));
+              this->insert_col(ranges::views::move(column), std::move(col_name));
         });
     }
 
@@ -243,7 +243,7 @@ public:
         throw_check_insert_col_name(col_name);
         throw_check_insert_col_size(ranges::size(rng));
         if (col_name.size()) header_.insert(col_name);
-        data_.emplace_back(ranges::view::transform(rng, cvt));
+        data_.emplace_back(ranges::views::transform(rng, cvt));
         return n_cols() - 1;
     }
 
@@ -341,7 +341,7 @@ public:
     /// \returns A range of ranges of std::string&.
     auto raw_cols()
     {
-        return ranges::view::transform(data_, ranges::view::all);
+        return ranges::views::transform(data_, ranges::views::all);
     }
 
     /// Return a raw view of all columns.
@@ -351,7 +351,7 @@ public:
     /// \returns A range of ranges of const std::string&.
     auto raw_cols() const
     {
-        return ranges::view::transform(data_, ranges::view::all);
+        return ranges::views::transform(data_, ranges::views::all);
     }
 
     /// Return a raw view of multiple columns.
@@ -433,7 +433,7 @@ public:
         assert(sizeof...(Ts) == ranges::size(col_indexes));
         return utility::tuple_transform_with_index(std::move(cvts),
           [raw_cols = raw_icols(std::move(col_indexes))](auto&& cvt, auto i) {
-              return ranges::view::transform(raw_cols[i], std::move(cvt));
+              return ranges::views::transform(raw_cols[i], std::move(cvt));
         });
     }
 
@@ -472,7 +472,7 @@ public:
     auto raw_icol(std::size_t col_index)
     {
         throw_check_col_idx(col_index);
-        return ranges::view::all(raw_cols()[col_index]);
+        return ranges::views::all(raw_cols()[col_index]);
     }
 
     /// Return a raw view of a column.
@@ -482,7 +482,7 @@ public:
     auto raw_icol(std::size_t col_index) const
     {
         throw_check_col_idx(col_index);
-        return ranges::view::all(raw_cols()[col_index]);
+        return ranges::views::all(raw_cols()[col_index]);
     }
 
     /// Return a raw view of a column.
@@ -532,7 +532,7 @@ public:
     auto icol(std::size_t col_index,
               std::function<T(const std::string&)> cvt = utility::string_to<T>) const
     {
-        return ranges::view::transform(raw_icol(col_index), cvt);
+        return ranges::views::transform(raw_icol(col_index), cvt);
     }
 
     /// Return a typed view of a column.
@@ -656,7 +656,7 @@ public:
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
         return std::apply(
-          ranges::view::zip,
+          ranges::views::zip,
           icols<Ts...>(std::move(col_indexes), std::move(cvts)));
     }
 
@@ -685,7 +685,7 @@ public:
 
     /// Return an indexed typed view of a single column.
     ///
-    /// This function returns a range of tuples, where the first tuple element is 
+    /// This function returns a range of tuples, where the first tuple element is
     /// from the key column and the second element is from the value column.
     /// This range can be used to construct a map or a hashmap.
     ///
@@ -710,7 +710,7 @@ public:
     {
         auto key_col = icol<IndexT>(key_col_index, std::move(key_col_cvt));
         auto val_col = icol<ColT>(val_col_index, std::move(val_col_cvt));
-        return ranges::view::zip(key_col, val_col);
+        return ranges::views::zip(key_col, val_col);
     }
 
     /// Return an indexed typed view of a single column.
@@ -760,7 +760,7 @@ public:
     {
         auto key_col = icol<IndexT>(key_col_index, std::move(key_col_cvt));
         auto val_cols = irows<Ts...>(std::move(val_col_indexes), std::move(val_col_cvts));
-        return ranges::view::zip(key_col, val_cols);
+        return ranges::views::zip(key_col, val_cols);
     }
 
     /// Return an indexed typed view of multiple columns.

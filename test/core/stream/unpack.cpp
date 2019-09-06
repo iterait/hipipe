@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(test_unpack_dim0)
     std::vector<std::vector<int>> unp_int;
     std::vector<std::vector<std::vector<int>>> unp_intvec;
     std::tie(unp_int, unp_intvec) =
-      hipipe::stream::unpack(ranges::view::move(data), from<Int, IntVec>, dim<0>);
+      hipipe::stream::unpack(ranges::views::move(data), from<Int, IntVec>, dim<0>);
     BOOST_TEST(unp_int == (std::vector<std::vector<int>>{{3, 1}, {7}}));
     BOOST_TEST(unp_intvec == (std::vector<std::vector<std::vector<int>>>{
       {{1, 4}, {8, 2}}, {{2, 5}}
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(test_unpack_dim1)
     std::vector<int> unp_int;
     std::vector<std::vector<int>> unp_intvec;
     std::tie(unp_int, unp_intvec) =
-      hipipe::stream::unpack(ranges::view::move(data), from<Int, IntVec>);
+      hipipe::stream::unpack(ranges::views::move(data), from<Int, IntVec>);
     BOOST_TEST(unp_int == (std::vector<int>{3, 1, 7}));
     BOOST_TEST(unp_intvec == (std::vector<std::vector<int>>{{1, 4}, {8, 2}, {2, 5}}));
 }
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_unpack_dim2)
 
     std::vector<batch_t> data = generate_data();
     std::vector<int> unp_intvec;
-    unp_intvec = hipipe::stream::unpack(ranges::view::move(data), from<IntVec>, dim<2>);
+    unp_intvec = hipipe::stream::unpack(ranges::views::move(data), from<IntVec>, dim<2>);
     BOOST_TEST(unp_intvec == (std::vector<int>{1, 4, 8, 2, 2, 5}));
 }
 
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_unpack_dim2_move_only)
 
     std::vector<batch_t> data = generate_move_only_data_2d();
     std::vector<std::unique_ptr<int>> unp_uniquevec;
-    unp_uniquevec = hipipe::stream::unpack(ranges::view::move(data), from<UniqueVec>, dim<2>);
-    std::vector<int> values = ranges::view::indirect(unp_uniquevec);
+    unp_uniquevec = hipipe::stream::unpack(ranges::views::move(data), from<UniqueVec>, dim<2>);
+    std::vector<int> values = ranges::views::indirect(unp_uniquevec);
     BOOST_TEST(values == (std::vector<int>{6, 3, 7, 4, 2, 1, 2, 8}));
 }
