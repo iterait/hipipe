@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(
   "hipipe"
-  VERSION 0.6.1
+  VERSION 0.7.0
 )
 set(PROJECT_DESCRIPTION "C++ data pipeline with Python bindings.")
 
