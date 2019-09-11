@@ -43,7 +43,8 @@ BOOST_AUTO_TEST_CASE(test_conditional_simple)
       | ranges::views::move
       | hipipe::stream::transform(from<dogs>, to<dogs>, cond<do_trans>,
           [](int dog) { return -1; }
-        );
+        )
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<dogs>() == (std::vector<int>{-1, -1,  5}));
@@ -78,7 +79,9 @@ BOOST_AUTO_TEST_CASE(test_conditional_with_random_fill)
       | hipipe::stream::random_fill(from<dogs>, to<do_trans>, 1, dist, prng)
       | hipipe::stream::transform(from<dogs>, to<dogs>, cond<do_trans>,
           [](int dog) { return dog - 1; }
-        );
+        )
+      | ranges::to_vector;
+
 
     long n_transformed = 0;
     BOOST_TEST(stream.size() == 2);
@@ -119,7 +122,8 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_simple)
       | ranges::views::move
       | hipipe::stream::transform(from<dogs>, to<dogs>, 1.0, [](int dog) { return 1; }, prng)
       | hipipe::stream::transform(from<dogs>, to<dogs>, 0.5, [](int dog) { return 2; }, prng)
-      | hipipe::stream::transform(from<dogs>, to<dogs>, 0.0, [](int dog) { return 3; }, prng);
+      | hipipe::stream::transform(from<dogs>, to<dogs>, 0.0, [](int dog) { return 3; }, prng)
+      | ranges::to_vector;
 
     BOOST_CHECK(stream.size() == 2);
     long number1 = ranges::count(stream.at(0).extract<dogs>(), 1) +

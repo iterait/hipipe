@@ -46,7 +46,8 @@ BOOST_AUTO_TEST_CASE(test_for_each_of_two)
       | ranges::views::move
       | hipipe::stream::for_each(from<Int, Double>,
           [&sum](const int& v, double c) { sum += v; }
-        );
+        )
+      | ranges::to_vector;
 
     BOOST_TEST(sum == 5);
     BOOST_TEST(stream.size() == 2);

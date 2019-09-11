@@ -13,6 +13,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <range/v3/algorithm/find_first_of.hpp>
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/move.hpp>
 
@@ -235,8 +236,8 @@ std::ostream& write_csv(
   char escape)
 {
     write_csv_row(out, df.header(), separator, quote, escape);
-    for (const std::vector<std::string>& row : df.raw_rows()) {
-        write_csv_row(out, row, separator, quote, escape);
+    for (auto&& row : df.raw_rows()) {
+        write_csv_row(out, ranges::to_vector(row), separator, quote, escape);
     }
     return out;
 }

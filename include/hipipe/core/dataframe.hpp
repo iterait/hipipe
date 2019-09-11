@@ -21,6 +21,7 @@
 #include <range/v3/view/move.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
+#include <range/v3/view/zip_with.hpp>
 
 #include <functional>
 #include <iomanip>
@@ -655,8 +656,13 @@ public:
                std::tuple<std::function<Ts(const std::string&)>...> cvts =
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
+        // Make sure the zip produces std::tuple, not ranges::common_tuple or similar.
+        auto zip_as_std_tuple = [](auto&&... rngs) {
+            auto std_tupler = [](Ts... ts) -> std::tuple<Ts...> { return {std::move(ts)...}; };
+            return ranges::views::zip_with(std_tupler, std::forward<decltype(rngs)>(rngs)...);
+        };
         return std::apply(
-          ranges::views::zip,
+          zip_as_std_tuple,
           icols<Ts...>(std::move(col_indexes), std::move(cvts)));
     }
 
@@ -716,7 +722,9 @@ public:
     /// Return an indexed typed view of a single column.
     ///
     /// \code
-    ///     std::unordered_map<int, double> mapper = df.index_col<int, double>("first", "second");
+    ///     std::unordered_map<int, double> mapper =
+    ///         df.index_col<int, double>("first", "second")
+    ///       | ranges::to<std::unordered_map>;
     /// \endcode
     ///
     /// This function is the same as index_icol(), but columns are selected by name.
@@ -769,7 +777,8 @@ public:
     ///
     /// \code
     ///     std::unordered_map<int, std::tuple<long, double>> mapper =
-    ///       df.index_cols<int, long, double>("id", {"col1", "col2"});
+    ///         df.index_cols<int, long, double>("id", {"col1", "col2"})
+    ///       | ranges::to<std::unordered_map>;
     /// \endcode
     ///
     /// This function is similar to index_icols(), but columns are selected by name.

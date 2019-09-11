@@ -17,6 +17,7 @@
 #include <hipipe/core/utility/random.hpp>
 #include <hipipe/core/utility/tuple.hpp>
 
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/any_view.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
@@ -106,6 +107,19 @@ inline ranges::views::view<detail::partial_transform_fn> partial_transform{};
 // transform //
 
 namespace detail {
+    /// Convert a tuple of containers to a tuple of containers of different type using ranges::to.
+    ///
+    /// This basically calls `ranges::to<std::tuple_element<i, DestTuple>>(std::get<i>(rngs))`
+    /// for every index `i`.
+    template <typename DestTuple, typename SourceTuple>
+    DestTuple convert_tuple_of_ranges(SourceTuple rngs)
+    {
+        static_assert(std::tuple_size_v<SourceTuple> == std::tuple_size_v<DestTuple>);
+        return utility::tuple_transform_with_index(std::move(rngs), [](auto rng, auto index) {
+            using DestType = std::tuple_element_t<index, DestTuple>;
+            return ranges::to<DestType>(ranges::views::move(rng));
+        });
+    }
 
     // Apply fun to each element in tuple of ranges in the given dimension.
     template<typename Fun, std::size_t Dim, typename From, typename To>
@@ -126,11 +140,20 @@ namespace detail {
               to_t<ranges::range_value_type_t<ToTypes>...>>
                 fun_wrapper{std::ref(fun)};
             // transform
-            auto range_of_tuples =
+            auto trans_view_of_tuples =
               ranges::views::transform(
                 std::apply(ranges::views::zip, std::move(tuple_of_ranges)),
                 std::move(fun_wrapper));
-            return utility::unzip_if<(sizeof...(ToTypes) > 1)>(std::move(range_of_tuples));
+            // unzip the result and convert the ranges to the desired types
+            if constexpr (sizeof...(ToTypes) > 1) {
+                auto trans_tuple_of_vectors =
+                  utility::unzip(std::move(trans_view_of_tuples));
+                return convert_tuple_of_ranges<std::tuple<ToTypes...>>(
+                  std::move(trans_tuple_of_vectors));
+            // result is only one range, no unzipping
+            } else {
+                return ranges::to<ToTypes...>(std::move(trans_view_of_tuples));
+            }
         }
     };
 

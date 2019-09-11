@@ -240,7 +240,7 @@ namespace detail {
 }  // namespace detail
 
 /// \ingroup Tuple
-/// \brief Unzips a range of tuples to a tuple of ranges.
+/// \brief Unzips a range of tuples to a tuple of std::vectors.
 ///
 /// Example:
 /// \code

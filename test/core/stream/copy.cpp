@@ -38,7 +38,8 @@ BOOST_AUTO_TEST_CASE(test_simple_copy)
     std::vector<batch_t> stream = data
       | ranges::views::move
       | copy(from<Int>, to<Int2>)
-      | transform(from<Int>, to<Int>, [](int a) {return a+1;});
+      | transform(from<Int>, to<Int>, [](int a) {return a+1;})
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).size() == 2);
@@ -73,7 +74,8 @@ BOOST_AUTO_TEST_CASE(test_multi_copy)
       | ranges::views::move
       | copy(from<Int>, to<Int2>)
       | transform(from<Int2>, to<Int2>, [](int a) {return a+1;})
-      | copy(from<Int, Int2>, to<Int3, Int4>);
+      | copy(from<Int, Int2>, to<Int3, Int4>)
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).size() == 4);
@@ -113,7 +115,8 @@ BOOST_AUTO_TEST_CASE(test_constructible_copy)
 
     std::vector<batch_t> stream = data
       | ranges::views::move
-      | copy(from<Int>, to<Long>);
+      | copy(from<Int>, to<Long>)
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).size() == 2);

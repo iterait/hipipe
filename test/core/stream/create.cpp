@@ -23,7 +23,8 @@
 BOOST_AUTO_TEST_CASE(test_int_column)
 {
     std::vector<hipipe::stream::batch_t> stream = ranges::views::iota(0, 10)
-      | hipipe::stream::create<Int>();
+      | hipipe::stream::create<Int>()
+      | ranges::to_vector;
     BOOST_TEST(stream.size() == 10);
     for (int i = 0; i < (int)stream.size(); ++i) {
         BOOST_TEST(stream.at(i).contains<Int>());
@@ -37,9 +38,10 @@ BOOST_AUTO_TEST_CASE(test_one_batch_column)
 {
     // create a new column with a single batch
     std::vector<hipipe::stream::batch_t> stream = ranges::views::iota(0, 10)
-      | hipipe::stream::create<Int>(50);
+      | hipipe::stream::create<Int>(50)
+      | ranges::to_vector;
     BOOST_TEST(stream.size() == 1);
-    std::vector<int> desired_batch0 = ranges::views::iota(0, 10);
+    std::vector<int> desired_batch0 = ranges::to_vector(ranges::views::iota(0, 10));
     std::vector<int> generated_batch0 = stream.front().extract<Int>();
     BOOST_TEST(generated_batch0 == desired_batch0);
 }
@@ -49,13 +51,14 @@ BOOST_AUTO_TEST_CASE(test_two_batch_column)
 {
     // create a new column with two batches
     std::vector<hipipe::stream::batch_t> stream = ranges::views::iota(0, 10)
-      | hipipe::stream::create<Int>(5);
+      | hipipe::stream::create<Int>(5)
+      | ranges::to_vector;
     BOOST_TEST(stream.size() == 2);
     std::vector<int> generated_batch0 = stream.at(0).extract<Int>();
-    std::vector<int> desired_batch0 = ranges::views::iota(0, 5);
+    std::vector<int> desired_batch0 = ranges::to_vector(ranges::views::iota(0, 5));
     BOOST_TEST(generated_batch0 == desired_batch0, boost::test_tools::per_element());
     std::vector<int> generated_batch1 = stream.at(1).extract<Int>();
-    std::vector<int> desired_batch1 = ranges::views::iota(5, 10);
+    std::vector<int> desired_batch1 = ranges::to_vector(ranges::views::iota(5, 10));
     BOOST_TEST(generated_batch1 == desired_batch1);
 }
 
@@ -72,7 +75,8 @@ BOOST_AUTO_TEST_CASE(test_move_only_column)
       | hipipe::stream::create<Unique>(1)
       | ranges::views::transform([](const hipipe::stream::batch_t& batch) -> int {
             return *batch.extract<Unique>().at(0);
-        });
+        })
+      | ranges::to_vector;
 
     BOOST_TEST(generated == (std::vector<int>{5, 6}));
 }
@@ -91,7 +95,8 @@ BOOST_AUTO_TEST_CASE(test_multiple_columns)
       | ranges::views::transform([](const hipipe::stream::batch_t& batch) -> std::tuple<int, int> {
           return std::make_tuple(*batch.extract<Unique>().at(0),
                                   batch.extract<Int>().at(0));
-        });
+        })
+      | ranges::to_vector;
 
     BOOST_TEST(generated == (std::vector<std::tuple<int, int>>{{1, 5}, {2, 6}}));
 }

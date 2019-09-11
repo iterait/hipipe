@@ -12,6 +12,7 @@
 #ifndef HIPIPE_CORE_INDEX_MAPPER_HPP
 #define HIPIPE_CORE_INDEX_MAPPER_HPP
 
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
 
 #include <unordered_map>
@@ -65,17 +66,19 @@ public:
     /// \throws std::out_of_range If any of the values does not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals) const
     {
-        return ranges::views::transform(vals, [this](const T& val) {
-            return this->index_for(val);
-        });
+        return ranges::to_vector(ranges::views::transform(
+          vals, [this](const T& val) {
+              return this->index_for(val);
+          }));
     }
 
     /// Returns the indexes of the given values or a default value if they do not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals, std::size_t defval) const
     {
-        return ranges::views::transform(vals, [this, defval](const T& val) {
-            return this->index_for(val, defval);
-        });
+        return ranges::to_vector(ranges::views::transform(
+          vals, [this, defval](const T& val) {
+              return this->index_for(val, defval);
+          }));
     }
 
     // at //
@@ -96,9 +99,10 @@ public:
     /// \throws std::out_of_range If any of the indexes does not exist in the mapper.
     std::vector<T> at(const std::vector<std::size_t>& idxs) const
     {
-        return ranges::views::transform(idxs, [this](std::size_t idx) {
-            return this->at(idx);
-        });
+        return ranges::to_vector(ranges::views::transform(
+          idxs, [this](std::size_t idx) {
+              return this->at(idx);
+          }));
     }
 
     // insert //

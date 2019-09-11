@@ -59,7 +59,8 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_dim2_move_only)
       | hipipe::stream::transform(from<UniqueVec>, to<IntVec>,
           [](std::unique_ptr<int>& ptr) -> int {
               return *ptr;
-          }, dim<2>);
+          }, dim<2>)
+      | ranges::to_vector;
 
     BOOST_CHECK(stream.size() == 2);
     BOOST_CHECK(stream.at(0).extract<IntVec>().size()       == 3);

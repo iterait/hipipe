@@ -17,6 +17,7 @@
 #include <hipipe/core/stream/transform.hpp>
 
 #include <boost/test/unit_test.hpp>
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/indirect.hpp>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/transform.hpp>
@@ -172,7 +173,8 @@ BOOST_AUTO_TEST_CASE(test_buffer_transformed_stream)
           [](int i, std::unique_ptr<int>& p) -> int {
             return i + *p;
         })
-      | hipipe::stream::buffer(3);
+      | hipipe::stream::buffer(3)
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>().size() == 2);

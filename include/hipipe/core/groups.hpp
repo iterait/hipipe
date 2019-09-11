@@ -19,6 +19,7 @@
 #include <range/v3/algorithm/all_of.hpp>
 #include <range/v3/algorithm/copy.hpp>
 #include <range/v3/numeric/accumulate.hpp>
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/concat.hpp>
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/filter.hpp>
@@ -114,7 +115,7 @@ generate_groups(std::size_t n, std::size_t size,
     namespace views = ranges::views;
 
     std::size_t volatile_size = volatile_ratio.size();
-    auto full_ratio = views::concat(volatile_ratio, fixed_ratio);
+    auto full_ratio = ranges::to_vector(views::concat(volatile_ratio, fixed_ratio));
 
     std::vector<std::vector<std::size_t>> all_groups;
     std::vector<std::size_t> initial_groups = generate_groups(size, full_ratio, gen);

@@ -32,7 +32,8 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only)
       | hipipe::stream::transform(from<UniqueVec>, to<UniqueVec>,
           [](std::unique_ptr<int>& ptr) -> std::unique_ptr<int> {
               return std::make_unique<int>(*ptr + 1);
-        }, dim<2>);
+        }, dim<2>)
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
 

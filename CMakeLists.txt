@@ -3,7 +3,7 @@ project(
   "hipipe"
   VERSION 0.6.1
 )
-set(PROJECT_DESCRIPTION "C++17 data pipeline with Python bindings.")
+set(PROJECT_DESCRIPTION "C++ data pipeline with Python bindings.")
 
 # -------
 # Options
@@ -41,8 +41,8 @@ configure_file(
 # Compiler Flags
 # --------------
 
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -pedantic ${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g1")
+set(CMAKE_CXX_FLAGS "-std=c++2a -Wall -pedantic ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g1 -Werror")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 
 # ----------------------
@@ -98,7 +98,7 @@ add_library(
 set_target_properties(
   hipipe_core PROPERTIES
     EXPORT_NAME Core
-    INTERFACE_COMPILE_OPTIONS "-std=c++17"
+    INTERFACE_COMPILE_OPTIONS "-std=c++2a"
     VERSION ${PROJECT_VERSION}
 )
 target_link_libraries(
@@ -190,7 +190,7 @@ if(HIPIPE_BUILD_TENSORFLOW)
     )
     set_target_properties(
       TensorflowCC::Shared
-      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++17"
+      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++2a"
     )
   # fallback to the static library
   # static library is linked privately to avoid multiple funtion definitions,
@@ -207,7 +207,7 @@ if(HIPIPE_BUILD_TENSORFLOW)
     )
     set_target_properties(
       TensorflowCC::Static
-      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++17"
+      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++2a"
     )
   endif()
   set_target_properties(

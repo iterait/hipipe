@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(test_partial_transform)
               new_int_data.push_back(*std::get<0>(data).at(0));
               return std::make_tuple(std::move(new_int_data), std::move(new_unique_data));
         })
-      ;
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Unique>().size() == 1);
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(test_to_itself)
          [](const int& v) { return v - 1; })
       | hipipe::stream::transform(from<Double>, to<Double>,
          [](const int& v) { return v - 1; })
-      ;
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     // batch 0
@@ -141,7 +141,8 @@ BOOST_AUTO_TEST_CASE(test_move_only)
       | hipipe::stream::transform(from<Unique>, to<Unique>,
           [](const std::unique_ptr<int> &ptr) {
               return std::make_unique<int>(*ptr + 1);
-        });
+        })
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Unique>().size() == 1);
@@ -169,7 +170,8 @@ BOOST_AUTO_TEST_CASE(test_mutable)
       | ranges::views::move
       | transform(from<Int>, to<Int>, [i = 0](const int&) mutable {
             return i++;
-        });
+        })
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>() == (std::vector<int>{0, 1, 2}));
@@ -197,7 +199,8 @@ BOOST_AUTO_TEST_CASE(test_two_to_one)
       | ranges::views::move
       | transform(from<Int, Double>, to<Double>, [](int i, double d) -> double {
             return i + d;
-        });
+        })
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {3, 7}));
@@ -225,7 +228,8 @@ BOOST_AUTO_TEST_CASE(test_one_to_two)
       | ranges::views::move
       | transform(from<Int>, to<Int, Double>, [](int i) {
             return std::make_tuple(i + i, (double)(i * i));
-        });
+        })
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {6,  14 }));
@@ -258,7 +262,8 @@ BOOST_AUTO_TEST_CASE(test_dim0)
             std::vector<int> new_batch = int_batch;
             new_batch.push_back(4);
             return new_batch;
-        }, dim<0>);
+        }, dim<0>)
+      | ranges::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {3, 7, 4}));
