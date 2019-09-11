@@ -236,7 +236,7 @@ public:
     /// \throws std::invalid_argument 1) If the dataframe has a header but no column
     ///                               name was provided. 2) If the column size is not equal
     ///                               to n_rows.
-    template<typename Rng, typename ValueT = ranges::range_value_type_t<Rng>>
+    template<typename Rng, typename ValueT = ranges::range_value_t<Rng>>
     std::size_t insert_col(Rng&& rng, std::string col_name = {},
                            std::function<std::string(const ValueT&)> cvt =
                              static_cast<std::string (*)(const ValueT&)>(utility::to_string))

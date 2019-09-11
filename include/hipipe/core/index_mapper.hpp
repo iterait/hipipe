@@ -209,7 +209,7 @@ private:
 ///
 /// \param rng The range of values to be inserted.
 /// \returns The index mapper made of unique values of the range.
-template<typename Rng, typename T = ranges::range_value_type_t<Rng>>
+template<typename Rng, typename T = ranges::range_value_t<Rng>>
 index_mapper<T> make_unique_index_mapper(Rng&& rng)
 {
     index_mapper<T> mapper;

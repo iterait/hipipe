@@ -193,7 +193,7 @@ public:
             long stop = handle_index(slice->stop, len());
             if (start > stop) start = stop;
 
-            using slice_data_type = std::vector<ranges::range_value_type_t<Rng>>;
+            using slice_data_type = std::vector<ranges::range_value_t<Rng>>;
             slice_data_type slice_data{rng_ptr_->begin() + start, rng_ptr_->begin() + stop};
             return boost::python::object{range<slice_data_type>{std::move(slice_data)}};
         }

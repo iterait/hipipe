@@ -39,7 +39,7 @@ private:
     private:
         buffer_view<Rng>* rng_ = nullptr;
         ranges::iterator_t<Rng> it_ = {};
-        using value_type = ranges::range_value_type_t<Rng>;
+        using value_type = ranges::range_value_t<Rng>;
         using reference_type = value_type&;
 
         std::size_t n_;

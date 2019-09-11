@@ -35,7 +35,7 @@ Container2d transpose(const Container2d& data)
 {
     auto width = ranges::size(data);
     auto height = ranges::size(ranges::at(data, 0));
-    Container2d res(height, ranges::range_value_type_t<Container2d>(width));
+    Container2d res(height, ranges::range_value_t<Container2d>(width));
     for (std::size_t i = 0; i < height; ++i) {
         for (std::size_t j = 0; j < width; ++j) {
             res[i][j] = data[j][i];

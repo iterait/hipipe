@@ -136,8 +136,8 @@ namespace detail {
             assert(utility::same_size(tuple_of_ranges));
             // build the function to be applied
             wrap_fun_for_dim<FunRef, Dim-1,
-              from_t<ranges::range_value_type_t<FromTypes>...>,
-              to_t<ranges::range_value_type_t<ToTypes>...>>
+              from_t<ranges::range_value_t<FromTypes>...>,
+              to_t<ranges::range_value_t<ToTypes>...>>
                 fun_wrapper{std::ref(fun)};
             // transform
             auto trans_view_of_tuples =

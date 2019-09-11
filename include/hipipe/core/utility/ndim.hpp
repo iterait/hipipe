@@ -54,7 +54,7 @@ struct ndims<Rng, PrevRng, false> : std::integral_constant<long, 0L> {
 
 template<typename Rng, typename PrevRng>
 struct ndims<Rng, PrevRng, true>
-  : std::integral_constant<long, ndims<ranges::range_value_type_t<Rng>, Rng>{} + 1> {
+  : std::integral_constant<long, ndims<ranges::range_value_t<Rng>, Rng>{} + 1> {
 };
 
 // For recursive ranges, such as std::filesystem::path, do not recurse further and
@@ -121,7 +121,7 @@ using ndim_container_t = typename ndim_container<T, Dims, Container>::type;
 template<typename Rng, long Dim = -1L>
 struct ndim_type
 //// \cond
-  : ndim_type<typename ranges::range_value_type_t<Rng>, Dim - 1L> {
+  : ndim_type<typename ranges::range_value_t<Rng>, Dim - 1L> {
   static_assert(Dim > 0, "Dimension has to be positive, zero or -1.");
 //// \endcond
 };
@@ -150,7 +150,7 @@ namespace detail {
         {
             size_out[Dim-1].push_back(ranges::size(rng));
             for (auto& subrng : rng) {
-                ndim_size_impl<ranges::range_value_type_t<Rng>, Dim+1, NDims>
+                ndim_size_impl<ranges::range_value_t<Rng>, Dim+1, NDims>
                   ::impl(subrng, size_out);
             }
         }
@@ -333,7 +333,7 @@ namespace detail {
         {
             shape[Dim-1] = ranges::size(rng);
             if (ranges::size(rng)) {
-                shape_impl<typename ranges::range_value_type_t<Rng>, Dim+1, NDims>
+                shape_impl<typename ranges::range_value_t<Rng>, Dim+1, NDims>
                   ::impl(*ranges::begin(rng), shape);
             }
         }

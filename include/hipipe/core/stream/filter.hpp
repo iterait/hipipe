@@ -54,7 +54,7 @@ namespace detail {
             // the values. To avoid this double iteration, we convert the
             // filter_view to a vector manually and let it exponentially
             // reallocate.
-            std::vector<ranges::range_value_type_t<decltype(range_of_tuples)>> ts;
+            std::vector<ranges::range_value_t<decltype(range_of_tuples)>> ts;
             for (auto&& t : ranges::views::move(range_of_tuples)) ts.push_back(std::move(t));
             return utility::maybe_untuple(utility::unzip(ranges::views::move(ts)));
         }

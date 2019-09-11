@@ -221,7 +221,7 @@ namespace detail {
     template<typename Rng>
     auto unzip_impl(Rng& range_of_tuples)
     {
-        using tuple_type = ranges::range_value_type_t<Rng>;
+        using tuple_type = ranges::range_value_t<Rng>;
         constexpr auto tuple_size = std::tuple_size<tuple_type>{};
         constexpr auto indices = std::make_index_sequence<tuple_size>{};
         std::size_t reserve_size = detail::safe_reserve_size(range_of_tuples);

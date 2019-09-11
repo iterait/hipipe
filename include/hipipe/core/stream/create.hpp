@@ -39,7 +39,7 @@ namespace detail {
                   "Cannot convert the given data range to the selected column type.");
                 batch.insert_or_assign<Columns...>(ranges::to_vector(std::forward<Source>(source)));
             } else {
-                using SourceValue = ranges::range_value_type_t<Source>;
+                using SourceValue = ranges::range_value_t<Source>;
                 static_assert(std::is_constructible_v<
                   std::tuple<typename Columns::example_type...>, SourceValue&&>,
                   "hipipe::stream::create: "

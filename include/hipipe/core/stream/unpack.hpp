@@ -40,7 +40,7 @@ namespace detail {
         std::tuple<std::vector<utility::ndim_type_t<typename FromColumns::data_type, Dim>>...>
         impl(Rng&& range_of_batches)
         {
-            static_assert(std::is_same_v<std::decay_t<ranges::range_value_type_t<Rng>>, batch_t>,
+            static_assert(std::is_same_v<std::decay_t<ranges::range_value_t<Rng>>, batch_t>,
               "hipipe::stream::unpack requires a range of batches as input.");
             static_assert(((Dim <= utility::ndims<typename FromColumns::data_type>::value) && ...),
               "hipipe::stream::unpack requires the requested dimension to be less or equal to the"
