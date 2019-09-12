@@ -31,6 +31,10 @@
 
 namespace hipipe {
 
+namespace rga = ranges::actions;
+namespace rgv = ranges::views;
+
+
 /// \ingroup Groups
 /// \brief Randomly group data into multiple clusters with a given ratio.
 ///
@@ -50,8 +54,6 @@ template<typename Prng = std::mt19937&>
 std::vector<std::size_t> generate_groups(std::size_t size, std::vector<double> ratio,
                                          Prng&& gen = utility::random_generator)
 {
-    namespace views = ranges::views;
-
     // check all ratios non-negative
     assert(ranges::all_of(ratio, [](double d) { return d >= 0; }));
 
@@ -73,10 +75,10 @@ std::vector<std::size_t> generate_groups(std::size_t size, std::vector<double> r
         std::size_t count = std::lround(ratio[i] * size);
         // take all the remaining elements if this is the last non-zero group
         if (i + 1 == ratio.size()) count = size - groups.size();
-        ranges::actions::insert(groups, groups.end(), views::repeat_n(i, count));
+        rga::insert(groups, groups.end(), rgv::repeat_n(i, count));
     }
 
-    ranges::actions::shuffle(groups, gen);
+    rga::shuffle(groups, gen);
     return groups;
 }
 
@@ -112,10 +114,8 @@ generate_groups(std::size_t n, std::size_t size,
                 const std::vector<double>& fixed_ratio,
                 Prng&& gen = utility::random_generator)
 {
-    namespace views = ranges::views;
-
     std::size_t volatile_size = volatile_ratio.size();
-    auto full_ratio = ranges::to_vector(views::concat(volatile_ratio, fixed_ratio));
+    auto full_ratio = ranges::to_vector(rgv::concat(volatile_ratio, fixed_ratio));
 
     std::vector<std::vector<std::size_t>> all_groups;
     std::vector<std::size_t> initial_groups = generate_groups(size, full_ratio, gen);
@@ -124,7 +124,7 @@ generate_groups(std::size_t n, std::size_t size,
         auto groups = initial_groups;
         // select those groups, which are volatile (those will be replaced)
         auto groups_volatile =
-          views::filter(groups, [volatile_size](std::size_t l) { return l < volatile_size; });
+          rgv::filter(groups, [volatile_size](std::size_t l) { return l < volatile_size; });
         // count the number of volatile groups
         std::size_t volatile_count = ranges::distance(groups_volatile);
         // generate the replacement

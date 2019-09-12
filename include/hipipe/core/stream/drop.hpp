@@ -17,12 +17,14 @@
 
 namespace hipipe::stream {
 
+namespace rgv = ranges::views;
+
 namespace detail {
 
     template<typename... Columns>
     class drop_fn {
     private:
-        friend ranges::views::view_access;
+        friend rgv::view_access;
 
         static auto bind(drop_fn<Columns...> fun)
         {
@@ -33,7 +35,7 @@ namespace detail {
         CPP_template(class Rng)(requires ranges::input_range<Rng>)
         forward_stream_t operator()(Rng&& rng) const
         {
-            return ranges::views::transform(std::forward<Rng>(rng),
+            return rgv::transform(std::forward<Rng>(rng),
               [](batch_t batch) -> batch_t {
                   ((batch.erase<Columns>()), ...);
                   return batch;
@@ -64,6 +66,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | drop<id>;
 /// \endcode
 template <typename... Columns>
-ranges::views::view<detail::drop_fn<Columns...>> drop{};
+rgv::view<detail::drop_fn<Columns...>> drop{};
 
 }  // end namespace hipipe::stream

@@ -20,6 +20,7 @@
 
 namespace hipipe::stream {
 
+namespace rgv = ranges::views;
 
 template <typename Rng>
 struct rebatch_view : ranges::view_facade<rebatch_view<Rng>> {
@@ -128,7 +129,7 @@ public:
 class rebatch_fn {
 private:
     /// \cond
-    friend ranges::views::view_access;
+    friend rgv::view_access;
     /// \endcond
 
     static auto bind(rebatch_fn rebatch, std::size_t n)
@@ -138,9 +139,9 @@ private:
 
 public:
     CPP_template(class Rng)(requires ranges::input_range<Rng>)
-    rebatch_view<ranges::views::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
+    rebatch_view<rgv::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
     {
-        return {ranges::views::all(std::forward<Rng>(rng)), n};
+        return {rgv::all(std::forward<Rng>(rng)), n};
     }
 };  // class rebatch_fn
 
@@ -165,6 +166,6 @@ public:
 ///       | create<value>(2)  // batches the data by two examples
 ///       | rebatch(3);       // changes the batch size to three examples
 /// \endcode
-inline ranges::views::view<rebatch_fn> rebatch{};
+inline rgv::view<rebatch_fn> rebatch{};
 
 }  // namespace hipipe::stream

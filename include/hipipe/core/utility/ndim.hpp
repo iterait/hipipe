@@ -36,6 +36,9 @@
 
 namespace hipipe::utility {
 
+namespace rga = ranges::actions;
+namespace rgv = ranges::views;
+
 /// \ingroup NDim
 /// \brief Gets the number of dimensions of a multidimensional range.
 ///
@@ -411,7 +414,7 @@ namespace detail {
     struct flat_view_impl {
         static auto impl()
         {
-            return ranges::views::for_each([](auto& subrng) {
+            return rgv::for_each([](auto& subrng) {
                 return flat_view_impl<Dim-1>::impl()(subrng);
             });
         }
@@ -422,7 +425,7 @@ namespace detail {
     struct flat_view_impl<1> {
         static auto impl()
         {
-            return ranges::views::all;
+            return rgv::all;
         }
     };
 
@@ -474,8 +477,8 @@ namespace detail {
     struct reshaped_view_impl_go {
         static auto impl(const std::shared_ptr<std::vector<long>>& shape_ptr)
         {
-            return ranges::views::chunk((*shape_ptr)[N-2])
-              | ranges::views::transform([shape_ptr](auto subview) {
+            return rgv::chunk((*shape_ptr)[N-2])
+              | rgv::transform([shape_ptr](auto subview) {
                     return reshaped_view_impl_go<N-1>::impl(shape_ptr)(std::move(subview));
             });
         }
@@ -485,7 +488,7 @@ namespace detail {
     struct reshaped_view_impl_go<1> {
         static auto impl(const std::shared_ptr<std::vector<long>>&)
         {
-            return ranges::views::all;
+            return rgv::all;
         }
     };
 
@@ -509,7 +512,7 @@ namespace detail {
         // check that the user requests the same number of elements as there really is
         assert(ranges::distance(flat) == ranges::accumulate(shape, 1, std::multiplies<>{}));
         // calculate the cummulative product of the shape list in reverse order
-        shape |= ranges::actions::reverse;
+        shape |= rga::reverse;
         ranges::partial_sum(shape, shape, std::multiplies<>{});
         // the recursive chunks will share a single copy of the shape list (performance)
         auto shape_ptr = std::make_shared<std::vector<long>>(std::move(shape));

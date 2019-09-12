@@ -27,6 +27,8 @@
 
 namespace hipipe::stream {
 
+namespace rgv = ranges::views;
+
 // partial transform //
 
 namespace detail {
@@ -67,7 +69,7 @@ namespace detail {
 
     class partial_transform_fn {
     private:
-        friend ranges::views::view_access;
+        friend rgv::view_access;
 
         template <typename From, typename To, typename Fun>
         static auto bind(partial_transform_fn transformer, From f, To t, Fun fun)
@@ -87,7 +89,7 @@ namespace detail {
             detail::partial_transform_impl<Fun, from_t<FromTypes...>, to_t<ToTypes...>>
               trans_fun{std::move(fun)};
 
-            return ranges::views::transform(std::move(rng), std::move(trans_fun));
+            return rgv::transform(std::move(rng), std::move(trans_fun));
         }
     };
 
@@ -102,7 +104,7 @@ namespace detail {
 //
 // This transformer is used internally by stream::transform and should not
 // be used directly by the end user of the library.
-inline ranges::views::view<detail::partial_transform_fn> partial_transform{};
+inline rgv::view<detail::partial_transform_fn> partial_transform{};
 
 // transform //
 
@@ -117,7 +119,7 @@ namespace detail {
         static_assert(std::tuple_size_v<SourceTuple> == std::tuple_size_v<DestTuple>);
         return utility::tuple_transform_with_index(std::move(rngs), [](auto rng, auto index) {
             using DestType = std::tuple_element_t<index, DestTuple>;
-            return ranges::to<DestType>(ranges::views::move(rng));
+            return ranges::to<DestType>(rgv::move(rng));
         });
     }
 
@@ -141,8 +143,8 @@ namespace detail {
                 fun_wrapper{std::ref(fun)};
             // transform
             auto trans_view_of_tuples =
-              ranges::views::transform(
-                std::apply(ranges::views::zip, std::move(tuple_of_ranges)),
+              rgv::transform(
+                std::apply(rgv::zip, std::move(tuple_of_ranges)),
                 std::move(fun_wrapper));
             // unzip the result and convert the ranges to the desired types
             if constexpr (sizeof...(ToTypes) > 1) {

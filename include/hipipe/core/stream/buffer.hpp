@@ -24,6 +24,7 @@
 
 namespace hipipe::stream {
 
+namespace rgv = ranges::views;
 
 template<typename Rng>
 struct buffer_view : ranges::view_facade<buffer_view<Rng>> {
@@ -139,7 +140,7 @@ public:
 class buffer_fn {
 private:
     /// \cond
-    friend ranges::views::view_access;
+    friend rgv::view_access;
     /// \endcond
 
     static auto bind(buffer_fn buffer, std::size_t n = std::numeric_limits<std::size_t>::max())
@@ -149,10 +150,10 @@ private:
 
 public:
     CPP_template(typename Rng)(requires ranges::forward_range<Rng>)
-    buffer_view<ranges::views::all_t<Rng>>
+    buffer_view<rgv::all_t<Rng>>
     operator()(Rng&& rng, std::size_t n = std::numeric_limits<std::size_t>::max()) const
     {
-        return {ranges::views::all(std::forward<Rng>(rng)), n};
+        return {rgv::all(std::forward<Rng>(rng)), n};
     }
 
     /// \cond
@@ -182,10 +183,10 @@ public:
 /// \code
 ///     std::vector<int> data = {1, 2, 3, 4, 5};
 ///     auto buffered_rng = data
-///       | ranges::views::transform([](int v) { return v + 1; })
+///       | rgv::transform([](int v) { return v + 1; })
 ///       | buffer(2);
 /// \endcode
-inline ranges::views::view<buffer_fn> buffer{};
+inline rgv::view<buffer_fn> buffer{};
 
 }  // end namespace hipipe::stream
 #endif

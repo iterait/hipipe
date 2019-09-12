@@ -23,12 +23,11 @@ namespace hipipe {
 
 std::ostream& operator<<(std::ostream& out, const dataframe& df)
 {
-    namespace views = ranges::views;
     // calculate the width of the columns using their longest field
     std::vector<std::size_t> col_widths = df.raw_cols()
-      | views::transform([](auto&& col) {
+      | rgv::transform([](auto&& col) {
             auto elem_sizes = col
-              | views::transform([](auto& field) { return ranges::size(field); });
+              | rgv::transform([](auto& field) { return ranges::size(field); });
             return ranges::max(elem_sizes) + 2;
         })
       | ranges::to_vector;
@@ -36,8 +35,8 @@ std::ostream& operator<<(std::ostream& out, const dataframe& df)
     auto header = df.header();
     if (header.size()) {
         // update col_widths using header widths
-        col_widths = views::zip(col_widths, header)
-          | views::transform([](auto&& tpl) {
+        col_widths = rgv::zip(col_widths, header)
+          | rgv::transform([](auto&& tpl) {
                 return std::max(std::get<0>(tpl), std::get<1>(tpl).size() + 2);
             })
           | ranges::to_vector;

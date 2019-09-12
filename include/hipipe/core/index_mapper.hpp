@@ -20,6 +20,8 @@
 
 namespace hipipe {
 
+namespace rgv = ranges::views;
+
 /// \ingroup IndexMapper
 /// \brief Provides a bidirectional access from values to their indices in an std::vector.
 template<typename T>
@@ -39,7 +41,7 @@ public:
     /// Behaves as if the values were inserted to the mapper using insert().
     index_mapper(std::initializer_list<T> values)
     {
-        insert(ranges::views::all(values));
+        insert(rgv::all(values));
     }
 
     // index_for //
@@ -66,7 +68,7 @@ public:
     /// \throws std::out_of_range If any of the values does not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals) const
     {
-        return ranges::to_vector(ranges::views::transform(
+        return ranges::to_vector(rgv::transform(
           vals, [this](const T& val) {
               return this->index_for(val);
           }));
@@ -75,7 +77,7 @@ public:
     /// Returns the indexes of the given values or a default value if they do not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals, std::size_t defval) const
     {
-        return ranges::to_vector(ranges::views::transform(
+        return ranges::to_vector(rgv::transform(
           vals, [this, defval](const T& val) {
               return this->index_for(val, defval);
           }));
@@ -99,7 +101,7 @@ public:
     /// \throws std::out_of_range If any of the indexes does not exist in the mapper.
     std::vector<T> at(const std::vector<std::size_t>& idxs) const
     {
-        return ranges::to_vector(ranges::views::transform(
+        return ranges::to_vector(rgv::transform(
           idxs, [this](std::size_t idx) {
               return this->at(idx);
           }));

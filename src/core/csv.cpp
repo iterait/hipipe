@@ -29,6 +29,7 @@
 
 namespace hipipe {
 
+namespace rgv = ranges::views;
 
 // Read and discard blank characters (similar to std::ws, but uses std::isblank).
 //
@@ -127,8 +128,8 @@ dataframe read_csv(
     // load csv line by line
     auto csv_rows =
       csv_istream_range(in, separator, quote, escape)
-      | ranges::views::drop(drop)
-      | ranges::views::move;
+      | rgv::drop(drop)
+      | rgv::move;
     auto csv_row_it = ranges::begin(csv_rows);
     // load header if requested
     std::size_t n_cols = -1;

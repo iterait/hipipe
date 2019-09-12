@@ -16,12 +16,14 @@
 
 namespace hipipe::stream {
 
+namespace rgv = ranges::views;
+
 namespace detail {
 
     template<typename... Columns>
     class keep_fn {
     private:
-        friend ranges::views::view_access;
+        friend rgv::view_access;
 
         static auto bind(keep_fn<Columns...> fun)
         {
@@ -32,7 +34,7 @@ namespace detail {
         CPP_template(typename Rng)(requires ranges::input_range<Rng>)
         forward_stream_t operator()(Rng&& rng) const
         {
-            return ranges::views::transform(std::forward<Rng>(rng),
+            return rgv::transform(std::forward<Rng>(rng),
               [](batch_t batch) -> batch_t {
                   batch_t result;
                   (result.raw_insert_or_assign<Columns>(std::move(batch.at<Columns>())), ...);
@@ -64,6 +66,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | keep<value>;  // now it has only the value column
 /// \endcode
 template <typename... Columns>
-ranges::views::view<detail::keep_fn<Columns...>> keep{};
+rgv::view<detail::keep_fn<Columns...>> keep{};
 
 }  // end namespace hipipe::stream

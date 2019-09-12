@@ -21,6 +21,8 @@
 
 namespace hipipe::stream {
 
+namespace rgv = ranges::views;
+
 namespace detail {
 
     template<typename... Columns>
@@ -57,7 +59,7 @@ namespace detail {
     template<typename... Columns>
     class create_fn {
     private:
-        friend ranges::views::view_access;
+        friend rgv::view_access;
 
         static auto bind(create_fn<Columns...> fun, std::size_t batch_size = 1)
         {
@@ -67,8 +69,8 @@ namespace detail {
         CPP_template(class Rng)(requires ranges::forward_range<Rng>)
         forward_stream_t operator()(Rng&& rng, std::size_t batch_size = 1) const
         {
-            return ranges::views::transform(
-              ranges::views::chunk(std::forward<Rng>(rng), batch_size),
+            return rgv::transform(
+              rgv::chunk(std::forward<Rng>(rng), batch_size),
               create_impl<Columns...>{});
         }
 
@@ -108,6 +110,6 @@ namespace detail {
 ///
 /// \param batch_size The requested batch size of the new stream.
 template<typename... Columns>
-ranges::views::view<detail::create_fn<Columns...>> create{};
+rgv::view<detail::create_fn<Columns...>> create{};
 
 } // end namespace hipipe::stream

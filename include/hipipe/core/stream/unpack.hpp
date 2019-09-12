@@ -20,6 +20,8 @@
 
 namespace hipipe::stream {
 
+namespace rgv = ranges::views;
+
 namespace detail {
 
 
@@ -29,7 +31,7 @@ namespace detail {
         template<typename Rng>
         static auto unpack_columns(Rng&& rng)
         {
-            return ranges::views::transform(std::forward<Rng>(rng), [](batch_t source)
+            return rgv::transform(std::forward<Rng>(rng), [](batch_t source)
                 -> std::tuple<typename FromColumns::data_type...> {
                     return {std::move(source.extract<FromColumns>())...};
             });
@@ -50,7 +52,7 @@ namespace detail {
             // flatten the values in each column upto the given dimension
             return utility::tuple_transform(std::move(tuple_of_batches), [](auto&& batch_range) {
                 // make sure to convert the flat view to std::vector to avoid dangling ref
-                return ranges::views::move(utility::flat_view<Dim+1>(batch_range));
+                return rgv::move(utility::flat_view<Dim+1>(batch_range));
             });
         }
     };
