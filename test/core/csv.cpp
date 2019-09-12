@@ -33,9 +33,9 @@ namespace fs = std::experimental::filesystem;
 template<typename Container2d>
 Container2d transpose(const Container2d& data)
 {
-    auto width = ranges::size(data);
-    auto height = ranges::size(ranges::at(data, 0));
-    Container2d res(height, ranges::range_value_t<Container2d>(width));
+    auto width = rg::size(data);
+    auto height = rg::size(rg::at(data, 0));
+    Container2d res(height, rg::range_value_t<Container2d>(width));
     for (std::size_t i = 0; i < height; ++i) {
         for (std::size_t j = 0; j < width; ++j) {
             res[i][j] = data[j][i];
@@ -144,9 +144,9 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream)
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     test_ranges_equal(df.header(), simple_csv_rows[0]);
-    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | rgv::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | rgv::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | rgv::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | rgv::slice(1, rg::end));
+    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | rgv::slice(1, rg::end));
+    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | rgv::slice(1, rg::end));
 }
 
 BOOST_AUTO_TEST_CASE(test_read_csv_from_no_file)
@@ -161,9 +161,9 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     BOOST_TEST(df.header().empty());
-    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | rgv::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | rgv::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | rgv::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | rgv::slice(1, rg::end));
+    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | rgv::slice(1, rg::end));
+    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | rgv::slice(1, rg::end));
 }
 
 BOOST_AUTO_TEST_CASE(test_read_quoted_csv_from_istream)
@@ -201,8 +201,8 @@ BOOST_AUTO_TEST_CASE(test_compare_after_write_and_read)
     const dataframe df2 = read_csv(oss, 0, true, '|', '*', '+');
     test_ranges_equal(df1.header(), df2.header());
     // TODO The following causes a warning in clang++ 8
-    auto df1_cols = ranges::to<std::vector<std::vector<std::string>>>(df1.raw_cols());
-    auto df2_cols = ranges::to<std::vector<std::vector<std::string>>>(df2.raw_cols());
+    auto df1_cols = rg::to<std::vector<std::vector<std::string>>>(df1.raw_cols());
+    auto df2_cols = rg::to<std::vector<std::vector<std::string>>>(df2.raw_cols());
     BOOST_CHECK(df1_cols == df2_cols);
 }
 
@@ -227,8 +227,8 @@ BOOST_AUTO_TEST_CASE(test_file_write_and_read)
     fs::remove(csv_file);
     test_ranges_equal(df1.header(), df2.header());
     // TODO The following causes a warning in clang++ 8
-    auto df1_cols = ranges::to<std::vector<std::vector<std::string>>>(df1.raw_cols());
-    auto df2_cols = ranges::to<std::vector<std::vector<std::string>>>(df2.raw_cols());
+    auto df1_cols = rg::to<std::vector<std::vector<std::string>>>(df1.raw_cols());
+    auto df2_cols = rg::to<std::vector<std::vector<std::string>>>(df2.raw_cols());
     BOOST_CHECK(df1_cols == df2_cols);
 }
 

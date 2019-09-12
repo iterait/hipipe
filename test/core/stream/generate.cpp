@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_simple)
       | generate(from<IntVec2d>, to<Generated3d>, [i = 0]() mutable {
             return std::vector<int>{i++};
         }, 1)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     for (std::size_t i = 0; i < stream.size(); ++i) {
         Generated::data_type generated     = stream.at(i).extract<Generated>();

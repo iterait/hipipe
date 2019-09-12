@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_of_two)
       | hipipe::stream::for_each(from<Int, Double>,
           [&sum](const int& v, double c) { sum += v; }
         )
-      | ranges::to_vector;
+      | rg::to_vector;
 
     BOOST_TEST(sum == 5);
     BOOST_TEST(stream.size() == 2);
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_mutable)
     data
       | rgv::move
       | hipipe::stream::for_each(from<Int>, func)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     BOOST_TEST(*(func.i_ptr) == 4);
 }
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_move_only)
           [&generated](const int& v, const std::unique_ptr<int>& p) {
               generated.push_back(v + *p);
         })
-      | ranges::to_vector;
+      | rg::to_vector;
 
     BOOST_TEST(generated == (std::vector<int>{8, 3}));
 }
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_dim0)
                        const std::vector<std::unique_ptr<int>>& ptr_batch) {
               generated.push_back(*(ptr_batch[0]) + int_batch[0]);
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     BOOST_TEST(generated == (std::vector<int>{8, 3}));
 }
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only)
           [&generated](std::unique_ptr<int>& ptr) {
               generated.push_back(*ptr + 1);
           }, dim<2>)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     BOOST_TEST(generated == (std::vector<int>{7, 4, 8, 5, 3, 2, 3, 9}));
 }
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(test_for_each_dim2_move_only_mutable)
           [&generated, i = 4](std::unique_ptr<int>&) mutable {
               generated.push_back(i++);
           }, dim<2>)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     BOOST_TEST(generated == (std::vector<int>{4, 5, 6, 7, 8, 9, 10, 11}));
 }

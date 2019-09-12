@@ -36,6 +36,7 @@
 
 namespace hipipe::utility {
 
+namespace rg = ranges;
 namespace rga = ranges::actions;
 namespace rgv = ranges::views;
 
@@ -47,7 +48,7 @@ namespace rgv = ranges::views;
 ///     std::size_t rng_ndims = ndims<std::vector<std::list<int>>>{};
 ///     // rng_ndims == 2;
 /// \endcode
-template<typename Rng, typename PrevRng = void, bool IsRange = ranges::range<Rng>>
+template<typename Rng, typename PrevRng = void, bool IsRange = rg::range<Rng>>
 struct ndims {
 };
 
@@ -57,7 +58,7 @@ struct ndims<Rng, PrevRng, false> : std::integral_constant<long, 0L> {
 
 template<typename Rng, typename PrevRng>
 struct ndims<Rng, PrevRng, true>
-  : std::integral_constant<long, ndims<ranges::range_value_t<Rng>, Rng>{} + 1> {
+  : std::integral_constant<long, ndims<rg::range_value_t<Rng>, Rng>{} + 1> {
 };
 
 // For recursive ranges, such as std::filesystem::path, do not recurse further and
@@ -124,7 +125,7 @@ using ndim_container_t = typename ndim_container<T, Dims, Container>::type;
 template<typename Rng, long Dim = -1L>
 struct ndim_type
 //// \cond
-  : ndim_type<typename ranges::range_value_t<Rng>, Dim - 1L> {
+  : ndim_type<typename rg::range_value_t<Rng>, Dim - 1L> {
   static_assert(Dim > 0, "Dimension has to be positive, zero or -1.");
 //// \endcond
 };
@@ -151,9 +152,9 @@ namespace detail {
     struct ndim_size_impl {
         static void impl(const Rng& rng, std::vector<std::vector<long>>& size_out)
         {
-            size_out[Dim-1].push_back(ranges::size(rng));
+            size_out[Dim-1].push_back(rg::size(rng));
             for (auto& subrng : rng) {
-                ndim_size_impl<ranges::range_value_t<Rng>, Dim+1, NDims>
+                ndim_size_impl<rg::range_value_t<Rng>, Dim+1, NDims>
                   ::impl(subrng, size_out);
             }
         }
@@ -163,7 +164,7 @@ namespace detail {
     struct ndim_size_impl<Rng, Dim, Dim> {
         static void impl(const Rng& rng, std::vector<std::vector<long>>& size_out)
         {
-            size_out[Dim-1].push_back(ranges::size(rng));
+            size_out[Dim-1].push_back(rg::size(rng));
         }
     };
 
@@ -268,7 +269,7 @@ Rng& ndim_resize(Rng& vec,
     assert(vec_size.size() == NDims);
     static_assert(NDims <= ndims<Rng>{} - ndims<ValT>{});
     for (std::size_t i = 1; i < vec_size.size(); ++i) {
-        assert(vec_size[i].size() == ranges::accumulate(vec_size[i-1], 0UL));
+        assert(vec_size[i].size() == rg::accumulate(vec_size[i-1], 0UL));
     }
     // build initial indices
     std::vector<long> vec_size_idx(vec_size.size());
@@ -313,8 +314,8 @@ Rng& ndim_pad(Rng& vec, ValT val = ValT{})
     std::vector<std::vector<long>> vec_size = ndim_size<NDims>(vec);
     // replace the sizes in each dimension with the max size in the same dimension
     for (std::size_t i = 1; i < vec_size.size(); ++i) {
-        long max_size = ranges::max(vec_size[i]);
-        ranges::fill(vec_size[i], max_size);
+        long max_size = rg::max(vec_size[i]);
+        rg::fill(vec_size[i], max_size);
     }
     return utility::ndim_resize<NDims>(vec, vec_size, std::move(val));
 }
@@ -334,10 +335,10 @@ namespace detail {
     struct shape_impl {
         static void impl(const Rng& rng, std::vector<long>& shape)
         {
-            shape[Dim-1] = ranges::size(rng);
-            if (ranges::size(rng)) {
-                shape_impl<typename ranges::range_value_t<Rng>, Dim+1, NDims>
-                  ::impl(*ranges::begin(rng), shape);
+            shape[Dim-1] = rg::size(rng);
+            if (rg::size(rng)) {
+                shape_impl<typename rg::range_value_t<Rng>, Dim+1, NDims>
+                  ::impl(*rg::begin(rng), shape);
             }
         }
     };
@@ -346,7 +347,7 @@ namespace detail {
     struct shape_impl<Rng, Dim, Dim> {
         static void impl(const Rng& rng, std::vector<long>& shape)
         {
-            shape[Dim-1] = ranges::size(rng);
+            shape[Dim-1] = rg::size(rng);
         }
     };
 
@@ -355,13 +356,13 @@ namespace detail {
     struct check_rectangular_shape {
         static bool all_same(std::vector<long>& vec)
         {
-            return ranges::adjacent_find(vec, std::not_equal_to<long>{}) == ranges::end(vec);
+            return rg::adjacent_find(vec, std::not_equal_to<long>{}) == rg::end(vec);
         }
 
         static bool impl(const Rng& rng)
         {
             std::vector<std::vector<long>> size = utility::ndim_size<NDims>(rng);
-            return ranges::all_of(size, all_same);
+            return rg::all_of(size, all_same);
         }
     };
 
@@ -499,21 +500,21 @@ namespace detail {
         auto flat = flat_view(vec);
 
         // if -1 present in the shape list, deduce the dimension
-        auto deduced_pos = ranges::find(shape, -1);
+        auto deduced_pos = rg::find(shape, -1);
         if (deduced_pos != shape.end()) {
-            auto flat_size = ranges::distance(flat);
-            auto shape_prod = -ranges::accumulate(shape, 1, std::multiplies<>{});
+            auto flat_size = rg::distance(flat);
+            auto shape_prod = -rg::accumulate(shape, 1, std::multiplies<>{});
             assert(flat_size % shape_prod == 0);
             *deduced_pos = flat_size / shape_prod;
         }
 
         // check that all the requested dimenstions have positive size
-        assert(ranges::all_of(shape, [](long s) { return s > 0; }));
+        assert(rg::all_of(shape, [](long s) { return s > 0; }));
         // check that the user requests the same number of elements as there really is
-        assert(ranges::distance(flat) == ranges::accumulate(shape, 1, std::multiplies<>{}));
+        assert(rg::distance(flat) == rg::accumulate(shape, 1, std::multiplies<>{}));
         // calculate the cummulative product of the shape list in reverse order
         shape |= rga::reverse;
-        ranges::partial_sum(shape, shape, std::multiplies<>{});
+        rg::partial_sum(shape, shape, std::multiplies<>{});
         // the recursive chunks will share a single copy of the shape list (performance)
         auto shape_ptr = std::make_shared<std::vector<long>>(std::move(shape));
         return detail::reshaped_view_impl_go<N>::impl(shape_ptr)(std::move(flat));
@@ -527,7 +528,7 @@ namespace detail {
 /// Usage:
 /// \code
 ///     std::list<int> lst{1, 2, 3, 4, 5, 6};
-///     std::vector<std::vector<int>> rlst = ranges::to_vector(reshaped_view<2>(lst, {2, 3}));
+///     std::vector<std::vector<int>> rlst = rg::to_vector(reshaped_view<2>(lst, {2, 3}));
 ///     // rlst == {{1, 2, 3}, {4, 5, 6}};
 /// \endcode
 ///
@@ -575,7 +576,7 @@ namespace detail {
         template<typename Rng, typename Gen>
         static void impl(Rng& rng, Gen& gen, long gendims)
         {
-            if (Dim > gendims) ranges::fill(rng, std::invoke(gen));
+            if (Dim > gendims) rg::fill(rng, std::invoke(gen));
             else for (auto& val : rng) val = std::invoke(gen);
         }
     };
@@ -708,7 +709,7 @@ namespace detail {
         template<typename Rng, typename... Rngs>
         bool operator()(Rng&& rng, Rngs&&... rngs) const
         {
-            return (... && (ranges::size(rng) == ranges::size(rngs)));
+            return (... && (rg::size(rng) == rg::size(rngs)));
         }
 
         bool operator()() const

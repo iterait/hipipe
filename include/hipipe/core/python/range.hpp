@@ -25,6 +25,8 @@
 
 namespace hipipe::python {
 
+namespace rg = ranges;
+
 /// \ingroup Python
 /// \brief Exception which is translated to Python's StopIteration when thrown.
 struct stop_iteration_exception : public std::runtime_error {
@@ -63,23 +65,23 @@ private:
     std::shared_ptr<Rng> rng_ptr_;
 
     // register __len__ function if it is supported
-    CPP_template(int dummy = 0)(requires ranges::sized_range<const Rng>)
+    CPP_template(int dummy = 0)(requires rg::sized_range<const Rng>)
     static void register_len(boost::python::class_<range<Rng>>& cls)
     {
         cls.def("__len__", &range<Rng>::len<>);
     }
-    CPP_template(int dummy = 0)(requires !ranges::sized_range<const Rng>)
+    CPP_template(int dummy = 0)(requires !rg::sized_range<const Rng>)
     static void register_len(boost::python::class_<range<Rng>>&)
     {
     }
 
     // register __getitem__ function if it is supported
-    CPP_template(int dummy = 0)(requires ranges::random_access_range<const Rng>)
+    CPP_template(int dummy = 0)(requires rg::random_access_range<const Rng>)
     static void register_getitem(boost::python::class_<range<Rng>>& cls)
     {
         cls.def("__getitem__", &range<Rng>::getitem<>);
     }
-    CPP_template(int dummy = 0)(requires !ranges::random_access_range<const Rng>)
+    CPP_template(int dummy = 0)(requires !rg::random_access_range<const Rng>)
     static void register_getitem(boost::python::class_<range<Rng>>&)
     {
     }
@@ -107,7 +109,7 @@ public:
     class iterator {
     private:
         std::shared_ptr<Rng> rng_ptr_;
-        ranges::iterator_t<Rng> position_;
+        rg::iterator_t<Rng> position_;
         bool first_iteration_;
 
     public:
@@ -116,7 +118,7 @@ public:
         // Construct iterator from a range.
         explicit iterator(range& rng)
           : rng_ptr_{rng.rng_ptr_},
-            position_{ranges::begin(*rng_ptr_)},
+            position_{rg::begin(*rng_ptr_)},
             first_iteration_{true}
         {
         }
@@ -133,9 +135,9 @@ public:
         auto next()
         {
             // do not increment the iterator in the first iteration, just return *begin()
-            if (!first_iteration_ && position_ != ranges::end(*rng_ptr_)) ++position_;
+            if (!first_iteration_ && position_ != rg::end(*rng_ptr_)) ++position_;
             first_iteration_ = false;
-            if (position_ == ranges::end(*rng_ptr_)) throw stop_iteration_exception();
+            if (position_ == rg::end(*rng_ptr_)) throw stop_iteration_exception();
             return *position_;
         }
     };
@@ -166,7 +168,7 @@ public:
     // Get an item or a slice.
     //
     // Note that when slicing, the data get copied.
-    CPP_template(int dummy = 0)(requires ranges::sized_range<const Rng>)
+    CPP_template(int dummy = 0)(requires rg::sized_range<const Rng>)
     boost::python::object getitem(PyObject* idx_py) const
     {
         // handle slices
@@ -193,7 +195,7 @@ public:
             long stop = handle_index(slice->stop, len());
             if (start > stop) start = stop;
 
-            using slice_data_type = std::vector<ranges::range_value_t<Rng>>;
+            using slice_data_type = std::vector<rg::range_value_t<Rng>>;
             slice_data_type slice_data{rng_ptr_->begin() + start, rng_ptr_->begin() + stop};
             return boost::python::object{range<slice_data_type>{std::move(slice_data)}};
         }
@@ -201,14 +203,14 @@ public:
         // handle indices
         long idx = boost::python::extract<long>(idx_py);
         if (idx < 0) idx += len();
-        return boost::python::object{ranges::at(*rng_ptr_, idx)};
+        return boost::python::object{rg::at(*rng_ptr_, idx)};
     }
 
     // Get the size of the range.
-    CPP_template(int dummy = 0)(requires ranges::sized_range<const Rng>)
+    CPP_template(int dummy = 0)(requires rg::sized_range<const Rng>)
     long len() const
     {
-        return ranges::size(*rng_ptr_);
+        return rg::size(*rng_ptr_);
     }
 
 };  // class range

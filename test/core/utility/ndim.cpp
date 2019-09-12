@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(test_flatten)
 
 BOOST_AUTO_TEST_CASE(test_flatten_identity)
 {
-    const std::vector<int> vec = ranges::to_vector(rgv::iota(1, 16));
+    const std::vector<int> vec = rg::to_vector(rgv::iota(1, 16));
     test_ranges_equal(flat_view(vec), rgv::iota(1, 16));
 }
 
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(test_flatten_cutoff_dim1)
       {{6}, {7, 8}}
     };
     auto retrieved =
-      ranges::to<std::vector<std::vector<std::vector<int>>>>(flat_view<1>(vec));
+      rg::to<std::vector<std::vector<std::vector<int>>>>(flat_view<1>(vec));
     test_ranges_equal(retrieved, vec);
 }
 
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE(test_flatten_cutoff_dim2)
     const std::vector<std::list<int>> desired = {
       {{1, 2}, {3, 4}, {5}, {6}, {7, 8}}
     };
-    auto retrieved = ranges::to<std::vector<std::list<int>>>(flat_view<2>(vec));
+    auto retrieved = rg::to<std::vector<std::list<int>>>(flat_view<2>(vec));
     BOOST_CHECK(retrieved == desired);
 }
 
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(test_reshape_1d)
       {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}},
       {{10, 11, 12}, {13, 14, 15}}
     };
-    std::vector<int> rvec = ranges::to_vector(reshaped_view<1>(vec, {15}));
+    std::vector<int> rvec = rg::to_vector(reshaped_view<1>(vec, {15}));
     BOOST_TEST(rvec.size() == 15);
     test_ranges_equal(rvec, rgv::iota(1, 16));
 }
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(test_reshape_2d)
       {{10, 11, 12}, {13, 14, 15}}
     };
     auto rvec =
-      ranges::to<std::vector<std::vector<int>>>(reshaped_view<2>(vec, {3, 5}));
+      rg::to<std::vector<std::vector<int>>>(reshaped_view<2>(vec, {3, 5}));
     BOOST_TEST(rvec.size() == 3);
     for (std::size_t i = 0; i < 3; ++i) {
         BOOST_TEST(rvec[i].size() == 5);
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(test_reshape_3d)
       {{10, 11, 12}, {13, 14, 15}}
     };
     auto rvec =
-      ranges::to<std::vector<std::vector<std::vector<int>>>>(reshaped_view<3>(vec, {3, 1, 5}));
+      rg::to<std::vector<std::vector<std::vector<int>>>>(reshaped_view<3>(vec, {3, 1, 5}));
     BOOST_TEST(rvec.size() == 3);
     for (std::size_t i = 0; i < 3; ++i) {
         BOOST_TEST(rvec[i].size() == 1);
@@ -318,9 +318,9 @@ BOOST_AUTO_TEST_CASE(test_reshape_auto_dimension)
       {{10, 11, 12}, {13, 14, 15}}
     };
     auto rvec1 =
-      ranges::to<std::vector<std::vector<int>>>(reshaped_view<2>(vec, {3, -1}));
+      rg::to<std::vector<std::vector<int>>>(reshaped_view<2>(vec, {3, -1}));
     auto rvec2 =
-      ranges::to<std::vector<std::vector<int>>>(reshaped_view<2>(vec, {-1, 5}));
+      rg::to<std::vector<std::vector<int>>>(reshaped_view<2>(vec, {-1, 5}));
     BOOST_TEST(rvec1.size() == 3);
     BOOST_TEST(rvec2.size() == 3);
     for (std::size_t i = 0; i < 3; ++i) {
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE(test_reshape_move_only)
     vec.push_back(std::move(inner));
 
     auto rvec = reshaped_view<2>(vec, {1, 4});
-    test_ranges_equal(*ranges::begin(rvec) | rgv::indirect, rgv::iota(1, 5));
+    test_ranges_equal(*rg::begin(rvec) | rgv::indirect, rgv::iota(1, 5));
 }
 
 BOOST_AUTO_TEST_CASE(test_generate)
@@ -389,13 +389,13 @@ BOOST_AUTO_TEST_CASE(test_random_fill_1d)
     random_fill(vec, dist, gen, 0);
     BOOST_TEST(vec.size() == 10);
     vec |= rga::sort;
-    auto n_unique = ranges::distance(vec | rgv::unique);
+    auto n_unique = rg::distance(vec | rgv::unique);
     BOOST_TEST(n_unique == 1);
 
     random_fill(vec, dist, gen, 5);  // any number larger than 0 should suffice
     BOOST_TEST(vec.size() == 10);
     vec |= rga::sort;
-    n_unique = ranges::distance(vec | rgv::unique);
+    n_unique = rg::distance(vec | rgv::unique);
     BOOST_TEST(n_unique == 10);
 }
 
@@ -409,13 +409,13 @@ BOOST_AUTO_TEST_CASE(test_random_fill_2d)
     auto check = [](auto vec, std::vector<long> unique, long unique_total) {
         for (std::size_t i = 0; i < vec.size(); ++i) {
             vec[i] |= rga::sort;
-            auto n_unique = ranges::distance(vec[i] | rgv::unique);
+            auto n_unique = rg::distance(vec[i] | rgv::unique);
             BOOST_TEST(n_unique == unique[i]);
         }
 
-        std::vector<double> all_vals = ranges::to_vector(flat_view(vec));
+        std::vector<double> all_vals = rg::to_vector(flat_view(vec));
         all_vals |= rga::sort;
-        auto n_unique = ranges::distance(all_vals | rgv::unique);
+        auto n_unique = rg::distance(all_vals | rgv::unique);
         BOOST_TEST(n_unique == unique_total);
     };
 
@@ -438,14 +438,14 @@ BOOST_AUTO_TEST_CASE(test_random_fill_3d)
         for (std::size_t i = 0; i < vec.size(); ++i) {
             for (std::size_t j = 0; j < vec[i].size(); ++j) {
                 vec[i][j] |= rga::sort;
-                auto n_unique = ranges::distance(vec[i][j] | rgv::unique);
+                auto n_unique = rg::distance(vec[i][j] | rgv::unique);
                 BOOST_TEST(n_unique == unique[i][j]);
             }
         }
 
-        std::vector<double> all_vals = ranges::to_vector(flat_view(vec));
+        std::vector<double> all_vals = rg::to_vector(flat_view(vec));
         all_vals |= rga::sort;
-        auto n_unique = ranges::distance(all_vals | rgv::unique);
+        auto n_unique = rg::distance(all_vals | rgv::unique);
         BOOST_TEST(n_unique == unique_total);
     };
 

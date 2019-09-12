@@ -22,6 +22,7 @@
 
 namespace hipipe {
 
+namespace rg = ranges;
 
 /// \ingroup CSV
 /// \brief Parse and iterate over CSV formatted rows from an istream.
@@ -37,10 +38,10 @@ namespace hipipe {
 /// \endcode
 ///
 /// \throws std::ios_base::failure if badbit is triggered.
-class csv_istream_range : public ranges::view_facade<csv_istream_range> {
+class csv_istream_range : public rg::view_facade<csv_istream_range> {
 private:
     /// \cond
-    friend ranges::range_access;
+    friend rg::range_access;
     /// \endcond
     using single_pass = std::true_type;
     enum class RowPosition{Normal, Last, End};
@@ -78,7 +79,7 @@ private:
             return std::move(rng_->row_);
         }
 
-        bool equal(ranges::default_sentinel_t) const noexcept
+        bool equal(rg::default_sentinel_t) const noexcept
         {
             return rng_->row_position_ == RowPosition::End;
         }

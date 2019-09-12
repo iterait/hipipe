@@ -28,13 +28,13 @@ void check(std::vector<std::vector<double>> vec, std::vector<long> unique, long 
 {
     for (std::size_t i = 0; i < vec.size(); ++i) {
         vec.at(i) |= rga::sort;
-        long n_unique = ranges::distance(vec.at(i) | rgv::unique);
+        long n_unique = rg::distance(vec.at(i) | rgv::unique);
         BOOST_TEST(n_unique == unique.at(i));
     }
 
-    std::vector<double> all_vals = ranges::to_vector(hipipe::utility::flat_view(vec));
+    std::vector<double> all_vals = rg::to_vector(hipipe::utility::flat_view(vec));
     all_vals |= rga::sort;
-    long n_unique = ranges::distance(all_vals | rgv::unique);
+    long n_unique = rg::distance(all_vals | rgv::unique);
     BOOST_TEST(n_unique == unique_total);
 }
 
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_simple)
     std::vector<batch_t> stream = data
       | rgv::move
       | random_fill(from<IntVec2d>, to<Random>, 1, dist, gen)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     std::vector<std::vector<double>> all_random;
     for (std::size_t i = 0; i < stream.size(); ++i) {

@@ -27,10 +27,10 @@ std::ostream& operator<<(std::ostream& out, const dataframe& df)
     std::vector<std::size_t> col_widths = df.raw_cols()
       | rgv::transform([](auto&& col) {
             auto elem_sizes = col
-              | rgv::transform([](auto& field) { return ranges::size(field); });
-            return ranges::max(elem_sizes) + 2;
+              | rgv::transform([](auto& field) { return rg::size(field); });
+            return rg::max(elem_sizes) + 2;
         })
-      | ranges::to_vector;
+      | rg::to_vector;
 
     auto header = df.header();
     if (header.size()) {
@@ -39,7 +39,7 @@ std::ostream& operator<<(std::ostream& out, const dataframe& df)
           | rgv::transform([](auto&& tpl) {
                 return std::max(std::get<0>(tpl), std::get<1>(tpl).size() + 2);
             })
-          | ranges::to_vector;
+          | rg::to_vector;
 
         // print header
         for (std::size_t j = 0; j < header.size(); ++j) {

@@ -16,6 +16,7 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
 namespace rgv = ranges::views;
 
 namespace detail {
@@ -27,11 +28,11 @@ namespace detail {
 
         static auto bind(keep_fn<Columns...> fun)
         {
-            return ranges::make_pipeable(std::bind(fun, std::placeholders::_1));
+            return rg::make_pipeable(std::bind(fun, std::placeholders::_1));
         }
 
     public:
-        CPP_template(typename Rng)(requires ranges::input_range<Rng>)
+        CPP_template(typename Rng)(requires rg::input_range<Rng>)
         forward_stream_t operator()(Rng&& rng) const
         {
             return rgv::transform(std::forward<Rng>(rng),
@@ -43,10 +44,10 @@ namespace detail {
         }
 
         /// \cond
-        CPP_template(typename Rng)(requires !ranges::input_range<Rng>)
+        CPP_template(typename Rng)(requires !rg::input_range<Rng>)
         void operator()(Rng&&) const
         {
-            CONCEPT_ASSERT_MSG(ranges::input_range<Rng>(),
+            CONCEPT_ASSERT_MSG(rg::input_range<Rng>(),
               "stream::keep only works on ranges satisfying the input_range concept.");
         }
         /// \endcond

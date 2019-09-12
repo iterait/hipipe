@@ -30,6 +30,7 @@
 
 namespace hipipe {
 
+namespace rg = ranges;
 namespace rgv = ranges::views;
 
 /// \ingroup Dataframe
@@ -154,7 +155,7 @@ private:
       static auto raw_icols_impl(This this_ptr, std::vector<std::size_t> col_indexes)
       {
         return std::move(col_indexes)
-          | ranges::experimental::views::shared
+          | rg::experimental::views::shared
           | rgv::transform([this_ptr](std::size_t idx) {
                 return this_ptr->raw_cols()[idx];
             });
@@ -235,13 +236,13 @@ public:
     /// \throws std::invalid_argument 1) If the dataframe has a header but no column
     ///                               name was provided. 2) If the column size is not equal
     ///                               to n_rows.
-    template<typename Rng, typename ValueT = ranges::range_value_t<Rng>>
+    template<typename Rng, typename ValueT = rg::range_value_t<Rng>>
     std::size_t insert_col(Rng&& rng, std::string col_name = {},
                            std::function<std::string(const ValueT&)> cvt =
                              static_cast<std::string (*)(const ValueT&)>(utility::to_string))
     {
         throw_check_insert_col_name(col_name);
-        throw_check_insert_col_size(ranges::size(rng));
+        throw_check_insert_col_size(rg::size(rng));
         if (col_name.size()) header_.insert(col_name);
         data_.emplace_back(rgv::transform(rng, cvt));
         return n_cols() - 1;
@@ -430,7 +431,7 @@ public:
                std::tuple<std::function<Ts(const std::string&)>...> cvts =
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
-        assert(sizeof...(Ts) == ranges::size(col_indexes));
+        assert(sizeof...(Ts) == rg::size(col_indexes));
         return utility::tuple_transform_with_index(std::move(cvts),
           [raw_cols = raw_icols(std::move(col_indexes))](auto&& cvt, auto i) {
               return rgv::transform(raw_cols[i], std::move(cvt));

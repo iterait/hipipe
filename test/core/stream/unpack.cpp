@@ -101,6 +101,6 @@ BOOST_AUTO_TEST_CASE(test_unpack_dim2_move_only)
     std::vector<batch_t> data = generate_move_only_data_2d();
     std::vector<std::unique_ptr<int>> unp_uniquevec;
     unp_uniquevec = hipipe::stream::unpack(rgv::move(data), from<UniqueVec>, dim<2>);
-    std::vector<int> values = ranges::to_vector(rgv::indirect(unp_uniquevec));
+    std::vector<int> values = rg::to_vector(rgv::indirect(unp_uniquevec));
     BOOST_TEST(values == (std::vector<int>{6, 3, 7, 4, 2, 1, 2, 8}));
 }

@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_dim2_move_only)
           [](std::unique_ptr<int>& ptr) -> int {
               return *ptr;
           }, dim<2>)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     BOOST_CHECK(stream.size() == 2);
     BOOST_CHECK(stream.at(0).extract<IntVec>().size()       == 3);
@@ -71,11 +71,11 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_dim2_move_only)
     BOOST_CHECK(stream.at(1).extract<IntVec>().at(0).size() == 2);
 
     long number18 =
-      ranges::count(hipipe::utility::flat_view(stream.at(0).extract<IntVec>()), 18) +
-      ranges::count(hipipe::utility::flat_view(stream.at(1).extract<IntVec>()), 18);
+      rg::count(hipipe::utility::flat_view(stream.at(0).extract<IntVec>()), 18) +
+      rg::count(hipipe::utility::flat_view(stream.at(1).extract<IntVec>()), 18);
     long number19 =
-      ranges::count(hipipe::utility::flat_view(stream.at(0).extract<IntVec>()), 19) +
-      ranges::count(hipipe::utility::flat_view(stream.at(1).extract<IntVec>()), 19);
+      rg::count(hipipe::utility::flat_view(stream.at(0).extract<IntVec>()), 19) +
+      rg::count(hipipe::utility::flat_view(stream.at(1).extract<IntVec>()), 19);
 
     BOOST_TEST(number19 >= 4);
     BOOST_TEST(number19 == 8 - number18);

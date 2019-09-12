@@ -244,9 +244,9 @@ BOOST_AUTO_TEST_CASE(test_index_col)
     BOOST_CHECK_THROW((df.index_icol<char, bool>(3, 0)), std::out_of_range);
     BOOST_CHECK_THROW((df.index_col<int, double>("Id", "X")), std::out_of_range);
     auto indexed_irow = df.index_icol<int, double>(0, 2)
-      | ranges::to<std::unordered_map<int, double>>;
+      | rg::to<std::unordered_map<int, double>>;
     auto indexed_row = df.index_col<int, double>("Id", "B")
-      | ranges::to<std::unordered_map<int, double>>;
+      | rg::to<std::unordered_map<int, double>>;
     std::unordered_map<int, double> desired{
       {1, 1.1},
       {2, 1.2},
@@ -263,10 +263,10 @@ BOOST_AUTO_TEST_CASE(test_index_cols)
     BOOST_CHECK_THROW((df.index_cols<double, bool, bool>("Id", {"X", "Id"})), std::out_of_range);
     auto indexed_irows =
         df.index_icols<int, std::string, double>(0, {1, 2})
-      | ranges::to<std::map<int, std::tuple<std::string, double>>>;
+      | rg::to<std::map<int, std::tuple<std::string, double>>>;
     auto indexed_rows =
         df.index_cols<int, std::string, double>("Id", {"A", "B"})
-      | ranges::to<std::map<int, std::tuple<std::string, double>>>;
+      | rg::to<std::map<int, std::tuple<std::string, double>>>;
     std::map<int, std::tuple<std::string, double>> desired{
       {1, {"a1", 1.1}},
       {2, {"a2", 1.2}},

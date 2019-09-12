@@ -24,13 +24,14 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
 namespace rgv = ranges::views;
 
 template<typename Rng>
-struct buffer_view : ranges::view_facade<buffer_view<Rng>> {
+struct buffer_view : rg::view_facade<buffer_view<Rng>> {
 private:
     /// \cond
-    friend ranges::range_access;
+    friend rg::range_access;
     /// \endcond
 
     Rng rng_;
@@ -39,8 +40,8 @@ private:
     struct cursor {
     private:
         buffer_view<Rng>* rng_ = nullptr;
-        ranges::iterator_t<Rng> it_ = {};
-        using value_type = ranges::range_value_t<Rng>;
+        rg::iterator_t<Rng> it_ = {};
+        using value_type = rg::range_value_t<Rng>;
         using reference_type = value_type&;
 
         std::size_t n_;
@@ -60,7 +61,7 @@ private:
 
         void fill_buffer()
         {
-            while (it_ != ranges::end(rng_->rng_) && buffer_.size() < n_) {
+            while (it_ != rg::end(rng_->rng_) && buffer_.size() < n_) {
                 auto task = [it = it_]() { return std::make_shared<value_type>(*it); };
                 buffer_.emplace_back(global_thread_pool.enqueue(std::move(task)));
                 ++it_;
@@ -74,7 +75,7 @@ private:
 
         explicit cursor(buffer_view<Rng>& rng)
           : rng_{&rng}
-          , it_{ranges::begin(rng.rng_)}
+          , it_{rg::begin(rng.rng_)}
           , n_{rng.n_}
         {
             fill_buffer();
@@ -85,9 +86,9 @@ private:
             return std::move(*buffer_.front().get());
         }
 
-        bool equal(ranges::default_sentinel_t) const
+        bool equal(rg::default_sentinel_t) const
         {
-            return buffer_.empty() && it_ == ranges::end(rng_->rng_);
+            return buffer_.empty() && it_ == rg::end(rng_->rng_);
         }
 
         bool equal(const cursor& that) const
@@ -124,16 +125,16 @@ public:
     {
     }
 
-    CPP_template(int dummy = 0)(requires ranges::sized_range<const Rng>)
-    constexpr ranges::range_size_type_t<Rng> size() const
+    CPP_template(int dummy = 0)(requires rg::sized_range<const Rng>)
+    constexpr rg::range_size_type_t<Rng> size() const
     {
-        return ranges::size(rng_);
+        return rg::size(rng_);
     }
 
-    CPP_template(int dummy = 0)(requires ranges::sized_range<const Rng>)
-    constexpr ranges::range_size_type_t<Rng> size()
+    CPP_template(int dummy = 0)(requires rg::sized_range<const Rng>)
+    constexpr rg::range_size_type_t<Rng> size()
     {
-        return ranges::size(rng_);
+        return rg::size(rng_);
     }
 };
 
@@ -145,11 +146,11 @@ private:
 
     static auto bind(buffer_fn buffer, std::size_t n = std::numeric_limits<std::size_t>::max())
     {
-        return ranges::make_pipeable(std::bind(buffer, std::placeholders::_1, n));
+        return rg::make_pipeable(std::bind(buffer, std::placeholders::_1, n));
     }
 
 public:
-    CPP_template(typename Rng)(requires ranges::forward_range<Rng>)
+    CPP_template(typename Rng)(requires rg::forward_range<Rng>)
     buffer_view<rgv::all_t<Rng>>
     operator()(Rng&& rng, std::size_t n = std::numeric_limits<std::size_t>::max()) const
     {
@@ -157,10 +158,10 @@ public:
     }
 
     /// \cond
-    CPP_template(typename Rng)(requires !ranges::forward_range<Rng>)
+    CPP_template(typename Rng)(requires !rg::forward_range<Rng>)
     void operator()(Rng&&, std::size_t n = 0) const
     {
-        CONCEPT_ASSERT_MSG(ranges::forward_range<Rng>(),
+        CONCEPT_ASSERT_MSG(rg::forward_range<Rng>(),
           "stream::buffer only works on ranges satisfying the forward_range concept.");
     }
     /// \endcond

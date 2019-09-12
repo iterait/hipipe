@@ -16,6 +16,7 @@
 
 #include <range/v3/core.hpp>
 
+namespace rg = ranges;
 namespace rga = ranges::actions;
 namespace rgv = ranges::views;
 
@@ -24,13 +25,13 @@ void test_ranges_equal(Rng1&& rng1, Rng2&& rng2)
 {
     // using this function, ranges with different
     // begin() and end() types can be compared
-    auto it1 = ranges::begin(rng1);
-    auto it2 = ranges::begin(rng2);
-    while (it1 != ranges::end(rng1) && it2 != ranges::end(rng2)) {
+    auto it1 = rg::begin(rng1);
+    auto it2 = rg::begin(rng2);
+    while (it1 != rg::end(rng1) && it2 != rg::end(rng2)) {
         BOOST_TEST(*it1 == *it2);
         ++it1;
         ++it2;
     }
-    BOOST_CHECK(it1 == ranges::end(rng1));
-    BOOST_CHECK(it2 == ranges::end(rng2));
+    BOOST_CHECK(it1 == rg::end(rng1));
+    BOOST_CHECK(it2 == rg::end(rng2));
 }

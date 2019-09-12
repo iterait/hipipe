@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_dim0)
                     BOOST_FAIL("Only two batches should be provided.");
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 2);
 }
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_dim0_move_only)
                     BOOST_FAIL("Only one batch should be provided.");
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 1);
 }
 
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(test_dim1)
                     BOOST_FAIL("Only two batches should be provided.");
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 2);
 }
 
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(test_dim1_partial)
                     BOOST_FAIL("Only two batches should be provided.");
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 2);
 }
 
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(test_dim1_move_only)
                     BOOST_FAIL("Only four batches should be provided.");
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 4);
 }
 
@@ -275,6 +275,6 @@ BOOST_AUTO_TEST_CASE(test_dim2)
                     BOOST_FAIL("Only two batches should be provided.");
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 2);
 }

@@ -20,13 +20,14 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
 namespace rgv = ranges::views;
 
 template <typename Rng>
-struct rebatch_view : ranges::view_facade<rebatch_view<Rng>> {
+struct rebatch_view : rg::view_facade<rebatch_view<Rng>> {
 private:
     /// \cond
-    friend ranges::range_access;
+    friend rg::range_access;
     /// \endcond
     Rng rng_;
     std::size_t n_;
@@ -34,7 +35,7 @@ private:
     struct cursor {
     private:
         rebatch_view<Rng>* rng_ = nullptr;
-        ranges::iterator_t<Rng> it_ = {};
+        rg::iterator_t<Rng> it_ = {};
 
         // the batch into which we accumulate the data
         // the batch will be a pointer to allow moving from it in const functions
@@ -50,7 +51,7 @@ private:
         bool find_next()
         {
             while (subbatch_->batch_size() == 0) {
-                if (it_ == ranges::end(rng_->rng_) || ++it_ == ranges::end(rng_->rng_)) {
+                if (it_ == rg::end(rng_->rng_) || ++it_ == rg::end(rng_->rng_)) {
                     return false;
                 }
                 subbatch_ = std::make_shared<batch_t>(*it_);
@@ -76,10 +77,10 @@ private:
 
         explicit cursor(rebatch_view<Rng>& rng)
           : rng_{&rng}
-          , it_{ranges::begin(rng_->rng_)}
+          , it_{rg::begin(rng_->rng_)}
         {
             // do nothing if the subrange is empty
-            if (it_ == ranges::end(rng_->rng_)) {
+            if (it_ == rg::end(rng_->rng_)) {
                 done_ = true;
             } else {
                 subbatch_ = std::make_shared<batch_t>(*it_);
@@ -92,7 +93,7 @@ private:
             return std::move(*batch_);
         }
 
-        bool equal(ranges::default_sentinel_t) const
+        bool equal(rg::default_sentinel_t) const
         {
             return done_;
         }
@@ -134,11 +135,11 @@ private:
 
     static auto bind(rebatch_fn rebatch, std::size_t n)
     {
-        return ranges::make_pipeable(std::bind(rebatch, std::placeholders::_1, n));
+        return rg::make_pipeable(std::bind(rebatch, std::placeholders::_1, n));
     }
 
 public:
-    CPP_template(class Rng)(requires ranges::input_range<Rng>)
+    CPP_template(class Rng)(requires rg::input_range<Rng>)
     rebatch_view<rgv::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
     {
         return {rgv::all(std::forward<Rng>(rng)), n};

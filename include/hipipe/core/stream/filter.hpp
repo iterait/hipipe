@@ -23,6 +23,7 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
 namespace rgv = ranges::views;
 
 namespace detail {
@@ -56,7 +57,7 @@ namespace detail {
             // the values. To avoid this double iteration, we convert the
             // filter_view to a vector manually and let it exponentially
             // reallocate.
-            std::vector<ranges::range_value_t<decltype(range_of_tuples)>> ts;
+            std::vector<rg::range_value_t<decltype(range_of_tuples)>> ts;
             for (auto&& t : rgv::move(range_of_tuples)) ts.push_back(std::move(t));
             return utility::maybe_untuple(utility::unzip(rgv::move(ts)));
         }

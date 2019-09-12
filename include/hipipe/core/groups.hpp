@@ -31,6 +31,7 @@
 
 namespace hipipe {
 
+namespace rg = ranges;
 namespace rga = ranges::actions;
 namespace rgv = ranges::views;
 
@@ -55,10 +56,10 @@ std::vector<std::size_t> generate_groups(std::size_t size, std::vector<double> r
                                          Prng&& gen = utility::random_generator)
 {
     // check all ratios non-negative
-    assert(ranges::all_of(ratio, [](double d) { return d >= 0; }));
+    assert(rg::all_of(ratio, [](double d) { return d >= 0; }));
 
     // check positive ratio sum
-    double ratio_sum = ranges::accumulate(ratio, 0.);
+    double ratio_sum = rg::accumulate(ratio, 0.);
     assert(ratio_sum > 0);
 
     // remove trailing zeros
@@ -115,7 +116,7 @@ generate_groups(std::size_t n, std::size_t size,
                 Prng&& gen = utility::random_generator)
 {
     std::size_t volatile_size = volatile_ratio.size();
-    auto full_ratio = ranges::to_vector(rgv::concat(volatile_ratio, fixed_ratio));
+    auto full_ratio = rg::to_vector(rgv::concat(volatile_ratio, fixed_ratio));
 
     std::vector<std::vector<std::size_t>> all_groups;
     std::vector<std::size_t> initial_groups = generate_groups(size, full_ratio, gen);
@@ -126,11 +127,11 @@ generate_groups(std::size_t n, std::size_t size,
         auto groups_volatile =
           rgv::filter(groups, [volatile_size](std::size_t l) { return l < volatile_size; });
         // count the number of volatile groups
-        std::size_t volatile_count = ranges::distance(groups_volatile);
+        std::size_t volatile_count = rg::distance(groups_volatile);
         // generate the replacement
         auto groups_volatile_new = generate_groups(volatile_count, volatile_ratio, gen);
         // replace
-        ranges::copy(groups_volatile_new, groups_volatile.begin());
+        rg::copy(groups_volatile_new, groups_volatile.begin());
         // store
         all_groups.emplace_back(std::move(groups));
     }

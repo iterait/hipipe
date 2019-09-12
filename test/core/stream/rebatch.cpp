@@ -53,7 +53,7 @@ void check_20_elems_batch_size_2(std::vector<hipipe::stream::batch_t> data)
     std::vector<hipipe::stream::batch_t> stream = data
       | rgv::move
       | hipipe::stream::rebatch(3)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     // iterate through batches
     std::vector<int> result_unique;
@@ -85,7 +85,7 @@ void check_20_elems_batch_size_2(std::vector<hipipe::stream::batch_t> data)
     BOOST_TEST(batch_n == 7);
     BOOST_TEST(n == 20);
 
-    std::vector<int> desired = ranges::to_vector(rgv::iota(0, 20));
+    std::vector<int> desired = rg::to_vector(rgv::iota(0, 20));
     BOOST_TEST(result_unique == desired, boost::test_tools::per_element());
     BOOST_TEST(result_int == desired);
 }
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(test_batch_larger_batches)
     std::vector<hipipe::stream::batch_t> stream = data
       | rgv::move
       | hipipe::stream::rebatch(1)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     // iterate through batches
     std::vector<int> result_unique;
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_batch_larger_batches)
     }
     BOOST_TEST(n == 12);
 
-    std::vector<int> desired = ranges::to_vector(rgv::iota(0, 12));
+    std::vector<int> desired = rg::to_vector(rgv::iota(0, 12));
     BOOST_TEST(result_unique == desired);
     BOOST_TEST(result_int == desired);
 }
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_batch_empty_batches)
     std::vector<hipipe::stream::batch_t> stream = data
       | rgv::move
       | hipipe::stream::rebatch(1)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(stream.empty());
 }
 
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(test_batch_empty_stream)
     std::vector<hipipe::stream::batch_t> stream = data
       | rgv::move
       | hipipe::stream::rebatch(1)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(stream.empty());
 }
 
@@ -168,17 +168,17 @@ BOOST_AUTO_TEST_CASE(test_infinite_batch)
     auto stream = data
       | rgv::move
       | hipipe::stream::rebatch(std::numeric_limits<std::size_t>::max());
-    auto stream_it = ranges::begin(stream);
+    auto stream_it = rg::begin(stream);
     static_assert(std::is_same_v<hipipe::stream::batch_t&&, decltype(*stream_it)>);
     hipipe::stream::batch_t result = *stream_it;
     std::vector<int> result_unique = result.extract<Unique>()
-      | rgv::indirect | ranges::to_vector;
+      | rgv::indirect | rg::to_vector;
     std::vector<int> result_int = result.extract<Int>();
     BOOST_CHECK(++stream_it == stream.end());
     BOOST_TEST(result_unique.size() == 12);
     BOOST_TEST(result_int.size() == 12);
 
-    std::vector<int> desired = ranges::to_vector(rgv::iota(0, 12));
+    std::vector<int> desired = rg::to_vector(rgv::iota(0, 12));
     BOOST_TEST(result_unique == desired);
     BOOST_TEST(result_int == desired);
 }

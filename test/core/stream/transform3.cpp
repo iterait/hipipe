@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only_mutable)
           [i = 4](std::unique_ptr<int>&) mutable -> std::unique_ptr<int> {
               return std::make_unique<int>(i++);
         }, dim<2>)
-      | ranges::to_vector;
+      | rg::to_vector;
 
     BOOST_TEST(stream.size() == 2);
 

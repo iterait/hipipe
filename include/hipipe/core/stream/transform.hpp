@@ -27,6 +27,7 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
 namespace rgv = ranges::views;
 
 // partial transform //
@@ -74,7 +75,7 @@ namespace detail {
         template <typename From, typename To, typename Fun>
         static auto bind(partial_transform_fn transformer, From f, To t, Fun fun)
         {
-            return ranges::make_pipeable(
+            return rg::make_pipeable(
               std::bind(transformer, std::placeholders::_1, f, t, std::move(fun)));
         }
 
@@ -109,7 +110,7 @@ inline rgv::view<detail::partial_transform_fn> partial_transform{};
 // transform //
 
 namespace detail {
-    /// Convert a tuple of containers to a tuple of containers of different type using ranges::to.
+    /// Convert a tuple of containers to a tuple of containers of different type using rg::to.
     ///
     /// This basically calls `ranges::to<std::tuple_element<i, DestTuple>>(std::get<i>(rngs))`
     /// for every index `i`.
@@ -119,7 +120,7 @@ namespace detail {
         static_assert(std::tuple_size_v<SourceTuple> == std::tuple_size_v<DestTuple>);
         return utility::tuple_transform_with_index(std::move(rngs), [](auto rng, auto index) {
             using DestType = std::tuple_element_t<index, DestTuple>;
-            return ranges::to<DestType>(rgv::move(rng));
+            return rg::to<DestType>(rgv::move(rng));
         });
     }
 
@@ -138,8 +139,8 @@ namespace detail {
             assert(utility::same_size(tuple_of_ranges));
             // build the function to be applied
             wrap_fun_for_dim<FunRef, Dim-1,
-              from_t<ranges::range_value_t<FromTypes>...>,
-              to_t<ranges::range_value_t<ToTypes>...>>
+              from_t<rg::range_value_t<FromTypes>...>,
+              to_t<rg::range_value_t<ToTypes>...>>
                 fun_wrapper{std::ref(fun)};
             // transform
             auto trans_view_of_tuples =
@@ -154,7 +155,7 @@ namespace detail {
                   std::move(trans_tuple_of_vectors));
             // result is only one range, no unzipping
             } else {
-                return ranges::to<ToTypes...>(std::move(trans_view_of_tuples));
+                return rg::to<ToTypes...>(std::move(trans_view_of_tuples));
             }
         }
     };

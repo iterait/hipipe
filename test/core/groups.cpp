@@ -32,7 +32,7 @@ std::size_t n_groups(const std::vector<std::size_t>& groups, std::size_t group)
     return
       (groups
          | rgv::filter([group](std::size_t l) { return l == group; })
-         | ranges::to_vector
+         | rg::to_vector
       ).size();
 }
 

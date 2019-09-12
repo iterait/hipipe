@@ -21,6 +21,7 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
 namespace rgv = ranges::views;
 
 namespace detail {
@@ -39,9 +40,9 @@ namespace detail {
                 static_assert(std::is_constructible_v<Columns..., Source&&>,
                   "hipipe::stream::create: "
                   "Cannot convert the given data range to the selected column type.");
-                batch.insert_or_assign<Columns...>(ranges::to_vector(std::forward<Source>(source)));
+                batch.insert_or_assign<Columns...>(rg::to_vector(std::forward<Source>(source)));
             } else {
-                using SourceValue = ranges::range_value_t<Source>;
+                using SourceValue = rg::range_value_t<Source>;
                 static_assert(std::is_constructible_v<
                   std::tuple<typename Columns::example_type...>, SourceValue&&>,
                   "hipipe::stream::create: "
@@ -63,10 +64,10 @@ namespace detail {
 
         static auto bind(create_fn<Columns...> fun, std::size_t batch_size = 1)
         {
-            return ranges::make_pipeable(std::bind(fun, std::placeholders::_1, batch_size));
+            return rg::make_pipeable(std::bind(fun, std::placeholders::_1, batch_size));
         }
     public:
-        CPP_template(class Rng)(requires ranges::forward_range<Rng>)
+        CPP_template(class Rng)(requires rg::forward_range<Rng>)
         forward_stream_t operator()(Rng&& rng, std::size_t batch_size = 1) const
         {
             return rgv::transform(
@@ -75,10 +76,10 @@ namespace detail {
         }
 
         /// \cond
-        CPP_template(class Rng)(requires !ranges::forward_range<Rng>)
+        CPP_template(class Rng)(requires !rg::forward_range<Rng>)
         void operator()(Rng&&, std::size_t batch_size = 1) const
         {
-            CONCEPT_ASSERT_MSG(ranges::forward_range<Rng>(),
+            CONCEPT_ASSERT_MSG(rg::forward_range<Rng>(),
               "stream::create only works on ranges satisfying the forward_range concept.");
         }
         /// \endcond

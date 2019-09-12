@@ -23,6 +23,8 @@
 
 namespace hipipe::utility {
 
+namespace rg = ranges;
+
 /// \ingroup Tuple
 /// \brief Get the first index of a type in a variadic template list
 ///
@@ -207,12 +209,12 @@ namespace detail {
     }
 
     // if the size of the given range is known, return it, otherwise return 0
-    CPP_template(class Rng)(requires ranges::sized_range<Rng>)
+    CPP_template(class Rng)(requires rg::sized_range<Rng>)
     std::size_t safe_reserve_size(Rng&& rng)
     {
-        return ranges::size(rng);
+        return rg::size(rng);
     }
-    CPP_template(class Rng)(requires !ranges::sized_range<Rng>)
+    CPP_template(class Rng)(requires !rg::sized_range<Rng>)
     std::size_t safe_reserve_size(Rng&& rng)
     {
         return 0;
@@ -221,7 +223,7 @@ namespace detail {
     template<typename Rng>
     auto unzip_impl(Rng& range_of_tuples)
     {
-        using tuple_type = ranges::range_value_t<Rng>;
+        using tuple_type = rg::range_value_t<Rng>;
         constexpr auto tuple_size = std::tuple_size<tuple_type>{};
         constexpr auto indices = std::make_index_sequence<tuple_size>{};
         std::size_t reserve_size = detail::safe_reserve_size(range_of_tuples);
@@ -253,7 +255,7 @@ namespace detail {
 ///     std::vector<double> vb;
 ///     std::tie(va, vb) = unzip(data);
 /// \endcode
-CPP_template(class Rng)(requires ranges::range<Rng> && !ranges::view_<Rng>)
+CPP_template(class Rng)(requires rg::range<Rng> && !rg::view_<Rng>)
 auto unzip(Rng range_of_tuples)
 {
     // copy the given container and move elements out of it
@@ -261,10 +263,10 @@ auto unzip(Rng range_of_tuples)
 }
 
 /// Specialization of unzip function for views.
-CPP_template(class Rng)(requires ranges::view_<Rng>)
+CPP_template(class Rng)(requires rg::view_<Rng>)
 auto unzip(Rng view_of_tuples)
 {
-    return utility::unzip(ranges::to_vector(view_of_tuples));
+    return utility::unzip(rg::to_vector(view_of_tuples));
 }
 
 // maybe unzip //

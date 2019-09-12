@@ -24,6 +24,8 @@
 
 namespace hipipe::tensorflow {
 
+namespace rg = ranges;
+
 /// \ingroup Tensorflow
 /// \brief Run a session and feed its graph with the provided inputs.
 ///
@@ -46,9 +48,9 @@ run_graph(::tensorflow::Session& session,
           const std::vector<std::vector<long>>& input_shapes,
           const std::vector<std::string>& output_names)
 {
-  assert(ranges::size(input_names) == ranges::size(input_shapes));
-  assert(ranges::size(input_names) == sizeof...(InTs));
-  assert(ranges::size(output_names) == sizeof...(OutTs));
+  assert(rg::size(input_names) == rg::size(input_shapes));
+  assert(rg::size(input_names) == sizeof...(InTs));
+  assert(rg::size(output_names) == sizeof...(OutTs));
   std::tuple<InTs...> in_types;
   std::tuple<OutTs...> out_types;
 
