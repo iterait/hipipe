@@ -25,7 +25,7 @@
    <div id="projectname">HiPipe
    &#160;<span id="projectnumber">0.7.0</span>
    </div>
-   <div id="projectbrief">C++ data pipeline with Python bindings.</div>
+   <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
  </tr>
  </tbody>
@@ -160,7 +160,7 @@ $(function() {
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;dataframe <a class="code" href="group___c_s_v.html#ga53a97ffab09e4e840e8bc162a15c4740">read_csv</a>(</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  std::istream&amp; in,</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">int</span> <a class="code" href="group___stream.html#ga96ed36cd4f64d128e6c081463ae8d5de">drop</a> = 0,</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">int</span> <a class="code" href="group___stream.html#gaffe569568500525f1d6d2cd65c450032">drop</a> = 0,</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordtype">bool</span> has_header = <span class="keyword">true</span>,</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordtype">char</span> separator = <span class="charliteral">&#39;,&#39;</span>,</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keywordtype">char</span> quote = <span class="charliteral">&#39;&quot;&#39;</span>,</div>
@@ -169,7 +169,7 @@ $(function() {
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;dataframe <a class="code" href="group___c_s_v.html#ga53a97ffab09e4e840e8bc162a15c4740">read_csv</a>(</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keyword">const</span> std::experimental::filesystem::path&amp; file,</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordtype">int</span> <a class="code" href="group___stream.html#ga96ed36cd4f64d128e6c081463ae8d5de">drop</a> = 0,</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordtype">int</span> <a class="code" href="group___stream.html#gaffe569568500525f1d6d2cd65c450032">drop</a> = 0,</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keywordtype">bool</span> header = <span class="keyword">true</span>,</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordtype">char</span> separator = <span class="charliteral">&#39;,&#39;</span>,</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordtype">char</span> quote = <span class="charliteral">&#39;&quot;&#39;</span>,</div>
@@ -201,9 +201,9 @@ $(function() {
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160; </div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;}  <span class="comment">// namespace hipipe</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="agroup___stream_html_ga96ed36cd4f64d128e6c081463ae8d5de"><div class="ttname"><a href="group___stream.html#ga96ed36cd4f64d128e6c081463ae8d5de">hipipe::stream::drop</a></div><div class="ttdeci">ranges::views::view&lt; detail::drop_fn&lt; Columns... &gt; &gt; drop</div><div class="ttdoc">Drops columns from a stream.</div><div class="ttdef"><b>Definition:</b> <a href="drop_8hpp_source.html#l00073">drop.hpp:73</a></div></div>
 <div class="ttc" id="agroup___c_s_v_html_ga4243c846abd9308b56f9e569989fcb93"><div class="ttname"><a href="group___c_s_v.html#ga4243c846abd9308b56f9e569989fcb93">hipipe::write_csv</a></div><div class="ttdeci">void write_csv(const std::experimental::filesystem::path &amp;file, const dataframe &amp;df, char separator=',', char quote='&quot;', char escape = '\\')</div><div class="ttdoc">Same as write_csv(std::ostream...), but write directly to a file.</div></div>
 <div class="ttc" id="agroup___c_s_v_html_ga217fe6185c809adb3676c51b68f10927"><div class="ttname"><a href="group___c_s_v.html#ga217fe6185c809adb3676c51b68f10927">hipipe::write_csv_row</a></div><div class="ttdeci">std::ostream &amp; write_csv_row(std::ostream &amp;out, const std::vector&lt; std::string &gt; &amp;row, char separator=',', char quote='&quot;', char escape = '\\')</div><div class="ttdoc">Write a single csv row to an std::ostream.</div></div>
+<div class="ttc" id="agroup___stream_html_gaffe569568500525f1d6d2cd65c450032"><div class="ttname"><a href="group___stream.html#gaffe569568500525f1d6d2cd65c450032">hipipe::stream::drop</a></div><div class="ttdeci">rgv::view&lt; detail::drop_fn&lt; Columns... &gt; &gt; drop</div><div class="ttdoc">Drops columns from a stream.</div><div class="ttdef"><b>Definition:</b> <a href="drop_8hpp_source.html#l00075">drop.hpp:75</a></div></div>
 <div class="ttc" id="agroup___c_s_v_html_ga53a97ffab09e4e840e8bc162a15c4740"><div class="ttname"><a href="group___c_s_v.html#ga53a97ffab09e4e840e8bc162a15c4740">hipipe::read_csv</a></div><div class="ttdeci">dataframe read_csv(const std::experimental::filesystem::path &amp;file, int drop=0, bool header=true, char separator=',', char quote='&quot;', char escape = '\\')</div><div class="ttdoc">Same as read_csv() but read directly from a file.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

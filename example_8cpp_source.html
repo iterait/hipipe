@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.16"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>HiPipe: /home/floop/Dropbox/Workspace/20180906_Iterait/hipipe/test/core/stream/example.cpp Source File</title>
+<title>HiPipe: /home/floop/Workspace/20180906_Iterait/hipipe/test/core/stream/example.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
    <div id="projectname">HiPipe
    &#160;<span id="projectnumber">0.7.0</span>
    </div>
-   <div id="projectbrief">C++ data pipeline with Python bindings.</div>
+   <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
  </tr>
  </tbody>
@@ -130,7 +130,7 @@ $(function() {
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="comment">// filter only people older than 30 years</span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      | <a class="code" href="group___stream.html#gada9623ff6d664422fb96e7fedd47c1cf">hps::filter</a>(from&lt;login, age&gt;, by&lt;age&gt;, [](<span class="keywordtype">int</span> a) { <span class="keywordflow">return</span> a &gt; 30; })</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="comment">// asynchronously buffer the stream during iteration</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      | <a class="code" href="group___stream.html#ga135ae13d15f543a95aa01765843dd39a">hps::buffer</a>(2);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      | <a class="code" href="group___stream.html#ga05b50cd8e39dc3919e187426d692d498">hps::buffer</a>(2);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="comment">// extract the ages from the stream to std::vector</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    ages = <a class="code" href="group___stream.html#ga54df38e632e838f717054fb9df545200">hps::unpack</a>(stream, from&lt;age&gt;);</div>
@@ -140,11 +140,11 @@ $(function() {
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="agroup___string_html_ga6a0a836a966d5badfbda07e1673b0ffd"><div class="ttname"><a href="group___string.html#ga6a0a836a966d5badfbda07e1673b0ffd">hipipe::utility::to_string</a></div><div class="ttdeci">std::string to_string(const T &amp;value)</div><div class="ttdoc">Convert the given type to std::string.</div><div class="ttdef"><b>Definition:</b> <a href="string_8hpp_source.html#l00090">string.hpp:90</a></div></div>
-<div class="ttc" id="agroup___stream_html_gada9623ff6d664422fb96e7fedd47c1cf"><div class="ttname"><a href="group___stream.html#gada9623ff6d664422fb96e7fedd47c1cf">hipipe::stream::filter</a></div><div class="ttdeci">auto filter(from_t&lt; FromColumns... &gt; f, by_t&lt; ByColumns... &gt; b, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</div><div class="ttdoc">Filter stream data.</div><div class="ttdef"><b>Definition:</b> <a href="filter_8hpp_source.html#l00152">filter.hpp:152</a></div></div>
+<div class="ttc" id="agroup___stream_html_gada9623ff6d664422fb96e7fedd47c1cf"><div class="ttname"><a href="group___stream.html#gada9623ff6d664422fb96e7fedd47c1cf">hipipe::stream::filter</a></div><div class="ttdeci">auto filter(from_t&lt; FromColumns... &gt; f, by_t&lt; ByColumns... &gt; b, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</div><div class="ttdoc">Filter stream data.</div><div class="ttdef"><b>Definition:</b> <a href="filter_8hpp_source.html#l00154">filter.hpp:154</a></div></div>
+<div class="ttc" id="agroup___stream_html_ga05b50cd8e39dc3919e187426d692d498"><div class="ttname"><a href="group___stream.html#ga05b50cd8e39dc3919e187426d692d498">hipipe::stream::buffer</a></div><div class="ttdeci">rgv::view&lt; buffer_fn &gt; buffer</div><div class="ttdoc">Asynchronously buffers the given range.</div><div class="ttdef"><b>Definition:</b> <a href="buffer_8hpp_source.html#l00195">buffer.hpp:195</a></div></div>
 <div class="ttc" id="agroup___stream_html_ga762e4b9643b235eec42b86533e3302da"><div class="ttname"><a href="group___stream.html#ga762e4b9643b235eec42b86533e3302da">HIPIPE_DEFINE_COLUMN</a></div><div class="ttdeci">#define HIPIPE_DEFINE_COLUMN(column_name_, example_type_)</div><div class="ttdoc">Macro for fast column definition.</div><div class="ttdef"><b>Definition:</b> <a href="column__t_8hpp_source.html#l00250">column_t.hpp:250</a></div></div>
-<div class="ttc" id="agroup___stream_html_ga135ae13d15f543a95aa01765843dd39a"><div class="ttname"><a href="group___stream.html#ga135ae13d15f543a95aa01765843dd39a">hipipe::stream::buffer</a></div><div class="ttdeci">ranges::views::view&lt; buffer_fn &gt; buffer</div><div class="ttdoc">Asynchronously buffers the given range.</div><div class="ttdef"><b>Definition:</b> <a href="buffer_8hpp_source.html#l00194">buffer.hpp:194</a></div></div>
-<div class="ttc" id="agroup___stream_html_ga54df38e632e838f717054fb9df545200"><div class="ttname"><a href="group___stream.html#ga54df38e632e838f717054fb9df545200">hipipe::stream::unpack</a></div><div class="ttdeci">auto unpack(Rng &amp;&amp;rng, from_t&lt; FromColumns... &gt; f, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</div><div class="ttdoc">Unpack a stream into a tuple of ranges.</div><div class="ttdef"><b>Definition:</b> <a href="unpack_8hpp_source.html#l00116">unpack.hpp:116</a></div></div>
-<div class="ttc" id="agroup___stream_html_gabdf7aa0a0a0d369f631e4d99f8902397"><div class="ttname"><a href="group___stream.html#gabdf7aa0a0a0d369f631e4d99f8902397">hipipe::stream::transform</a></div><div class="ttdeci">auto transform(from_t&lt; FromColumns... &gt; f, to_t&lt; ToColumns... &gt; t, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</div><div class="ttdoc">Transform a subset of hipipe columns to a different subset of hipipe columns.</div><div class="ttdef"><b>Definition:</b> <a href="transform_8hpp_source.html#l00216">transform.hpp:216</a></div></div>
+<div class="ttc" id="agroup___stream_html_ga54df38e632e838f717054fb9df545200"><div class="ttname"><a href="group___stream.html#ga54df38e632e838f717054fb9df545200">hipipe::stream::unpack</a></div><div class="ttdeci">auto unpack(Rng &amp;&amp;rng, from_t&lt; FromColumns... &gt; f, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</div><div class="ttdoc">Unpack a stream into a tuple of ranges.</div><div class="ttdef"><b>Definition:</b> <a href="unpack_8hpp_source.html#l00118">unpack.hpp:118</a></div></div>
+<div class="ttc" id="agroup___stream_html_gabdf7aa0a0a0d369f631e4d99f8902397"><div class="ttname"><a href="group___stream.html#gabdf7aa0a0a0d369f631e4d99f8902397">hipipe::stream::transform</a></div><div class="ttdeci">auto transform(from_t&lt; FromColumns... &gt; f, to_t&lt; ToColumns... &gt; t, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</div><div class="ttdoc">Transform a subset of hipipe columns to a different subset of hipipe columns.</div><div class="ttdef"><b>Definition:</b> <a href="transform_8hpp_source.html#l00218">transform.hpp:218</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -25,7 +25,7 @@
    <div id="projectname">HiPipe
    &#160;<span id="projectnumber">0.7.0</span>
    </div>
-   <div id="projectbrief">C++ data pipeline with Python bindings.</div>
+   <div id="projectbrief">C++17 data pipeline with Python bindings.</div>
   </td>
  </tr>
  </tbody>
@@ -90,50 +90,52 @@ $(function() {
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>hipipe::stream {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>detail {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>rgv = ranges::views;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Columns&gt;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keyword">class </span>keep_fn {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keyword">friend</span> ranges::views::view_access;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keyword">static</span> <span class="keyword">auto</span> bind(keep_fn&lt;Columns...&gt; fun)</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            <span class="keywordflow">return</span> ranges::make_pipeable(std::bind(fun, std::placeholders::_1));</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        }</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <a class="code" href="group___tuple.html#gab312c3337b100e49819e940d5d16088f">CPP_template</a>(<span class="keyword">typename</span> Rng)(requires ranges::input_range&lt;Rng&gt;)</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <a class="code" href="group___stream.html#gaf31423b698a6dbb4929ce67fd7dd4286">forward_stream_t</a> <span class="keyword">operator</span>()(Rng&amp;&amp; rng) <span class="keyword">const</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="group___stream.html#gabdf7aa0a0a0d369f631e4d99f8902397">ranges::views::transform</a>(std::forward&lt;Rng&gt;(rng),</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;              [](batch_t batch) -&gt; batch_t {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                  batch_t result;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                  (result.raw_insert_or_assign&lt;Columns&gt;(std::move(batch.at&lt;Columns&gt;())), ...);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                  <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            });</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <a class="code" href="group___tuple.html#gab312c3337b100e49819e940d5d16088f">CPP_template</a>(<span class="keyword">typename</span> Rng)(requires !ranges::input_range&lt;Rng&gt;)</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordtype">void</span> <span class="keyword">operator</span>()(Rng&amp;&amp;) <span class="keyword">const</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            CONCEPT_ASSERT_MSG(ranges::input_range&lt;Rng&gt;(),</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;              <span class="stringliteral">&quot;stream::keep only works on ranges satisfying the input_range concept.&quot;</span>);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    };</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}  <span class="comment">// namespace detail</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>detail {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Columns&gt;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">class </span>keep_fn {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keyword">friend</span> rgv::view_access;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keyword">static</span> <span class="keyword">auto</span> bind(keep_fn&lt;Columns...&gt; fun)</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keywordflow">return</span> ranges::make_pipeable(std::bind(fun, std::placeholders::_1));</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        }</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <a class="code" href="group___tuple.html#gab312c3337b100e49819e940d5d16088f">CPP_template</a>(<span class="keyword">typename</span> Rng)(requires ranges::input_range&lt;Rng&gt;)</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <a class="code" href="group___stream.html#gaf31423b698a6dbb4929ce67fd7dd4286">forward_stream_t</a> <span class="keyword">operator</span>()(Rng&amp;&amp; rng) <span class="keyword">const</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="group___stream.html#gabdf7aa0a0a0d369f631e4d99f8902397">rgv::transform</a>(std::forward&lt;Rng&gt;(rng),</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;              [](batch_t batch) -&gt; batch_t {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                  batch_t result;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                  (result.raw_insert_or_assign&lt;Columns&gt;(std::move(batch.at&lt;Columns&gt;())), ...);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            });</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <a class="code" href="group___tuple.html#gab312c3337b100e49819e940d5d16088f">CPP_template</a>(<span class="keyword">typename</span> Rng)(requires !ranges::input_range&lt;Rng&gt;)</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordtype">void</span> <span class="keyword">operator</span>()(Rng&amp;&amp;) <span class="keyword">const</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            CONCEPT_ASSERT_MSG(ranges::input_range&lt;Rng&gt;(),</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;              <span class="stringliteral">&quot;stream::keep only works on ranges satisfying the input_range concept.&quot;</span>);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    };</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Columns&gt;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;ranges::views::view&lt;detail::keep_fn&lt;Columns...&gt;&gt; <a class="code" href="group___stream.html#gad392927017d4ae7aa3ea49b15054cb8b">keep</a>{};</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}  <span class="comment">// end namespace hipipe::stream</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}  <span class="comment">// namespace detail</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Columns&gt;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;rgv::view&lt;detail::keep_fn&lt;Columns...&gt;&gt; <a class="code" href="group___stream.html#gaa175a5cb079cc68913ca3d6dc89a0ece">keep</a>{};</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}  <span class="comment">// end namespace hipipe::stream</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="agroup___tuple_html_gab312c3337b100e49819e940d5d16088f"><div class="ttname"><a href="group___tuple.html#gab312c3337b100e49819e940d5d16088f">hipipe::utility::CPP_template</a></div><div class="ttdeci">CPP_template(class Rng)(requires ranges</div><div class="ttdoc">Unzips a range of tuples to a tuple of std::vectors.</div><div class="ttdef"><b>Definition:</b> <a href="tuple_8hpp_source.html#l00255">tuple.hpp:255</a></div></div>
 <div class="ttc" id="agroup___stream_html_gaf31423b698a6dbb4929ce67fd7dd4286"><div class="ttname"><a href="group___stream.html#gaf31423b698a6dbb4929ce67fd7dd4286">hipipe::stream::forward_stream_t</a></div><div class="ttdeci">ranges::any_view&lt; batch_t, ranges::category::forward &gt; forward_stream_t</div><div class="ttdoc">The stream itself, i.e., a range of batches.</div><div class="ttdef"><b>Definition:</b> <a href="stream__t_8hpp_source.html#l00029">stream_t.hpp:29</a></div></div>
-<div class="ttc" id="agroup___stream_html_gabdf7aa0a0a0d369f631e4d99f8902397"><div class="ttname"><a href="group___stream.html#gabdf7aa0a0a0d369f631e4d99f8902397">hipipe::stream::transform</a></div><div class="ttdeci">auto transform(from_t&lt; FromColumns... &gt; f, to_t&lt; ToColumns... &gt; t, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</div><div class="ttdoc">Transform a subset of hipipe columns to a different subset of hipipe columns.</div><div class="ttdef"><b>Definition:</b> <a href="transform_8hpp_source.html#l00216">transform.hpp:216</a></div></div>
-<div class="ttc" id="agroup___stream_html_gad392927017d4ae7aa3ea49b15054cb8b"><div class="ttname"><a href="group___stream.html#gad392927017d4ae7aa3ea49b15054cb8b">hipipe::stream::keep</a></div><div class="ttdeci">ranges::views::view&lt; detail::keep_fn&lt; Columns... &gt; &gt; keep</div><div class="ttdoc">Keep the specified columns in the stream, drop everything else.</div><div class="ttdef"><b>Definition:</b> <a href="keep_8hpp_source.html#l00072">keep.hpp:72</a></div></div>
+<div class="ttc" id="agroup___stream_html_gaa175a5cb079cc68913ca3d6dc89a0ece"><div class="ttname"><a href="group___stream.html#gaa175a5cb079cc68913ca3d6dc89a0ece">hipipe::stream::keep</a></div><div class="ttdeci">rgv::view&lt; detail::keep_fn&lt; Columns... &gt; &gt; keep</div><div class="ttdoc">Keep the specified columns in the stream, drop everything else.</div><div class="ttdef"><b>Definition:</b> <a href="keep_8hpp_source.html#l00074">keep.hpp:74</a></div></div>
+<div class="ttc" id="agroup___stream_html_gabdf7aa0a0a0d369f631e4d99f8902397"><div class="ttname"><a href="group___stream.html#gabdf7aa0a0a0d369f631e4d99f8902397">hipipe::stream::transform</a></div><div class="ttdeci">auto transform(from_t&lt; FromColumns... &gt; f, to_t&lt; ToColumns... &gt; t, Fun fun, dim_t&lt; Dim &gt; d=dim_t&lt; 1 &gt;{})</div><div class="ttdoc">Transform a subset of hipipe columns to a different subset of hipipe columns.</div><div class="ttdef"><b>Definition:</b> <a href="transform_8hpp_source.html#l00218">transform.hpp:218</a></div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

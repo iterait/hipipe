@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keep_226',['keep',['../group___stream.html#gad392927017d4ae7aa3ea49b15054cb8b',1,'hipipe::stream']]]
+  ['keep_226',['keep',['../group___stream.html#gaa175a5cb079cc68913ca3d6dc89a0ece',1,'hipipe::stream']]]
 ];
