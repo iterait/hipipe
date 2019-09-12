@@ -696,7 +696,9 @@ public:
     ///
     /// Example:
     /// \code
-    ///     std::unordered_map<int, double> mapper = df.index_icol<int, double>(0, 1);
+    ///     auto mapper =
+    ///         df.index_icol<int, double>(0, 1)
+    ///       | ranges::to<std::unordered_map<int, double>>;
     /// \endcode
     ///
     /// \param key_col_index Index of the column to be used as key.
@@ -721,9 +723,9 @@ public:
     /// Return an indexed typed view of a single column.
     ///
     /// \code
-    ///     std::unordered_map<int, double> mapper =
+    ///     auto mapper =
     ///         df.index_col<int, double>("first", "second")
-    ///       | ranges::to<std::unordered_map>;
+    ///       | ranges::to<std::unordered_map<int, double>>;
     /// \endcode
     ///
     /// This function is the same as index_icol(), but columns are selected by name.
@@ -751,8 +753,9 @@ public:
     /// See index_icol().
     ///
     /// \code
-    ///     std::unordered_map<int, std::tuple<long, double>> mapper =
-    ///       df.index_icols<int, long, double>(0, {1, 2});
+    ///     auto mapper =
+    ///         df.index_icols<int, long, double>(0, {1, 2});
+    ///       | ranges::to<int, std::tuple<long, double>>;
     /// \endcode
     ///
     /// This function is similar to index_icol(), but value type is a tuple of Ts.
@@ -775,9 +778,9 @@ public:
     /// See index_icol().
     ///
     /// \code
-    ///     std::unordered_map<int, std::tuple<long, double>> mapper =
+    ///     auto mapper =
     ///         df.index_cols<int, long, double>("id", {"col1", "col2"})
-    ///       | ranges::to<std::unordered_map>;
+    ///       | ranges::to<std::unordered_map<int, std::tuple<long, double>>>;
     /// \endcode
     ///
     /// This function is similar to index_icols(), but columns are selected by name.
