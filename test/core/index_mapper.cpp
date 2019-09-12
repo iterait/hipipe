@@ -93,8 +93,8 @@ BOOST_AUTO_TEST_CASE(test_insertion_container)
 BOOST_AUTO_TEST_CASE(test_insertion_lvalue_view)
 {
     index_mapper<int> int_mapper;
-    auto data = ranges::views::iota(3, 5)
-      | ranges::views::transform([](int i) { return i + 1; });
+    auto data = rgv::iota(3, 5)
+      | rgv::transform([](int i) { return i + 1; });
     int_mapper.insert(data);
     BOOST_TEST(int_mapper.size() == 2UL);
     test_ranges_equal(int_mapper.values(), std::vector<int>{4, 5});
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(test_insertion_rvalue_view)
 {
     index_mapper<std::string> mapper{"second"};
     std::vector<std::string> data = {"first", "sixth"};
-    mapper.insert(ranges::views::all(data));
+    mapper.insert(rgv::all(data));
     BOOST_TEST(mapper.size() == 3UL);
     test_ranges_equal(mapper.values(), std::vector<std::string>{"second", "first", "sixth"});
 }
@@ -130,9 +130,9 @@ BOOST_AUTO_TEST_CASE(test_try_insertion_multiple)
                       std::vector<std::string>{"second", "fourth", "fifth"});
     // test insertion of an rvalue view
     std::vector<std::string> data = {"second", "sixth"};
-    mapper.try_insert(ranges::views::all(data));
+    mapper.try_insert(rgv::all(data));
     // test insertion of an lvalue view
-    auto view = ranges::views::all(data);
+    auto view = rgv::all(data);
     mapper.try_insert(view);
     // check results
     BOOST_TEST(mapper.size() == 4UL);
@@ -151,12 +151,12 @@ BOOST_AUTO_TEST_CASE(test_make_unique_index_mapper_view)
 {
     // test view of a vector
     std::vector<int> data = {3, 2, 3, 1, 1, 2, 2, 1};
-    index_mapper<int> mapper = make_unique_index_mapper(ranges::views::all(data));
+    index_mapper<int> mapper = make_unique_index_mapper(rgv::all(data));
     test_ranges_equal(mapper.values(), std::vector<int>{3, 2, 1});
 
     // test pure view
-    mapper = make_unique_index_mapper(ranges::views::iota(2, 5)
-                                        | ranges::views::cycle
-                                        | ranges::views::take(10));
+    mapper = make_unique_index_mapper(rgv::iota(2, 5)
+                                        | rgv::cycle
+                                        | rgv::take(10));
     test_ranges_equal(mapper.values(), std::vector<int>{2, 3, 4});
 }

@@ -31,7 +31,7 @@ std::size_t n_groups(const std::vector<std::size_t>& groups, std::size_t group)
 {
     return
       (groups
-         | ranges::views::filter([group](std::size_t l) { return l == group; })
+         | rgv::filter([group](std::size_t l) { return l == group; })
          | ranges::to_vector
       ).size();
 }
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(test_generate_groups)
     BOOST_TEST(n_groups(groups, 1) == 5UL);
 
     auto sorted_groups = groups;
-    sorted_groups |= ranges::actions::sort;
+    sorted_groups |= rga::sort;
     BOOST_CHECK(sorted_groups != groups);
 }
 
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(test_generate_groups_zero_ratio)
     BOOST_TEST(n_groups(groups, 2) == 5UL);
 
     auto sorted_groups = groups;
-    sorted_groups |= ranges::actions::sort;
+    sorted_groups |= rga::sort;
     BOOST_CHECK(sorted_groups != groups);
 }
 

@@ -144,9 +144,9 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream)
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     test_ranges_equal(df.header(), simple_csv_rows[0]);
-    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | ranges::views::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | ranges::views::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | ranges::views::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | rgv::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | rgv::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | rgv::slice(1, ranges::end));
 }
 
 BOOST_AUTO_TEST_CASE(test_read_csv_from_no_file)
@@ -161,9 +161,9 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     BOOST_TEST(df.header().empty());
-    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | ranges::views::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | ranges::views::slice(1, ranges::end));
-    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | ranges::views::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[0], simple_csv_cols[0] | rgv::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[1], simple_csv_cols[1] | rgv::slice(1, ranges::end));
+    test_ranges_equal(df.raw_cols()[2], simple_csv_cols[2] | rgv::slice(1, ranges::end));
 }
 
 BOOST_AUTO_TEST_CASE(test_read_quoted_csv_from_istream)

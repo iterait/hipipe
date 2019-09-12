@@ -16,6 +16,8 @@
 
 #include <range/v3/core.hpp>
 
+namespace rga = ranges::actions;
+namespace rgv = ranges::views;
 
 template<typename Rng1, typename Rng2>
 void test_ranges_equal(Rng1&& rng1, Rng2&& rng2)

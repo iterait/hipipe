@@ -51,7 +51,7 @@ auto generate_regular_batched_data(int batches, int batch_size)
 void check_20_elems_batch_size_2(std::vector<hipipe::stream::batch_t> data)
 {
     std::vector<hipipe::stream::batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::rebatch(3)
       | ranges::to_vector;
 
@@ -85,7 +85,7 @@ void check_20_elems_batch_size_2(std::vector<hipipe::stream::batch_t> data)
     BOOST_TEST(batch_n == 7);
     BOOST_TEST(n == 20);
 
-    std::vector<int> desired = ranges::to_vector(ranges::views::iota(0, 20));
+    std::vector<int> desired = ranges::to_vector(rgv::iota(0, 20));
     BOOST_TEST(result_unique == desired, boost::test_tools::per_element());
     BOOST_TEST(result_int == desired);
 }
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(test_batch_larger_batches)
     std::vector<hipipe::stream::batch_t> data = generate_regular_batched_data(3, 4);
 
     std::vector<hipipe::stream::batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::rebatch(1)
       | ranges::to_vector;
 
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_batch_larger_batches)
     }
     BOOST_TEST(n == 12);
 
-    std::vector<int> desired = ranges::to_vector(ranges::views::iota(0, 12));
+    std::vector<int> desired = ranges::to_vector(rgv::iota(0, 12));
     BOOST_TEST(result_unique == desired);
     BOOST_TEST(result_int == desired);
 }
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_batch_empty_batches)
     // batch out of empty batches
     std::vector<hipipe::stream::batch_t> data = generate_batched_data({0, 0, 0, 0});
     std::vector<hipipe::stream::batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::rebatch(1)
       | ranges::to_vector;
     BOOST_TEST(stream.empty());
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(test_batch_empty_stream)
     // batch out of empty range
     std::vector<hipipe::stream::batch_t> data = generate_batched_data({});
     std::vector<hipipe::stream::batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::rebatch(1)
       | ranges::to_vector;
     BOOST_TEST(stream.empty());
@@ -166,19 +166,19 @@ BOOST_AUTO_TEST_CASE(test_infinite_batch)
     std::vector<hipipe::stream::batch_t> data = generate_regular_batched_data(3, 4);
     // make batch of infinite size
     auto stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::rebatch(std::numeric_limits<std::size_t>::max());
     auto stream_it = ranges::begin(stream);
     static_assert(std::is_same_v<hipipe::stream::batch_t&&, decltype(*stream_it)>);
     hipipe::stream::batch_t result = *stream_it;
     std::vector<int> result_unique = result.extract<Unique>()
-      | ranges::views::indirect | ranges::to_vector;
+      | rgv::indirect | ranges::to_vector;
     std::vector<int> result_int = result.extract<Int>();
     BOOST_CHECK(++stream_it == stream.end());
     BOOST_TEST(result_unique.size() == 12);
     BOOST_TEST(result_int.size() == 12);
 
-    std::vector<int> desired = ranges::to_vector(ranges::views::iota(0, 12));
+    std::vector<int> desired = ranges::to_vector(rgv::iota(0, 12));
     BOOST_TEST(result_unique == desired);
     BOOST_TEST(result_int == desired);
 }

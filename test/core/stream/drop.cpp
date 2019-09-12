@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(test_int_column)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::drop<Int>
       | ranges::to_vector;
 
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(test_move_only_column)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::drop<Unique>
       | ranges::to_vector;
 
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(test_multiple_columns)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::drop<Int, Unique>
       | ranges::to_vector;
 

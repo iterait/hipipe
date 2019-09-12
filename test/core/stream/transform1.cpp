@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(test_partial_transform)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       // Increment unique_ptr values by one.
       | hipipe::stream::partial_transform(from<Unique>, to<Unique>,
           [](std::tuple<Unique::data_type&> data)
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(test_to_itself)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::transform(from<Int>, to<Int>,
          [](const int& v) { return v - 1; })
       | hipipe::stream::transform(from<Double>, to<Double>,
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(test_move_only)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::transform(from<Unique>, to<Unique>,
           [](const std::unique_ptr<int> &ptr) {
               return std::make_unique<int>(*ptr + 1);
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(test_mutable)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | transform(from<Int>, to<Int>, [i = 0](const int&) mutable {
             return i++;
         })
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(test_two_to_one)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | transform(from<Int, Double>, to<Double>, [](int i, double d) -> double {
             return i + d;
         })
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(test_one_to_two)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | transform(from<Int>, to<Int, Double>, [](int i) {
             return std::make_tuple(i + i, (double)(i * i));
         })
@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE(test_dim0)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::views::move
+      | rgv::move
       | transform(from<Int>, to<Int>, [](const Int::data_type& int_batch) {
             std::vector<int> new_batch = int_batch;
             new_batch.push_back(4);

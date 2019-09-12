@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(test_dim0)
 
     std::size_t i = 0;
     data
-      | ranges::views::move
+      | rgv::move
       // for dim0, `from` is ignored anyway
       | hipipe::stream::filter(from<Int, Double>, by<Double>,
           [](const std::vector<double>& v) { return v.at(0) > 3.; }, dim<0>)
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(test_dim0_move_only)
 
     std::size_t i = 0;
     data
-      | ranges::views::move
+      | rgv::move
       // for dim0, `from` is ignored anyway
       | hipipe::stream::filter(from<>, by<Unique>,
           [](const std::vector<std::unique_ptr<int>>& v) { return *(v.at(0)) >= 3; }, dim<0>)
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_dim1)
 
     std::size_t i = 0;
     data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::filter(from<Int, Double>, by<Double>,
           [](double v) { return v >= 5.; })
       | hipipe::stream::for_each(from<Int, Double>, [&i](auto& ints, auto& doubles) {
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(test_dim1_partial)
 
     std::size_t i = 0;
     data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::filter(from<Double>, by<Double>,
           [](double v) { return v >= 5.; })
       | hipipe::stream::for_each(from<Int, Double>, [&i](auto& a, auto& b) {
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(test_dim1_move_only)
 
     std::size_t i = 0;
     data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::filter(from<Unique>, by<Unique>,
           [](auto& ptr) { return *ptr >= 5.; })
       | hipipe::stream::for_each(from<Int, Unique>, [&i](auto& a, auto& b) {
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(test_dim2)
 
     std::size_t i = 0;
     auto generated = data
-      | ranges::views::move
+      | rgv::move
       | hipipe::stream::filter(from<IntVec1, IntVec2>, by<IntVec2>,
           [](int v) { return v >= 4; }, dim<2>)
       | hipipe::stream::for_each(from<IntVec1, IntVec2>, [&i](auto& iv1, auto& iv2) {

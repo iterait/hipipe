@@ -19,6 +19,7 @@
 
 namespace py = boost::python;
 namespace hpy = hipipe::python;
+namespace rgv = ranges::views;
 
 HIPIPE_DEFINE_COLUMN(Int, int)
 HIPIPE_DEFINE_COLUMN(Double, double)
@@ -28,7 +29,7 @@ std::vector<hipipe::stream::batch_t> empty_stream_;
 auto empty_stream()
 {
     empty_stream_.clear();
-    return hpy::stream::to_python(ranges::views::move(empty_stream_));
+    return hpy::stream::to_python(rgv::move(empty_stream_));
 }
 
 
@@ -39,7 +40,7 @@ auto empty_batch_stream()
     empty_batch_stream_.resize(2);
     empty_batch_stream_.at(1).insert_or_assign<Int>();
     empty_batch_stream_.at(1).insert_or_assign<Double>();
-    return hpy::stream::to_python(ranges::views::move(empty_batch_stream_));
+    return hpy::stream::to_python(rgv::move(empty_batch_stream_));
 }
 
 
@@ -52,7 +53,7 @@ auto number_stream()
     number_stream_.at(0).insert_or_assign<Double>(Double::data_type{5.});
     number_stream_.at(1).insert_or_assign<Int>(Int::data_type{1, 4});
     number_stream_.at(1).insert_or_assign<Double>(Double::data_type{2.});
-    return hpy::stream::to_python(ranges::views::move(number_stream_));
+    return hpy::stream::to_python(rgv::move(number_stream_));
 }
 
 
