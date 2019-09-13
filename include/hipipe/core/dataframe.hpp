@@ -21,7 +21,6 @@
 #include <range/v3/view/move.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
-#include <range/v3/view/zip_with.hpp>
 
 #include <functional>
 #include <iomanip>
@@ -656,13 +655,8 @@ public:
                std::tuple<std::function<Ts(const std::string&)>...> cvts =
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
-        // Make sure the zip produces std::tuple, not ranges::common_tuple or similar.
-        auto zip_as_std_tuple = [](auto&&... rngs) {
-            auto std_tupler = [](Ts... ts) -> std::tuple<Ts...> { return {std::move(ts)...}; };
-            return rgv::zip_with(std_tupler, std::forward<decltype(rngs)>(rngs)...);
-        };
         return std::apply(
-          zip_as_std_tuple,
+          rgv::zip,
           icols<Ts...>(std::move(col_indexes), std::move(cvts)));
     }
 
