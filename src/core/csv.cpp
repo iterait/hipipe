@@ -13,9 +13,11 @@
 
 #include <boost/algorithm/string.hpp>
 #include <range/v3/algorithm/find_first_of.hpp>
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/move.hpp>
 
+#include <array>
 #include <cctype>
 #include <climits>
 #include <deque>
@@ -27,6 +29,8 @@
 
 namespace hipipe {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
 
 // Read and discard blank characters (similar to std::ws, but uses std::isblank).
 //
@@ -125,46 +129,46 @@ dataframe read_csv(
     // load csv line by line
     auto csv_rows =
       csv_istream_range(in, separator, quote, escape)
-      | ranges::view::drop(drop)
-      | ranges::view::move;
-    auto csv_row_it = ranges::begin(csv_rows);
+      | rgv::drop(drop)
+      | rgv::move;
+    auto csv_row_it = rg::begin(csv_rows);
     // load header if requested
     std::size_t n_cols = -1;
     if (has_header) {
-        if (csv_row_it == ranges::end(csv_rows)) {
+        if (csv_row_it == rg::end(csv_rows)) {
             throw std::ios_base::failure{"There has to be at least the header row."};
         }
         std::vector<std::string> csv_row = *csv_row_it;
-        n_cols = ranges::size(csv_row);
+        n_cols = rg::size(csv_row);
         header = std::move(csv_row);
         data.resize(n_cols);
         ++csv_row_it;
     }
     // load data
-    for (std::size_t i = 0; csv_row_it != ranges::end(csv_rows); ++csv_row_it, ++i) {
+    for (std::size_t i = 0; csv_row_it != rg::end(csv_rows); ++csv_row_it, ++i) {
         std::vector<std::string> csv_row = *csv_row_it;
         // sanity check row size
         if (i == 0) {
             if (has_header) {
-                if (ranges::size(csv_row) != n_cols) {
+                if (rg::size(csv_row) != n_cols) {
                     throw std::ios_base::failure{"The first row must have the same "
                                                  "length as the header."};
                 }
             } else {
-                n_cols = ranges::size(csv_row);
+                n_cols = rg::size(csv_row);
                 data.resize(n_cols);
             }
         } else {
-            if (ranges::size(csv_row) != n_cols) {
+            if (rg::size(csv_row) != n_cols) {
                 throw std::ios_base::failure{"Row " + std::to_string(i)
                                              + " has a different length "
-                                             + "(has: " + std::to_string(ranges::size(csv_row))
+                                             + "(has: " + std::to_string(rg::size(csv_row))
                                              + " , expected: " + std::to_string(n_cols)
                                              + ")."};
             }
         }
         // store columns
-        for (std::size_t j = 0; j < ranges::size(csv_row); ++j) {
+        for (std::size_t j = 0; j < rg::size(csv_row); ++j) {
             data[j].push_back(std::move(csv_row[j]));
         }
     }
@@ -206,19 +210,19 @@ std::ostream& write_csv_row(
     auto orig_exceptions = out.exceptions();
     out.exceptions(orig_exceptions | std::ostream::badbit);
 
-    for (std::size_t i = 0; i < ranges::size(row); ++i) {
+    for (std::size_t i = 0; i < rg::size(row); ++i) {
         const std::string& field = row[i];
         // output quoted string if it contains separator, double quote, newline or
         // starts or ends with a whitespace
-        if (ranges::find_first_of(field, {separator, quote, '\n'}) != ranges::end(field)
-            || trimmable(field)) {
+        std::array<char, 3> must_quote = {separator, quote, '\n'};
+        if (rg::find_first_of(field, must_quote) != rg::end(field) || trimmable(field)) {
             out << std::quoted(field, quote, escape);
         } else {
             out << field;
         }
 
         // output separator or newline
-        if (i + 1 < ranges::size(row)) out << separator;
+        if (i + 1 < rg::size(row)) out << separator;
         else out << '\n';
     }
 
@@ -235,8 +239,8 @@ std::ostream& write_csv(
   char escape)
 {
     write_csv_row(out, df.header(), separator, quote, escape);
-    for (const std::vector<std::string>& row : df.raw_rows()) {
-        write_csv_row(out, row, separator, quote, escape);
+    for (auto&& row : df.raw_rows()) {
+        write_csv_row(out, rg::to_vector(row), separator, quote, escape);
     }
     return out;
 }

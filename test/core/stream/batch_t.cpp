@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(test_batch_insert_assign_extract_move_only)
     BOOST_TEST(*batch.extract<Unique>().at(1) == 2);
     batch.insert_or_assign<Unique>();
     BOOST_TEST(batch.extract<Unique>().empty());
-}    
+}
 
 
 BOOST_AUTO_TEST_CASE(test_batch_get_size)

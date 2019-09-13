@@ -19,6 +19,7 @@
 #include <range/v3/algorithm/all_of.hpp>
 #include <range/v3/algorithm/copy.hpp>
 #include <range/v3/numeric/accumulate.hpp>
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/concat.hpp>
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/filter.hpp>
@@ -29,6 +30,11 @@
 #include <vector>
 
 namespace hipipe {
+
+namespace rg = ranges;
+namespace rga = ranges::actions;
+namespace rgv = ranges::views;
+
 
 /// \ingroup Groups
 /// \brief Randomly group data into multiple clusters with a given ratio.
@@ -49,13 +55,11 @@ template<typename Prng = std::mt19937&>
 std::vector<std::size_t> generate_groups(std::size_t size, std::vector<double> ratio,
                                          Prng&& gen = utility::random_generator)
 {
-    namespace view = ranges::view;
-
     // check all ratios non-negative
-    assert(ranges::all_of(ratio, [](double d) { return d >= 0; }));
+    assert(rg::all_of(ratio, [](double d) { return d >= 0; }));
 
     // check positive ratio sum
-    double ratio_sum = ranges::accumulate(ratio, 0.);
+    double ratio_sum = rg::accumulate(ratio, 0.);
     assert(ratio_sum > 0);
 
     // remove trailing zeros
@@ -72,10 +76,10 @@ std::vector<std::size_t> generate_groups(std::size_t size, std::vector<double> r
         std::size_t count = std::lround(ratio[i] * size);
         // take all the remaining elements if this is the last non-zero group
         if (i + 1 == ratio.size()) count = size - groups.size();
-        ranges::action::insert(groups, groups.end(), view::repeat_n(i, count));
+        rga::insert(groups, groups.end(), rgv::repeat_n(i, count));
     }
 
-    ranges::action::shuffle(groups, gen);
+    rga::shuffle(groups, gen);
     return groups;
 }
 
@@ -111,10 +115,8 @@ generate_groups(std::size_t n, std::size_t size,
                 const std::vector<double>& fixed_ratio,
                 Prng&& gen = utility::random_generator)
 {
-    namespace view = ranges::view;
-
     std::size_t volatile_size = volatile_ratio.size();
-    auto full_ratio = view::concat(volatile_ratio, fixed_ratio);
+    auto full_ratio = rg::to_vector(rgv::concat(volatile_ratio, fixed_ratio));
 
     std::vector<std::vector<std::size_t>> all_groups;
     std::vector<std::size_t> initial_groups = generate_groups(size, full_ratio, gen);
@@ -123,13 +125,13 @@ generate_groups(std::size_t n, std::size_t size,
         auto groups = initial_groups;
         // select those groups, which are volatile (those will be replaced)
         auto groups_volatile =
-          view::filter(groups, [volatile_size](std::size_t l) { return l < volatile_size; });
+          rgv::filter(groups, [volatile_size](std::size_t l) { return l < volatile_size; });
         // count the number of volatile groups
-        std::size_t volatile_count = ranges::distance(groups_volatile);
+        std::size_t volatile_count = rg::distance(groups_volatile);
         // generate the replacement
         auto groups_volatile_new = generate_groups(volatile_count, volatile_ratio, gen);
         // replace
-        ranges::copy(groups_volatile_new, groups_volatile.begin());
+        rg::copy(groups_volatile_new, groups_volatile.begin());
         // store
         all_groups.emplace_back(std::move(groups));
     }

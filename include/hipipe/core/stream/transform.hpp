@@ -17,6 +17,7 @@
 #include <hipipe/core/utility/random.hpp>
 #include <hipipe/core/utility/tuple.hpp>
 
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/any_view.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
@@ -25,6 +26,9 @@
 #include <utility>
 
 namespace hipipe::stream {
+
+namespace rg = ranges;
+namespace rgv = ranges::views;
 
 // partial transform //
 
@@ -66,12 +70,12 @@ namespace detail {
 
     class partial_transform_fn {
     private:
-        friend ranges::view::view_access;
+        friend rgv::view_access;
 
         template <typename From, typename To, typename Fun>
         static auto bind(partial_transform_fn transformer, From f, To t, Fun fun)
         {
-            return ranges::make_pipeable(
+            return rg::make_pipeable(
               std::bind(transformer, std::placeholders::_1, f, t, std::move(fun)));
         }
 
@@ -86,7 +90,7 @@ namespace detail {
             detail::partial_transform_impl<Fun, from_t<FromTypes...>, to_t<ToTypes...>>
               trans_fun{std::move(fun)};
 
-            return ranges::view::transform(std::move(rng), std::move(trans_fun));
+            return rgv::transform(std::move(rng), std::move(trans_fun));
         }
     };
 
@@ -101,11 +105,24 @@ namespace detail {
 //
 // This transformer is used internally by stream::transform and should not
 // be used directly by the end user of the library.
-inline ranges::view::view<detail::partial_transform_fn> partial_transform{};
+inline rgv::view<detail::partial_transform_fn> partial_transform{};
 
 // transform //
 
 namespace detail {
+    /// Convert a tuple of containers to a tuple of containers of different type using rg::to.
+    ///
+    /// This basically calls `ranges::to<std::tuple_element<i, DestTuple>>(std::get<i>(rngs))`
+    /// for every index `i`.
+    template <typename DestTuple, typename SourceTuple>
+    DestTuple convert_tuple_of_ranges(SourceTuple rngs)
+    {
+        static_assert(std::tuple_size_v<SourceTuple> == std::tuple_size_v<DestTuple>);
+        return utility::tuple_transform_with_index(std::move(rngs), [](auto rng, auto index) {
+            using DestType = std::tuple_element_t<index, DestTuple>;
+            return rg::to<DestType>(rgv::move(rng));
+        });
+    }
 
     // Apply fun to each element in tuple of ranges in the given dimension.
     template<typename Fun, std::size_t Dim, typename From, typename To>
@@ -122,15 +139,24 @@ namespace detail {
             assert(utility::same_size(tuple_of_ranges));
             // build the function to be applied
             wrap_fun_for_dim<FunRef, Dim-1,
-              from_t<ranges::range_value_type_t<FromTypes>...>,
-              to_t<ranges::range_value_type_t<ToTypes>...>>
+              from_t<rg::range_value_t<FromTypes>...>,
+              to_t<rg::range_value_t<ToTypes>...>>
                 fun_wrapper{std::ref(fun)};
             // transform
-            auto range_of_tuples =
-              ranges::view::transform(
-                std::apply(ranges::view::zip, std::move(tuple_of_ranges)),
+            auto trans_view_of_tuples =
+              rgv::transform(
+                std::apply(rgv::zip, std::move(tuple_of_ranges)),
                 std::move(fun_wrapper));
-            return utility::unzip_if<(sizeof...(ToTypes) > 1)>(std::move(range_of_tuples));
+            // unzip the result and convert the ranges to the desired types
+            if constexpr (sizeof...(ToTypes) > 1) {
+                auto trans_tuple_of_vectors =
+                  utility::unzip(std::move(trans_view_of_tuples));
+                return convert_tuple_of_ranges<std::tuple<ToTypes...>>(
+                  std::move(trans_tuple_of_vectors));
+            // result is only one range, no unzipping
+            } else {
+                return rg::to<ToTypes...>(std::move(trans_view_of_tuples));
+            }
         }
     };
 
@@ -276,13 +302,13 @@ namespace detail {
 ///
 ///     // hardcoded usage
 ///     std::vector<int> data_cond = {true, true, false, false};
-///     auto rng = ranges::view::zip(data_int, data_cond)
+///     auto rng = ranges::views::zip(data_int, data_cond)
 ///       | create<dogs, do_trans>()
 ///       // this transforms only the first two examples and does nothing for the last two
 ///       | transform(from<dogs>, to<dogs>, cond<do_trans>, [](int dog) { return dog + 1; })
 ///       // this transformation reverts the previous one
 ///       | transform(from<dogs>, to<dogs>, cond<do_trans>, [](int dog) { return dog - 1; });
-///     
+///
 ///     // random_fill usage
 ///     std::bernoulli_distribution dist{0.5};
 ///     auto rng2 = data_int

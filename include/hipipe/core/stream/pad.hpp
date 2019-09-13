@@ -69,10 +69,10 @@ namespace detail {
 ///     auto rng = data
 ///       | create<sequences>(2)
 ///       | pad(from<sequences>, mask<sequence_masks>, -1);
-///     // sequences_batch_1 == {{1, 2, -1}, {3, 4, 5}} 
-///     // sequences_batch_2 == {{-1, -1}, {6, 7}} 
-///     // sequence_masks_batch_1 == {{true, true, false}, {true, true, true}} 
-///     // sequence_masks_batch_2 == {{false, false}, {true, true}} 
+///     // sequences_batch_1 == {{1, 2, -1}, {3, 4, 5}}
+///     // sequences_batch_2 == {{-1, -1}, {6, 7}}
+///     // sequence_masks_batch_1 == {{true, true, false}, {true, true, true}}
+///     // sequence_masks_batch_2 == {{false, false}, {true, true}}
 /// \endcode
 ///
 /// \param f The column to be padded.
@@ -85,7 +85,7 @@ template<
   // in the dimension of the mask column.
   typename ValT =
     typename utility::ndim_type_t<
-      typename FromColumn::data_type, 
+      typename FromColumn::data_type,
       utility::ndims<typename MaskColumn::data_type>::value>>
 auto pad(from_t<FromColumn> f, mask_t<MaskColumn> m, ValT value = ValT{})
 {

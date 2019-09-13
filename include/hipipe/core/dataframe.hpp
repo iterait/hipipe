@@ -21,6 +21,7 @@
 #include <range/v3/view/move.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
+#include <range/v3/view/zip_with.hpp>
 
 #include <functional>
 #include <iomanip>
@@ -29,6 +30,8 @@
 
 namespace hipipe {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
 
 /// \ingroup Dataframe
 /// \brief Tabular object with convenient data access methods.
@@ -125,12 +128,11 @@ private:
     template <typename This>
     static auto raw_irows_impl(This this_ptr, std::vector<std::size_t> col_indexes)
     {
-        namespace view = ranges::view;
-        return view::iota(0UL, this_ptr->n_rows())
-          | view::transform([this_ptr, col_indexes=std::move(col_indexes)](std::size_t i) {
+        return rgv::iota(0UL, this_ptr->n_rows())
+          | rgv::transform([this_ptr, col_indexes=std::move(col_indexes)](std::size_t i) {
                 return this_ptr->raw_icols(col_indexes)
                   // decltype(auto) to make sure a reference is returned
-                  | view::transform([i](auto&& col) -> decltype(auto) {
+                  | rgv::transform([i](auto&& col) -> decltype(auto) {
                         return col[i];
                     });
             });
@@ -139,12 +141,11 @@ private:
       template<typename This>
       static auto raw_rows_impl(This this_ptr)
       {
-        namespace view = ranges::view;
-        return view::iota(0UL, this_ptr->n_rows())
-          | view::transform([this_ptr](std::size_t i) {
-                return view::iota(0UL, this_ptr->n_cols())
+        return rgv::iota(0UL, this_ptr->n_rows())
+          | rgv::transform([this_ptr](std::size_t i) {
+                return rgv::iota(0UL, this_ptr->n_cols())
                   // decltype(auto) to make sure a reference is returned
-                  | view::transform([this_ptr, i](std::size_t j) -> decltype(auto) {
+                  | rgv::transform([this_ptr, i](std::size_t j) -> decltype(auto) {
                         return this_ptr->raw_cols()[j][i];
                     });
             });
@@ -154,8 +155,8 @@ private:
       static auto raw_icols_impl(This this_ptr, std::vector<std::size_t> col_indexes)
       {
         return std::move(col_indexes)
-          | ranges::experimental::view::shared
-          | ranges::view::transform([this_ptr](std::size_t idx) {
+          | rg::experimental::views::shared
+          | rgv::transform([this_ptr](std::size_t idx) {
                 return this_ptr->raw_cols()[idx];
             });
       }
@@ -187,7 +188,7 @@ public:
         throw_check_new_header(columns.size(), header);
         for (std::size_t i = 0; i < columns.size(); ++i) {
             std::string col_name = header.empty() ? "" : std::move(header[i]);
-            insert_col(ranges::view::move(columns[i]), std::move(col_name));
+            insert_col(rgv::move(columns[i]), std::move(col_name));
         }
     }
 
@@ -219,7 +220,7 @@ public:
         utility::tuple_for_each_with_index(std::move(columns),
           [this, &header](auto& column, auto index) {
               std::string col_name = header.empty() ? "" : std::move(header[index]);
-              this->insert_col(ranges::view::move(column), std::move(col_name));
+              this->insert_col(rgv::move(column), std::move(col_name));
         });
     }
 
@@ -235,15 +236,15 @@ public:
     /// \throws std::invalid_argument 1) If the dataframe has a header but no column
     ///                               name was provided. 2) If the column size is not equal
     ///                               to n_rows.
-    template<typename Rng, typename ValueT = ranges::range_value_type_t<Rng>>
+    template<typename Rng, typename ValueT = rg::range_value_t<Rng>>
     std::size_t insert_col(Rng&& rng, std::string col_name = {},
                            std::function<std::string(const ValueT&)> cvt =
                              static_cast<std::string (*)(const ValueT&)>(utility::to_string))
     {
         throw_check_insert_col_name(col_name);
-        throw_check_insert_col_size(ranges::size(rng));
+        throw_check_insert_col_size(rg::size(rng));
         if (col_name.size()) header_.insert(col_name);
-        data_.emplace_back(ranges::view::transform(rng, cvt));
+        data_.emplace_back(rgv::transform(rng, cvt));
         return n_cols() - 1;
     }
 
@@ -341,7 +342,7 @@ public:
     /// \returns A range of ranges of std::string&.
     auto raw_cols()
     {
-        return ranges::view::transform(data_, ranges::view::all);
+        return rgv::transform(data_, rgv::all);
     }
 
     /// Return a raw view of all columns.
@@ -351,7 +352,7 @@ public:
     /// \returns A range of ranges of const std::string&.
     auto raw_cols() const
     {
-        return ranges::view::transform(data_, ranges::view::all);
+        return rgv::transform(data_, rgv::all);
     }
 
     /// Return a raw view of multiple columns.
@@ -430,10 +431,10 @@ public:
                std::tuple<std::function<Ts(const std::string&)>...> cvts =
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
-        assert(sizeof...(Ts) == ranges::size(col_indexes));
+        assert(sizeof...(Ts) == rg::size(col_indexes));
         return utility::tuple_transform_with_index(std::move(cvts),
           [raw_cols = raw_icols(std::move(col_indexes))](auto&& cvt, auto i) {
-              return ranges::view::transform(raw_cols[i], std::move(cvt));
+              return rgv::transform(raw_cols[i], std::move(cvt));
         });
     }
 
@@ -472,7 +473,7 @@ public:
     auto raw_icol(std::size_t col_index)
     {
         throw_check_col_idx(col_index);
-        return ranges::view::all(raw_cols()[col_index]);
+        return rgv::all(raw_cols()[col_index]);
     }
 
     /// Return a raw view of a column.
@@ -482,7 +483,7 @@ public:
     auto raw_icol(std::size_t col_index) const
     {
         throw_check_col_idx(col_index);
-        return ranges::view::all(raw_cols()[col_index]);
+        return rgv::all(raw_cols()[col_index]);
     }
 
     /// Return a raw view of a column.
@@ -532,7 +533,7 @@ public:
     auto icol(std::size_t col_index,
               std::function<T(const std::string&)> cvt = utility::string_to<T>) const
     {
-        return ranges::view::transform(raw_icol(col_index), cvt);
+        return rgv::transform(raw_icol(col_index), cvt);
     }
 
     /// Return a typed view of a column.
@@ -655,8 +656,13 @@ public:
                std::tuple<std::function<Ts(const std::string&)>...> cvts =
                  std::make_tuple(utility::string_to<Ts>...)) const
     {
+        // Make sure the zip produces std::tuple, not ranges::common_tuple or similar.
+        auto zip_as_std_tuple = [](auto&&... rngs) {
+            auto std_tupler = [](Ts... ts) -> std::tuple<Ts...> { return {std::move(ts)...}; };
+            return rgv::zip_with(std_tupler, std::forward<decltype(rngs)>(rngs)...);
+        };
         return std::apply(
-          ranges::view::zip,
+          zip_as_std_tuple,
           icols<Ts...>(std::move(col_indexes), std::move(cvts)));
     }
 
@@ -685,13 +691,15 @@ public:
 
     /// Return an indexed typed view of a single column.
     ///
-    /// This function returns a range of tuples, where the first tuple element is 
+    /// This function returns a range of tuples, where the first tuple element is
     /// from the key column and the second element is from the value column.
     /// This range can be used to construct a map or a hashmap.
     ///
     /// Example:
     /// \code
-    ///     std::unordered_map<int, double> mapper = df.index_icol<int, double>(0, 1);
+    ///     auto mapper =
+    ///         df.index_icol<int, double>(0, 1)
+    ///       | ranges::to<std::unordered_map<int, double>>;
     /// \endcode
     ///
     /// \param key_col_index Index of the column to be used as key.
@@ -710,13 +718,15 @@ public:
     {
         auto key_col = icol<IndexT>(key_col_index, std::move(key_col_cvt));
         auto val_col = icol<ColT>(val_col_index, std::move(val_col_cvt));
-        return ranges::view::zip(key_col, val_col);
+        return rgv::zip(key_col, val_col);
     }
 
     /// Return an indexed typed view of a single column.
     ///
     /// \code
-    ///     std::unordered_map<int, double> mapper = df.index_col<int, double>("first", "second");
+    ///     auto mapper =
+    ///         df.index_col<int, double>("first", "second")
+    ///       | ranges::to<std::unordered_map<int, double>>;
     /// \endcode
     ///
     /// This function is the same as index_icol(), but columns are selected by name.
@@ -744,8 +754,9 @@ public:
     /// See index_icol().
     ///
     /// \code
-    ///     std::unordered_map<int, std::tuple<long, double>> mapper =
-    ///       df.index_icols<int, long, double>(0, {1, 2});
+    ///     auto mapper =
+    ///         df.index_icols<int, long, double>(0, {1, 2});
+    ///       | ranges::to<int, std::tuple<long, double>>;
     /// \endcode
     ///
     /// This function is similar to index_icol(), but value type is a tuple of Ts.
@@ -760,7 +771,7 @@ public:
     {
         auto key_col = icol<IndexT>(key_col_index, std::move(key_col_cvt));
         auto val_cols = irows<Ts...>(std::move(val_col_indexes), std::move(val_col_cvts));
-        return ranges::view::zip(key_col, val_cols);
+        return rgv::zip(key_col, val_cols);
     }
 
     /// Return an indexed typed view of multiple columns.
@@ -768,8 +779,9 @@ public:
     /// See index_icol().
     ///
     /// \code
-    ///     std::unordered_map<int, std::tuple<long, double>> mapper =
-    ///       df.index_cols<int, long, double>("id", {"col1", "col2"});
+    ///     auto mapper =
+    ///         df.index_cols<int, long, double>("id", {"col1", "col2"})
+    ///       | ranges::to<std::unordered_map<int, std::tuple<long, double>>>;
     /// \endcode
     ///
     /// This function is similar to index_icols(), but columns are selected by name.

@@ -18,8 +18,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace hipipe::tensorflow;
-using namespace boost;
+namespace htf = hipipe::tensorflow;
 
 BOOST_AUTO_TEST_CASE(test_simple_run)
 {
@@ -36,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_simple_run)
 
     // run graph
     std::tie(output_data, output_shapes) =
-      run_graph<float>(*sess, input_names, input_data, input_shapes, output_names);
+      htf::run_graph<float>(*sess, input_names, input_data, input_shapes, output_names);
 
     // test output shape
     BOOST_TEST(output_shapes.size() == 1);

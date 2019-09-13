@@ -16,23 +16,26 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
+
 namespace detail {
 
     template<typename... Columns>
     class keep_fn {
     private:
-        friend ranges::view::view_access;
+        friend rgv::view_access;
 
         static auto bind(keep_fn<Columns...> fun)
         {
-            return ranges::make_pipeable(std::bind(fun, std::placeholders::_1));
+            return rg::make_pipeable(std::bind(fun, std::placeholders::_1));
         }
 
     public:
-        template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
+        CPP_template(typename Rng)(requires rg::input_range<Rng>)
         forward_stream_t operator()(Rng&& rng) const
         {
-            return ranges::view::transform(std::forward<Rng>(rng),
+            return rgv::transform(std::forward<Rng>(rng),
               [](batch_t batch) -> batch_t {
                   batch_t result;
                   (result.raw_insert_or_assign<Columns>(std::move(batch.at<Columns>())), ...);
@@ -41,11 +44,11 @@ namespace detail {
         }
 
         /// \cond
-        template<typename Rng, CONCEPT_REQUIRES_(!ranges::InputRange<Rng>())>
+        CPP_template(typename Rng)(requires !rg::input_range<Rng>)
         void operator()(Rng&&) const
         {
-            CONCEPT_ASSERT_MSG(ranges::InputRange<Rng>(),
-              "stream::keep only works on ranges satisfying the InputRange concept.");
+            CONCEPT_ASSERT_MSG(rg::input_range<Rng>(),
+              "stream::keep only works on ranges satisfying the input_range concept.");
         }
         /// \endcond
     };
@@ -64,6 +67,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | keep<value>;  // now it has only the value column
 /// \endcode
 template <typename... Columns>
-ranges::view::view<detail::keep_fn<Columns...>> keep{};
+rgv::view<detail::keep_fn<Columns...>> keep{};
 
 }  // end namespace hipipe::stream

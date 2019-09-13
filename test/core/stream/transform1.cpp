@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(test_partial_transform)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       // Increment unique_ptr values by one.
       | hipipe::stream::partial_transform(from<Unique>, to<Unique>,
           [](std::tuple<Unique::data_type&> data)
@@ -66,8 +66,8 @@ BOOST_AUTO_TEST_CASE(test_partial_transform)
               new_int_data.push_back(*std::get<0>(data).at(0));
               return std::make_tuple(std::move(new_int_data), std::move(new_unique_data));
         })
-      ;
-    
+      | rg::to_vector;
+
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Unique>().size() == 1);
     BOOST_TEST(stream.at(0).extract<Int>().size() == 1);
@@ -97,12 +97,12 @@ BOOST_AUTO_TEST_CASE(test_to_itself)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::transform(from<Int>, to<Int>,
          [](const int& v) { return v - 1; })
       | hipipe::stream::transform(from<Double>, to<Double>,
          [](const int& v) { return v - 1; })
-      ;
+      | rg::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     // batch 0
@@ -137,11 +137,12 @@ BOOST_AUTO_TEST_CASE(test_move_only)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::transform(from<Unique>, to<Unique>,
           [](const std::unique_ptr<int> &ptr) {
               return std::make_unique<int>(*ptr + 1);
-        });
+        })
+      | rg::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Unique>().size() == 1);
@@ -166,10 +167,11 @@ BOOST_AUTO_TEST_CASE(test_mutable)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | transform(from<Int>, to<Int>, [i = 0](const int&) mutable {
             return i++;
-        });
+        })
+      | rg::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>() == (std::vector<int>{0, 1, 2}));
@@ -192,13 +194,14 @@ BOOST_AUTO_TEST_CASE(test_two_to_one)
     batch2.insert_or_assign<Int>(Int::data_type{1, 2});
     batch2.insert_or_assign<Double>(Double::data_type{3., 7.});
     data.push_back(std::move(batch2));
-  
+
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | transform(from<Int, Double>, to<Double>, [](int i, double d) -> double {
             return i + d;
-        });
-  
+        })
+      | rg::to_vector;
+
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {3, 7}));
     BOOST_TEST(stream.at(0).extract<Double>() == (std::vector<double>{8., 8.}));
@@ -222,11 +225,12 @@ BOOST_AUTO_TEST_CASE(test_one_to_two)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | transform(from<Int>, to<Int, Double>, [](int i) {
             return std::make_tuple(i + i, (double)(i * i));
-        });
-  
+        })
+      | rg::to_vector;
+
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {6,  14 }));
     BOOST_TEST(stream.at(0).extract<Double>() == (std::vector<double>{9., 49.}));
@@ -253,12 +257,13 @@ BOOST_AUTO_TEST_CASE(test_dim0)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | transform(from<Int>, to<Int>, [](const Int::data_type& int_batch) {
             std::vector<int> new_batch = int_batch;
             new_batch.push_back(4);
             return new_batch;
-        }, dim<0>);
+        }, dim<0>)
+      | rg::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>()    == (std::vector<int>   {3, 7, 4}));

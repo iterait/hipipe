@@ -23,6 +23,9 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
+
 namespace detail {
 
     // Filter the stream using the given function.
@@ -42,16 +45,21 @@ namespace detail {
             // the following is much nicer when written as a pipeline, but this
             // is more compilation time friendly
             auto range_of_tuples =
-              ranges::view::move(
-                ranges::view::filter(
-                  ranges::view::zip(cols...),
-                  [this](const auto& tuple) -> bool {
-                      return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
-                  }
-                )
-              );
-                
-            return utility::maybe_untuple(utility::unzip(std::move(range_of_tuples)));
+              rgv::filter(
+                rgv::zip(cols...),
+                [this](const auto& tuple) -> bool {
+                    return std::invoke(this->fun, std::get<ByIdxs>(tuple)...);
+                }
+            );
+            // If std::vector::assign() gets a pair of forward iterators, it first iterates
+            // through the range and calculates the distance to allocate the memory
+            // and afterwards iterates through the range once over and assigns
+            // the values. To avoid this double iteration, we convert the
+            // filter_view to a vector manually and let it exponentially
+            // reallocate.
+            std::vector<rg::range_value_t<decltype(range_of_tuples)>> ts;
+            for (auto&& t : rgv::move(range_of_tuples)) ts.push_back(std::move(t));
+            return utility::maybe_untuple(utility::unzip(rgv::move(ts)));
         }
     };
 
@@ -112,7 +120,7 @@ namespace detail {
         static auto impl(From, by_t<ByColumns...>, Fun fun)
         {
             apply_filter_fun_to_columns<Fun, ByColumns...> fun_wrapper{std::move(fun)};
-            return ranges::view::filter(std::move(fun_wrapper));
+            return rgv::filter(std::move(fun_wrapper));
         }
     };
 

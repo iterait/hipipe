@@ -20,6 +20,9 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
+
 namespace detail {
 
 
@@ -29,7 +32,7 @@ namespace detail {
         template<typename Rng>
         static auto unpack_columns(Rng&& rng)
         {
-            return ranges::view::transform(std::forward<Rng>(rng), [](batch_t source)
+            return rgv::transform(std::forward<Rng>(rng), [](batch_t source)
                 -> std::tuple<typename FromColumns::data_type...> {
                     return {std::move(source.extract<FromColumns>())...};
             });
@@ -40,7 +43,7 @@ namespace detail {
         std::tuple<std::vector<utility::ndim_type_t<typename FromColumns::data_type, Dim>>...>
         impl(Rng&& range_of_batches)
         {
-            static_assert(std::is_same_v<std::decay_t<ranges::range_value_type_t<Rng>>, batch_t>,
+            static_assert(std::is_same_v<std::decay_t<rg::range_value_t<Rng>>, batch_t>,
               "hipipe::stream::unpack requires a range of batches as input.");
             static_assert(((Dim <= utility::ndims<typename FromColumns::data_type>::value) && ...),
               "hipipe::stream::unpack requires the requested dimension to be less or equal to the"
@@ -50,7 +53,7 @@ namespace detail {
             // flatten the values in each column upto the given dimension
             return utility::tuple_transform(std::move(tuple_of_batches), [](auto&& batch_range) {
                 // make sure to convert the flat view to std::vector to avoid dangling ref
-                return ranges::view::move(utility::flat_view<Dim+1>(batch_range));
+                return rgv::move(utility::flat_view<Dim+1>(batch_range));
             });
         }
     };

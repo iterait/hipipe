@@ -20,12 +20,14 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
 
 template <typename Rng>
-struct rebatch_view : ranges::view_facade<rebatch_view<Rng>> {
+struct rebatch_view : rg::view_facade<rebatch_view<Rng>> {
 private:
     /// \cond
-    friend ranges::range_access;
+    friend rg::range_access;
     /// \endcond
     Rng rng_;
     std::size_t n_;
@@ -33,7 +35,7 @@ private:
     struct cursor {
     private:
         rebatch_view<Rng>* rng_ = nullptr;
-        ranges::iterator_t<Rng> it_ = {};
+        rg::iterator_t<Rng> it_ = {};
 
         // the batch into which we accumulate the data
         // the batch will be a pointer to allow moving from it in const functions
@@ -49,7 +51,7 @@ private:
         bool find_next()
         {
             while (subbatch_->batch_size() == 0) {
-                if (it_ == ranges::end(rng_->rng_) || ++it_ == ranges::end(rng_->rng_)) {
+                if (it_ == rg::end(rng_->rng_) || ++it_ == rg::end(rng_->rng_)) {
                     return false;
                 }
                 subbatch_ = std::make_shared<batch_t>(*it_);
@@ -75,10 +77,10 @@ private:
 
         explicit cursor(rebatch_view<Rng>& rng)
           : rng_{&rng}
-          , it_{ranges::begin(rng_->rng_)}
+          , it_{rg::begin(rng_->rng_)}
         {
             // do nothing if the subrange is empty
-            if (it_ == ranges::end(rng_->rng_)) {
+            if (it_ == rg::end(rng_->rng_)) {
                 done_ = true;
             } else {
                 subbatch_ = std::make_shared<batch_t>(*it_);
@@ -91,7 +93,7 @@ private:
             return std::move(*batch_);
         }
 
-        bool equal(ranges::default_sentinel) const
+        bool equal(rg::default_sentinel_t) const
         {
             return done_;
         }
@@ -128,19 +130,19 @@ public:
 class rebatch_fn {
 private:
     /// \cond
-    friend ranges::view::view_access;
+    friend rgv::view_access;
     /// \endcond
 
     static auto bind(rebatch_fn rebatch, std::size_t n)
     {
-        return ranges::make_pipeable(std::bind(rebatch, std::placeholders::_1, n));
+        return rg::make_pipeable(std::bind(rebatch, std::placeholders::_1, n));
     }
 
 public:
-    template <typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
-    rebatch_view<ranges::view::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
+    CPP_template(class Rng)(requires rg::input_range<Rng>)
+    rebatch_view<rgv::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
     {
-        return {ranges::view::all(std::forward<Rng>(rng)), n};
+        return {rgv::all(std::forward<Rng>(rng)), n};
     }
 };  // class rebatch_fn
 
@@ -155,16 +157,16 @@ public:
 /// the batches computed by the previous stream pipeline and reorganizes the
 /// evaluated data to batches of a different size. To avoid recalculation of the
 /// entire stream whenever e.g., std::distance is called, this transformer
-/// intentionally changes the stream type to InputRange. The downside is that no
+/// intentionally changes the stream type to input_range. The downside is that no
 /// further transformations or buffering can be appended and everything has to be
 /// prepared before the application of this transformer.
 ///
 /// \code
 ///     HIPIPE_DEFINE_COLUMN(value, int)
-///     auto rng = view::iota(0, 10)
+///     auto rng = views::iota(0, 10)
 ///       | create<value>(2)  // batches the data by two examples
 ///       | rebatch(3);       // changes the batch size to three examples
 /// \endcode
-inline ranges::view::view<rebatch_fn> rebatch{};
+inline rgv::view<rebatch_fn> rebatch{};
 
 }  // namespace hipipe::stream

@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(test_enqueue)
     BOOST_TEST(ptr2.use_count() == 3);
     // the third task should not be running yet, so
     // one reference is held in this scope and one in the
-    // task queue 
+    // task queue
     BOOST_TEST(ptr3.use_count() == 2);
     // now wait until the first two threads finish
     BOOST_TEST(f1.get() == 0);
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(test_enqueue)
     BOOST_TEST(ptr3.use_count() == 3);
     // and wait until it is finished
     BOOST_TEST(f3.get() == 2);
-    
+
     // make sure that exactly 2 threads were spawned
     // (exactly one pair has to be the same)
     BOOST_CHECK((ids[0] == ids[1]) ^ (ids[1] == ids[2]) ^ (ids[0] == ids[2]));

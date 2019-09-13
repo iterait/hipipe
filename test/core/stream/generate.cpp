@@ -42,13 +42,14 @@ BOOST_AUTO_TEST_CASE(test_simple)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | generate(from<IntVec2d>, to<Generated>, [i = 0]() mutable {
             return i++;
         }, 1)
       | generate(from<IntVec2d>, to<Generated3d>, [i = 0]() mutable {
             return std::vector<int>{i++};
-        }, 1);
+        }, 1)
+      | rg::to_vector;
 
     for (std::size_t i = 0; i < stream.size(); ++i) {
         Generated::data_type generated     = stream.at(i).extract<Generated>();

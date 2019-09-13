@@ -16,7 +16,7 @@
 #include <hipipe/core/stream/filter.hpp>
 #include <hipipe/core/stream/for_each.hpp>
 
-#include <range/v3/to_container.hpp>
+#include <range/v3/range/conversion.hpp>
 
 
 BOOST_AUTO_TEST_CASE(test_mutable)
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(test_mutable)
 
     std::size_t i = 0;
     auto generated = data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::filter(from<Int, IntVec>, by<Int>,
           [i = 0](int v) mutable { return i++ % 2 == 0; })
       | hipipe::stream::for_each(from<Int, IntVec>, [&i](auto& ints, auto& intvecs) {
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(test_mutable)
                     BOOST_FAIL("Only two batches should be provided.");
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 2);
 }
 
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_dim2_partial)
 
     std::size_t i = 0;
     auto generated = data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::filter(from<IntVec>, by<IntVec>, [](int v) { return v >= 4; }, dim<2>)
       | hipipe::stream::for_each(from<Int, IntVec>, [&i](auto& ints, auto& intvecs) {
             switch (i++) {
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(test_dim2_partial)
                     BOOST_FAIL("Only two batches should be provided.");
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 2);
 }
 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only)
 
     std::size_t i = 0;
     data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::filter(from<UniqueVec>, by<UniqueVec>,
           [](auto& ptr) { return *ptr >= 4.; }, dim<2>)
       | hipipe::stream::for_each(from<UniqueVec>, [&i](auto& unique_vec) {
@@ -139,6 +139,6 @@ BOOST_AUTO_TEST_CASE(test_dim2_move_only)
                     break;
             }
         }, dim<0>)
-      | ranges::to_vector;
+      | rg::to_vector;
     BOOST_TEST(i == 3);
 }

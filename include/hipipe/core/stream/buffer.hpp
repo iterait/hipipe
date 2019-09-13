@@ -24,12 +24,14 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
 
 template<typename Rng>
-struct buffer_view : ranges::view_facade<buffer_view<Rng>> {
+struct buffer_view : rg::view_facade<buffer_view<Rng>> {
 private:
     /// \cond
-    friend ranges::range_access;
+    friend rg::range_access;
     /// \endcond
 
     Rng rng_;
@@ -38,8 +40,8 @@ private:
     struct cursor {
     private:
         buffer_view<Rng>* rng_ = nullptr;
-        ranges::iterator_t<Rng> it_ = {};
-        using value_type = ranges::range_value_type_t<Rng>;
+        rg::iterator_t<Rng> it_ = {};
+        using value_type = rg::range_value_t<Rng>;
         using reference_type = value_type&;
 
         std::size_t n_;
@@ -59,7 +61,7 @@ private:
 
         void fill_buffer()
         {
-            while (it_ != ranges::end(rng_->rng_) && buffer_.size() < n_) {
+            while (it_ != rg::end(rng_->rng_) && buffer_.size() < n_) {
                 auto task = [it = it_]() { return std::make_shared<value_type>(*it); };
                 buffer_.emplace_back(global_thread_pool.enqueue(std::move(task)));
                 ++it_;
@@ -73,7 +75,7 @@ private:
 
         explicit cursor(buffer_view<Rng>& rng)
           : rng_{&rng}
-          , it_{ranges::begin(rng.rng_)}
+          , it_{rg::begin(rng.rng_)}
           , n_{rng.n_}
         {
             fill_buffer();
@@ -84,9 +86,9 @@ private:
             return std::move(*buffer_.front().get());
         }
 
-        bool equal(ranges::default_sentinel) const
+        bool equal(rg::default_sentinel_t) const
         {
-            return buffer_.empty() && it_ == ranges::end(rng_->rng_);
+            return buffer_.empty() && it_ == rg::end(rng_->rng_);
         }
 
         bool equal(const cursor& that) const
@@ -123,44 +125,44 @@ public:
     {
     }
 
-    CONCEPT_REQUIRES(ranges::SizedRange<Rng const>())
-    constexpr ranges::range_size_type_t<Rng> size() const
+    CPP_template(int dummy = 0)(requires rg::sized_range<const Rng>)
+    constexpr rg::range_size_type_t<Rng> size() const
     {
-        return ranges::size(rng_);
+        return rg::size(rng_);
     }
 
-    CONCEPT_REQUIRES(ranges::SizedRange<Rng>())
-    constexpr ranges::range_size_type_t<Rng> size()
+    CPP_template(int dummy = 0)(requires rg::sized_range<const Rng>)
+    constexpr rg::range_size_type_t<Rng> size()
     {
-        return ranges::size(rng_);
+        return rg::size(rng_);
     }
 };
 
 class buffer_fn {
 private:
     /// \cond
-    friend ranges::view::view_access;
+    friend rgv::view_access;
     /// \endcond
 
     static auto bind(buffer_fn buffer, std::size_t n = std::numeric_limits<std::size_t>::max())
     {
-        return ranges::make_pipeable(std::bind(buffer, std::placeholders::_1, n));
+        return rg::make_pipeable(std::bind(buffer, std::placeholders::_1, n));
     }
 
 public:
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::ForwardRange<Rng>())>
-    buffer_view<ranges::view::all_t<Rng>>
+    CPP_template(typename Rng)(requires rg::forward_range<Rng>)
+    buffer_view<rgv::all_t<Rng>>
     operator()(Rng&& rng, std::size_t n = std::numeric_limits<std::size_t>::max()) const
     {
-        return {ranges::view::all(std::forward<Rng>(rng)), n};
+        return {rgv::all(std::forward<Rng>(rng)), n};
     }
 
     /// \cond
-    template<typename Rng, CONCEPT_REQUIRES_(!ranges::ForwardRange<Rng>())>
+    CPP_template(typename Rng)(requires !rg::forward_range<Rng>)
     void operator()(Rng&&, std::size_t n = 0) const
     {
-        CONCEPT_ASSERT_MSG(ranges::ForwardRange<Rng>(),
-          "stream::buffer only works on ranges satisfying the ForwardRange concept.");
+        CONCEPT_ASSERT_MSG(rg::forward_range<Rng>(),
+          "stream::buffer only works on ranges satisfying the forward_range concept.");
     }
     /// \endcond
 };
@@ -175,17 +177,17 @@ public:
 /// Note that this transformer is not lazy and instead _eagerly evaluates_ the
 /// data in asynchronous threads. To avoid recalculation of the entire underlying
 /// range whenever e.g., std::distance is called, this transformer intentionally
-/// changes the stream type to InputRange. The downside is that no further
+/// changes the stream type to input_range. The downside is that no further
 /// transformations can be appended (except for \ref Stream stream::rebatch) and everything
 /// has to be prepared before the application of this transformer.
 ///
 /// \code
 ///     std::vector<int> data = {1, 2, 3, 4, 5};
 ///     auto buffered_rng = data
-///       | ranges::view::transform([](int v) { return v + 1; })
+///       | rgv::transform([](int v) { return v + 1; })
 ///       | buffer(2);
 /// \endcode
-inline ranges::view::view<buffer_fn> buffer{};
+inline rgv::view<buffer_fn> buffer{};
 
 }  // end namespace hipipe::stream
 #endif

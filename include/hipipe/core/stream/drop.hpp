@@ -17,23 +17,26 @@
 
 namespace hipipe::stream {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
+
 namespace detail {
 
     template<typename... Columns>
     class drop_fn {
     private:
-        friend ranges::view::view_access;
+        friend rgv::view_access;
 
         static auto bind(drop_fn<Columns...> fun)
         {
-            return ranges::make_pipeable(std::bind(fun, std::placeholders::_1));
+            return rg::make_pipeable(std::bind(fun, std::placeholders::_1));
         }
 
     public:
-        template<typename Rng, CONCEPT_REQUIRES_(ranges::InputRange<Rng>())>
+        CPP_template(class Rng)(requires rg::input_range<Rng>)
         forward_stream_t operator()(Rng&& rng) const
         {
-            return ranges::view::transform(std::forward<Rng>(rng),
+            return rgv::transform(std::forward<Rng>(rng),
               [](batch_t batch) -> batch_t {
                   ((batch.erase<Columns>()), ...);
                   return batch;
@@ -41,11 +44,11 @@ namespace detail {
         }
 
         /// \cond
-        template<typename Rng, CONCEPT_REQUIRES_(!ranges::InputRange<Rng>())>
+        CPP_template(class Rng)(requires !rg::input_range<Rng>)
         void operator()(Rng&&) const
         {
-            CONCEPT_ASSERT_MSG(ranges::InputRange<Rng>(),
-              "stream::drop only works on ranges satisfying the InputRange concept.");
+            CONCEPT_ASSERT_MSG(rg::input_range<Rng>(),
+              "stream::drop only works on ranges satisfying the input_range concept.");
         }
         /// \endcond
     };
@@ -64,6 +67,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | drop<id>;
 /// \endcode
 template <typename... Columns>
-ranges::view::view<detail::drop_fn<Columns...>> drop{};
+rgv::view<detail::drop_fn<Columns...>> drop{};
 
 }  // end namespace hipipe::stream

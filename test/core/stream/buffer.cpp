@@ -17,6 +17,7 @@
 #include <hipipe/core/stream/transform.hpp>
 
 #include <boost/test/unit_test.hpp>
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/indirect.hpp>
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/transform.hpp>
@@ -42,30 +43,30 @@ BOOST_AUTO_TEST_CASE(test_simple_traverse)
     auto rng1 = hipipe::stream::buffer(data, 2);
     auto rng2 = data | hipipe::stream::buffer(2);
 
-    auto it1 = ranges::begin(rng1);
+    auto it1 = rg::begin(rng1);
     static_assert(std::is_same<int&&, decltype(*it1)>{});
     BOOST_TEST(*it1 == 1);
 
-    auto it2 = ranges::begin(rng2);
+    auto it2 = rg::begin(rng2);
     static_assert(std::is_same<int&&, decltype(*it2)>{});
     BOOST_TEST(*it2 == 1);
 
-    BOOST_TEST(ranges::to_vector(rng1) == data);
-    BOOST_TEST(ranges::to_vector(rng2) == data);
+    BOOST_TEST(rg::to_vector(rng1) == data);
+    BOOST_TEST(rg::to_vector(rng2) == data);
 }
 
 
 BOOST_AUTO_TEST_CASE(test_move_only_data)
 {
     // check move only type buffering
-    auto rng = ranges::view::iota(1, 6)
-      | ranges::view::transform([](int i) {
+    auto rng = rgv::iota(1, 6)
+      | rgv::transform([](int i) {
           return std::make_unique<int>(i);
         })
       | hipipe::stream::buffer(2)
-      | ranges::view::indirect;
+      | rgv::indirect;
 
-    BOOST_TEST(ranges::to_vector(rng) == ranges::to_vector(ranges::view::iota(1, 6)));
+    BOOST_TEST(rg::to_vector(rng) == rg::to_vector(rgv::iota(1, 6)));
 }
 
 
@@ -79,8 +80,8 @@ BOOST_AUTO_TEST_CASE(test_check_if_buffered)
 
     // iterate through and check not-yet visited elements' use count
     test_use_count(data, {1, 1, 1, 1, 1});
-    auto it = ranges::begin(rng);
-    BOOST_CHECK(it != ranges::end(rng));
+    auto it = rg::begin(rng);
+    BOOST_CHECK(it != rg::end(rng));
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {2, 2, 1, 1, 1});
     ++it;
@@ -93,19 +94,19 @@ BOOST_AUTO_TEST_CASE(test_check_if_buffered)
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {1, 1, 1, 2, 2});
     ++it;
-    BOOST_CHECK(it != ranges::end(rng));
+    BOOST_CHECK(it != rg::end(rng));
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {1, 1, 1, 1, 2});
     ++it;
-    BOOST_CHECK(it == ranges::end(rng));
+    BOOST_CHECK(it == rg::end(rng));
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {1, 1, 1, 1, 1});
 
     // iterate with two iterators at once
-    auto it2 = ranges::begin(rng);
+    auto it2 = rg::begin(rng);
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {2, 2, 1, 1, 1});
-    auto it3 = ranges::begin(rng);
+    auto it3 = rg::begin(rng);
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {3, 3, 1, 1, 1});
     ++it2;
@@ -113,8 +114,8 @@ BOOST_AUTO_TEST_CASE(test_check_if_buffered)
     test_use_count(data, {2, 3, 2, 1, 1});
     static_assert(std::is_same<std::shared_ptr<int>&&, decltype(*it)>{});
 
-    BOOST_TEST(ranges::to_vector(ranges::view::indirect(rng)) ==
-               ranges::to_vector(ranges::view::iota(0, 5)));
+    BOOST_TEST(rg::to_vector(rgv::indirect(rng)) ==
+               rg::to_vector(rgv::iota(0, 5)));
 }
 
 
@@ -128,8 +129,8 @@ BOOST_AUTO_TEST_CASE(test_buffer_whole_range)
 
     // iterate through and check not-yet visited elements' use count
     test_use_count(data, {1, 1, 1, 1, 1});
-    auto it = ranges::begin(rng);
-    BOOST_CHECK(it != ranges::end(rng));
+    auto it = rg::begin(rng);
+    BOOST_CHECK(it != rg::end(rng));
     std::this_thread::sleep_for(40ms);
     test_use_count(data, {2, 2, 2, 2, 2});
     ++it;
@@ -139,7 +140,7 @@ BOOST_AUTO_TEST_CASE(test_buffer_whole_range)
     ++it;
     ++it;
     ++it;
-    BOOST_CHECK(it == ranges::end(rng));
+    BOOST_CHECK(it == rg::end(rng));
     std::this_thread::sleep_for(20ms);
     test_use_count(data, {1, 1, 1, 1, 1});
 }
@@ -167,12 +168,13 @@ BOOST_AUTO_TEST_CASE(test_buffer_transformed_stream)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::transform(from<Int, Unique>, to<Int>,
           [](int i, std::unique_ptr<int>& p) -> int {
             return i + *p;
         })
-      | hipipe::stream::buffer(3);
+      | hipipe::stream::buffer(3)
+      | rg::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<Int>().size() == 2);

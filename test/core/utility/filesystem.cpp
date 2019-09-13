@@ -18,7 +18,7 @@
 #include <set>
 #include <string>
 
-using namespace hipipe::utility;
+namespace hpu = hipipe::utility;
 namespace fs = std::experimental::filesystem;
 const char* hexchars = "0123456789abcdef";
 const char* pattern = "my_dir_%%%";
@@ -39,7 +39,7 @@ void check_correct(const fs::path& temp_dir_full)
 
 BOOST_AUTO_TEST_CASE(test_create_temp_directory)
 {
-    fs::path temp_dir = create_temp_directory(pattern);
+    fs::path temp_dir = hpu::create_temp_directory(pattern);
     check_correct(temp_dir);
     fs::remove(temp_dir);
 }
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test_create_many_temp_directories)
 {
     std::set<fs::path> paths;
     for (int i = 0; i < 2000; ++i) {
-        fs::path temp_dir = create_temp_directory(pattern);
+        fs::path temp_dir = hpu::create_temp_directory(pattern);
         check_correct(temp_dir);
         BOOST_TEST(paths.count(temp_dir) == 0);
         paths.insert(temp_dir);
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_create_many_temp_directories)
 
 BOOST_AUTO_TEST_CASE(test_throws_when_pattern_unsatisfiable)
 {
-    fs::path temp_dir = create_temp_directory(pattern);
-    BOOST_CHECK_THROW(create_temp_directory(temp_dir.filename()), std::runtime_error);
+    fs::path temp_dir = hpu::create_temp_directory(pattern);
+    BOOST_CHECK_THROW(hpu::create_temp_directory(temp_dir.filename()), std::runtime_error);
     fs::remove(temp_dir);
 }

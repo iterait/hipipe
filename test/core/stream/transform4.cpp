@@ -40,10 +40,11 @@ BOOST_AUTO_TEST_CASE(test_conditional_simple)
     data.push_back(std::move(batch2));
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::transform(from<dogs>, to<dogs>, cond<do_trans>,
           [](int dog) { return -1; }
-        );
+        )
+      | rg::to_vector;
 
     BOOST_TEST(stream.size() == 2);
     BOOST_TEST(stream.at(0).extract<dogs>() == (std::vector<int>{-1, -1,  5}));
@@ -74,11 +75,13 @@ BOOST_AUTO_TEST_CASE(test_conditional_with_random_fill)
     std::bernoulli_distribution dist{0.5};
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::random_fill(from<dogs>, to<do_trans>, 1, dist, prng)
       | hipipe::stream::transform(from<dogs>, to<dogs>, cond<do_trans>,
           [](int dog) { return dog - 1; }
-        );
+        )
+      | rg::to_vector;
+
 
     long n_transformed = 0;
     BOOST_TEST(stream.size() == 2);
@@ -116,18 +119,19 @@ BOOST_AUTO_TEST_CASE(test_probabilistic_simple)
     std::mt19937 prng{1000003};
 
     std::vector<batch_t> stream = data
-      | ranges::view::move
+      | rgv::move
       | hipipe::stream::transform(from<dogs>, to<dogs>, 1.0, [](int dog) { return 1; }, prng)
       | hipipe::stream::transform(from<dogs>, to<dogs>, 0.5, [](int dog) { return 2; }, prng)
-      | hipipe::stream::transform(from<dogs>, to<dogs>, 0.0, [](int dog) { return 3; }, prng);
+      | hipipe::stream::transform(from<dogs>, to<dogs>, 0.0, [](int dog) { return 3; }, prng)
+      | rg::to_vector;
 
     BOOST_CHECK(stream.size() == 2);
-    long number1 = ranges::count(stream.at(0).extract<dogs>(), 1) +
-                   ranges::count(stream.at(1).extract<dogs>(), 1);
-    long number2 = ranges::count(stream.at(0).extract<dogs>(), 2) +
-                   ranges::count(stream.at(1).extract<dogs>(), 2);
-    long number3 = ranges::count(stream.at(0).extract<dogs>(), 3) +
-                   ranges::count(stream.at(1).extract<dogs>(), 3);
+    long number1 = rg::count(stream.at(0).extract<dogs>(), 1) +
+                   rg::count(stream.at(1).extract<dogs>(), 1);
+    long number2 = rg::count(stream.at(0).extract<dogs>(), 2) +
+                   rg::count(stream.at(1).extract<dogs>(), 2);
+    long number3 = rg::count(stream.at(0).extract<dogs>(), 3) +
+                   rg::count(stream.at(1).extract<dogs>(), 3);
     BOOST_TEST(number1 >= 1);
     BOOST_TEST(number1 <= 5);
     BOOST_TEST(number1 == 6 - number2);

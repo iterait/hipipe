@@ -18,14 +18,16 @@
 
 namespace hipipe::python::stream {
 
+namespace rg = ranges;
+namespace rgv = ranges::views;
 
-range<ranges::any_view<boost::python::dict>> to_python(hipipe::stream::input_stream_t stream)
+range<rg::any_view<boost::python::dict>> to_python(hipipe::stream::input_stream_t stream)
 {
-    ranges::any_view<boost::python::dict> range_of_dicts =
-      ranges::view::transform(std::move(stream), &hipipe::stream::batch_t::to_python);
+    rg::any_view<boost::python::dict> range_of_dicts =
+      rgv::transform(std::move(stream), &hipipe::stream::batch_t::to_python);
 
     // make python iterator out of the range of python types
-    return range<ranges::any_view<boost::python::dict>>{std::move(range_of_dicts)};
+    return range<rg::any_view<boost::python::dict>>{std::move(range_of_dicts)};
 }
 
 

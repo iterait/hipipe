@@ -18,7 +18,7 @@
 
 #include <vector>
 
-using namespace hipipe;
+namespace hp = hipipe;
 
 std::vector<std::vector<unsigned char>> data{
   {},
@@ -47,13 +47,13 @@ std::vector<std::string> base64_data{
 BOOST_AUTO_TEST_CASE(test_b64_encode)
 {
     for (std::size_t i = 0; i < data.size(); ++i) {
-        BOOST_TEST(base64_encode(data[i]) == base64_data[i]);
+        BOOST_TEST(hp::base64_encode(data[i]) == base64_data[i]);
     }
 }
 
 BOOST_AUTO_TEST_CASE(test_b64_decode)
 {
     for (std::size_t i = 0; i < data.size(); ++i) {
-        BOOST_TEST(base64_decode(base64_data[i]) == data[i]);
+        BOOST_TEST(hp::base64_decode(base64_data[i]) == data[i]);
     }
 }

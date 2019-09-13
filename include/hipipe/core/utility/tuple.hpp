@@ -13,8 +13,8 @@
 #define HIPIPE_CORE_TUPLE_UTILS_HPP
 
 #include <range/v3/core.hpp>
-#include <range/v3/size.hpp>
-#include <range/v3/to_container.hpp>
+#include <range/v3/range/conversion.hpp>
+#include <range/v3/range/primitives.hpp>
 
 #include <experimental/tuple>
 #include <ostream>
@@ -22,6 +22,8 @@
 #include <vector>
 
 namespace hipipe::utility {
+
+namespace rg = ranges;
 
 /// \ingroup Tuple
 /// \brief Get the first index of a type in a variadic template list
@@ -207,12 +209,12 @@ namespace detail {
     }
 
     // if the size of the given range is known, return it, otherwise return 0
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::SizedRange<Rng>())>
+    CPP_template(class Rng)(requires rg::sized_range<Rng>)
     std::size_t safe_reserve_size(Rng&& rng)
     {
-        return ranges::size(rng);
+        return rg::size(rng);
     }
-    template<typename Rng, CONCEPT_REQUIRES_(!ranges::SizedRange<Rng>())>
+    CPP_template(class Rng)(requires !rg::sized_range<Rng>)
     std::size_t safe_reserve_size(Rng&& rng)
     {
         return 0;
@@ -221,7 +223,7 @@ namespace detail {
     template<typename Rng>
     auto unzip_impl(Rng& range_of_tuples)
     {
-        using tuple_type = ranges::range_value_type_t<Rng>;
+        using tuple_type = rg::range_value_t<Rng>;
         constexpr auto tuple_size = std::tuple_size<tuple_type>{};
         constexpr auto indices = std::make_index_sequence<tuple_size>{};
         std::size_t reserve_size = detail::safe_reserve_size(range_of_tuples);
@@ -240,7 +242,7 @@ namespace detail {
 }  // namespace detail
 
 /// \ingroup Tuple
-/// \brief Unzips a range of tuples to a tuple of ranges.
+/// \brief Unzips a range of tuples to a tuple of std::vectors.
 ///
 /// Example:
 /// \code
@@ -253,7 +255,7 @@ namespace detail {
 ///     std::vector<double> vb;
 ///     std::tie(va, vb) = unzip(data);
 /// \endcode
-template<typename Rng, CONCEPT_REQUIRES_(ranges::Range<Rng>() && !ranges::View<Rng>())>
+CPP_template(class Rng)(requires rg::range<Rng> && !rg::view_<Rng>)
 auto unzip(Rng range_of_tuples)
 {
     // copy the given container and move elements out of it
@@ -261,10 +263,10 @@ auto unzip(Rng range_of_tuples)
 }
 
 /// Specialization of unzip function for views.
-template<typename Rng, CONCEPT_REQUIRES_(ranges::View<Rng>())>
+CPP_template(class Rng)(requires rg::view_<Rng>)
 auto unzip(Rng view_of_tuples)
 {
-    return utility::unzip(ranges::to_vector(view_of_tuples));
+    return utility::unzip(rg::to_vector(view_of_tuples));
 }
 
 // maybe unzip //
@@ -355,11 +357,11 @@ namespace detail {
 ///     std::tuple<int, double> t1{1, 3.};
 ///     auto t2 = maybe_untuple(t1);
 ///     static_assert(std::is_same_v<decltype(t2), std::tuple<int, double>>);
-/// 
+///
 ///     std::tuple<int> t3{1};
 ///     auto t4 = maybe_untuple(t3);
 ///     static_assert(std::is_same_v<decltype(t4), int>);
-///  
+///
 ///     int i = 1;
 ///     std::tuple<int&> t5{i};
 ///     auto& t6 = maybe_untuple(t5);
@@ -393,7 +395,7 @@ namespace detail {
 /// Example:
 /// \code
 ///     auto tpl = std::make_tuple(1, 0.25, 'a');
-///   
+///
 ///     times_with_index<3>([&tpl](auto index) {
 ///         ++std::get<index>(tpl);
 ///     });
@@ -411,11 +413,11 @@ constexpr Fun times_with_index(Fun&& fun)
 /// Example:
 /// \code
 ///     auto tpl = std::make_tuple(1, 2.);
-///   
+///
 ///     tuple_for_each_with_index(tpl, [](auto& val, auto index) {
 ///         val += index;
 ///     });
-///   
+///
 ///     assert(tpl == std::make_tuple(1, 3.));
 /// \endcode
 template <typename Tuple, typename Fun>
@@ -447,11 +449,11 @@ namespace detail {
 /// Example:
 /// \code
 ///     auto tpl = std::make_tuple(1, 0.25, 'a');
-///   
+///
 ///     auto tpl2 = tuple_transform_with_index(tpl, [](auto&& elem, auto index) {
 ///         return elem + index;
 ///     });
-///   
+///
 ///     assert(tpl2 == std::make_tuple(1, 1.25, 'c'));
 /// \endcode
 template <typename Tuple, typename Fun>

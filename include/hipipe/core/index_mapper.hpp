@@ -12,12 +12,16 @@
 #ifndef HIPIPE_CORE_INDEX_MAPPER_HPP
 #define HIPIPE_CORE_INDEX_MAPPER_HPP
 
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
 
 #include <unordered_map>
 #include <vector>
 
 namespace hipipe {
+
+namespace rg = ranges;
+namespace rgv = ranges::views;
 
 /// \ingroup IndexMapper
 /// \brief Provides a bidirectional access from values to their indices in an std::vector.
@@ -38,7 +42,7 @@ public:
     /// Behaves as if the values were inserted to the mapper using insert().
     index_mapper(std::initializer_list<T> values)
     {
-        insert(ranges::view::all(values));
+        insert(rgv::all(values));
     }
 
     // index_for //
@@ -65,17 +69,19 @@ public:
     /// \throws std::out_of_range If any of the values does not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals) const
     {
-        return ranges::view::transform(vals, [this](const T& val) {
-            return this->index_for(val);
-        });
+        return rg::to_vector(rgv::transform(
+          vals, [this](const T& val) {
+              return this->index_for(val);
+          }));
     }
 
     /// Returns the indexes of the given values or a default value if they do not exist.
     std::vector<std::size_t> index_for(const std::vector<T>& vals, std::size_t defval) const
     {
-        return ranges::view::transform(vals, [this, defval](const T& val) {
-            return this->index_for(val, defval);
-        });
+        return rg::to_vector(rgv::transform(
+          vals, [this, defval](const T& val) {
+              return this->index_for(val, defval);
+          }));
     }
 
     // at //
@@ -96,9 +102,10 @@ public:
     /// \throws std::out_of_range If any of the indexes does not exist in the mapper.
     std::vector<T> at(const std::vector<std::size_t>& idxs) const
     {
-        return ranges::view::transform(idxs, [this](std::size_t idx) {
-            return this->at(idx);
-        });
+        return rg::to_vector(rgv::transform(
+          idxs, [this](std::size_t idx) {
+              return this->at(idx);
+          }));
     }
 
     // insert //
@@ -123,14 +130,14 @@ public:
     ///
     /// \param rng The range of values to be inserted.
     /// \throws std::invalid_argument if any of the elements is already present in the mapper.
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::Container<Rng>())>
+    CPP_template(class Rng)(requires rg::container<Rng>)
     void insert(Rng rng)
     {
         for (auto& val : rng) insert(std::move(val));
     }
 
     /// Specialization of range insertion for views.
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::View<Rng>())>
+    CPP_template(class Rng)(requires rg::view_<Rng>)
     void insert(Rng rng)
     {
         for (auto&& val : rng) insert(std::forward<decltype(val)>(val));
@@ -153,14 +160,14 @@ public:
     /// Insert elements to index mapper while skipping duplicates.
     ///
     /// \param rng The range of values to be inserted.
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::Container<Rng>())>
+    CPP_template(class Rng)(requires rg::container<Rng>)
     void try_insert(Rng rng)
     {
         for (auto& val : rng) try_insert(std::move(val));
     }
 
     /// Specialization of try_insert for views.
-    template<typename Rng, CONCEPT_REQUIRES_(ranges::View<Rng>())>
+    CPP_template(class Rng)(requires rg::view_<Rng>)
     void try_insert(Rng rng)
     {
         for (auto&& val : rng) try_insert(std::forward<decltype(val)>(val));
@@ -205,7 +212,7 @@ private:
 ///
 /// \param rng The range of values to be inserted.
 /// \returns The index mapper made of unique values of the range.
-template<typename Rng, typename T = ranges::range_value_type_t<Rng>>
+template<typename Rng, typename T = rg::range_value_t<Rng>>
 index_mapper<T> make_unique_index_mapper(Rng&& rng)
 {
     index_mapper<T> mapper;

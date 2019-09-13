@@ -11,6 +11,7 @@
 
 #include <hipipe/core/dataframe.hpp>
 
+#include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/zip.hpp>
 
@@ -22,22 +23,23 @@ namespace hipipe {
 
 std::ostream& operator<<(std::ostream& out, const dataframe& df)
 {
-    namespace view = ranges::view;
     // calculate the width of the columns using their longest field
     std::vector<std::size_t> col_widths = df.raw_cols()
-      | view::transform([](auto&& col) {
-            std::vector<std::size_t> elem_sizes = col
-              | view::transform([](auto& field) { return ranges::size(field); });
-            return ranges::max(elem_sizes) + 2;
-        });
+      | rgv::transform([](auto&& col) {
+            auto elem_sizes = col
+              | rgv::transform([](auto& field) { return rg::size(field); });
+            return rg::max(elem_sizes) + 2;
+        })
+      | rg::to_vector;
 
     auto header = df.header();
     if (header.size()) {
         // update col_widths using header widths
-        col_widths = view::zip(col_widths, header)
-          | view::transform([](auto&& tpl) {
+        col_widths = rgv::zip(col_widths, header)
+          | rgv::transform([](auto&& tpl) {
                 return std::max(std::get<0>(tpl), std::get<1>(tpl).size() + 2);
-            });
+            })
+          | rg::to_vector;
 
         // print header
         for (std::size_t j = 0; j < header.size(); ++j) {
