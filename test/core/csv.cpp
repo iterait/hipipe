@@ -25,7 +25,7 @@
 #include <sstream>
 #include <vector>
 
-using namespace hipipe;
+namespace hp = hipipe;
 namespace fs = std::experimental::filesystem;
 
 // 2d container transposition //
@@ -112,35 +112,35 @@ const std::vector<std::string> invalid_csvs{
 BOOST_AUTO_TEST_CASE(test_csv_istream_range_empty_csv)
 {
     std::istringstream empty_csv_ss;
-    auto csv_rows = csv_istream_range{empty_csv_ss};
+    auto csv_rows = hp::csv_istream_range{empty_csv_ss};
     BOOST_CHECK(csv_rows.begin() == csv_rows.end());
 }
 
 BOOST_AUTO_TEST_CASE(test_csv_istream_range_simple_csv)
 {
     std::istringstream simple_csv_ss{simple_csv};
-    auto csv_rows = csv_istream_range{simple_csv_ss};
+    auto csv_rows = hp::csv_istream_range{simple_csv_ss};
     test_ranges_equal(csv_rows, simple_csv_rows);
 }
 
 BOOST_AUTO_TEST_CASE(test_csv_istream_range_empty_fields_csv)
 {
     std::istringstream empty_fields_csv_ss{empty_fields_csv};
-    auto csv_rows = csv_istream_range{empty_fields_csv_ss};
+    auto csv_rows = hp::csv_istream_range{empty_fields_csv_ss};
     test_ranges_equal(csv_rows, empty_fields_csv_rows);
 }
 
 BOOST_AUTO_TEST_CASE(test_csv_istream_range_quoted_csv)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    auto csv_rows = csv_istream_range{quoted_csv_ss, '|', '*', '+'};
+    auto csv_rows = hp::csv_istream_range{quoted_csv_ss, '|', '*', '+'};
     test_ranges_equal(csv_rows, quoted_csv_rows);
 }
 
 BOOST_AUTO_TEST_CASE(test_read_csv_from_istream)
 {
     std::istringstream simple_csv_ss{simple_csv};
-    const dataframe df = read_csv(simple_csv_ss);
+    const hp::dataframe df = hp::read_csv(simple_csv_ss);
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     test_ranges_equal(df.header(), simple_csv_rows[0]);
@@ -151,13 +151,13 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream)
 
 BOOST_AUTO_TEST_CASE(test_read_csv_from_no_file)
 {
-    BOOST_CHECK_THROW(read_csv("no_file.csv"), std::ios_base::failure);
+    BOOST_CHECK_THROW(hp::read_csv("no_file.csv"), std::ios_base::failure);
 }
 
 BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
 {
     std::istringstream simple_csv_ss{simple_csv};
-    const dataframe df = read_csv(simple_csv_ss, 1, false);
+    const hp::dataframe df = hp::read_csv(simple_csv_ss, 1, false);
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 3);
     BOOST_TEST(df.header().empty());
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(test_read_csv_from_istream_no_header)
 BOOST_AUTO_TEST_CASE(test_read_quoted_csv_from_istream)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    const dataframe df = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
+    const hp::dataframe df = hp::read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
     BOOST_TEST(df.n_cols() == 3);
     BOOST_TEST(df.n_rows() == 2);
     test_ranges_equal(df.header(), quoted_csv_rows[0]);
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(test_read_quoted_csv_from_istream)
 BOOST_AUTO_TEST_CASE(test_write_quoted_to_ostream)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    const dataframe df = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
+    const hp::dataframe df = hp::read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
 
     std::ostringstream oss;
     write_csv(oss, df, '|', '*', '+');
@@ -194,11 +194,11 @@ BOOST_AUTO_TEST_CASE(test_write_quoted_to_ostream)
 BOOST_AUTO_TEST_CASE(test_compare_after_write_and_read)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    const dataframe df1 = read_csv(quoted_csv_ss);
+    const hp::dataframe df1 = hp::read_csv(quoted_csv_ss);
 
     std::stringstream oss;
     write_csv(oss, df1, '|', '*', '+');
-    const dataframe df2 = read_csv(oss, 0, true, '|', '*', '+');
+    const hp::dataframe df2 = hp::read_csv(oss, 0, true, '|', '*', '+');
     test_ranges_equal(df1.header(), df2.header());
     // TODO The following causes a warning in clang++ 8
     auto df1_cols = rg::to<std::vector<std::vector<std::string>>>(df1.raw_cols());
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(test_write_to_no_file)
 {
     namespace fs = std::experimental::filesystem;
     std::istringstream simple_csv_ss{simple_csv};
-    const dataframe df = read_csv(simple_csv_ss);
+    const hp::dataframe df = hp::read_csv(simple_csv_ss);
     fs::path dir{"dummy_directory"};
     fs::create_directory(dir);
     BOOST_CHECK_THROW(write_csv(dir, df), std::ios_base::failure);
@@ -219,11 +219,11 @@ BOOST_AUTO_TEST_CASE(test_write_to_no_file)
 BOOST_AUTO_TEST_CASE(test_file_write_and_read)
 {
     std::istringstream quoted_csv_ss{quoted_csv};
-    const dataframe df1 = read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
+    const hp::dataframe df1 = hp::read_csv(quoted_csv_ss, 0, true, '|', '*', '+');
 
     fs::path csv_file{"test.core.csv.test_file_write_and_read.csv"};
     write_csv(csv_file, df1, '|', '*', '+');
-    const dataframe df2 = read_csv(csv_file, 0, true, '|', '*', '+');
+    const hp::dataframe df2 = hp::read_csv(csv_file, 0, true, '|', '*', '+');
     fs::remove(csv_file);
     test_ranges_equal(df1.header(), df2.header());
     // TODO The following causes a warning in clang++ 8
@@ -236,6 +236,6 @@ BOOST_AUTO_TEST_CASE(test_exceptions)
 {
     for (auto& invalid_csv : invalid_csvs) {
         std::istringstream invalid_csv_ss{invalid_csv};
-        BOOST_CHECK_THROW(read_csv(invalid_csv_ss), std::ios_base::failure);
+        BOOST_CHECK_THROW(hp::read_csv(invalid_csv_ss), std::ios_base::failure);
     }
 }

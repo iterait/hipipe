@@ -22,9 +22,9 @@
 #include <string>
 #include <vector>
 
-using namespace hipipe;
+namespace hp = hipipe;
 
-const dataframe simple_df{
+const hp::dataframe simple_df{
     // columns
     std::make_tuple(
       std::vector<int>{1, 2, 3},
@@ -37,18 +37,18 @@ const dataframe simple_df{
 
 BOOST_AUTO_TEST_CASE(test_constructor_exceptions)
 {
-    BOOST_CHECK_THROW((dataframe{simple_df.data(), {"short", "header"}}),
+    BOOST_CHECK_THROW((hp::dataframe{simple_df.data(), {"short", "header"}}),
       std::invalid_argument);
-    BOOST_CHECK_THROW((dataframe{simple_df.data(), {"invalid", "", "header"}}),
+    BOOST_CHECK_THROW((hp::dataframe{simple_df.data(), {"invalid", "", "header"}}),
       std::invalid_argument);
     auto invalid_data = simple_df.data();
     invalid_data[1].pop_back();
-    BOOST_CHECK_THROW(dataframe{invalid_data}, std::invalid_argument);
+    BOOST_CHECK_THROW(hp::dataframe{invalid_data}, std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(test_insert_col)
 {
-    dataframe df{simple_df};
+    hp::dataframe df{simple_df};
     BOOST_CHECK_THROW(df.insert_col(
       std::vector<int>{5, 6, 7} /* missing header */), std::invalid_argument);
     BOOST_CHECK_THROW(df.insert_col(
@@ -62,14 +62,14 @@ BOOST_AUTO_TEST_CASE(test_insert_col)
     test_ranges_equal(df.raw_cols()[3], std::vector<std::string>{"5", "6", "7"});
     BOOST_TEST(df.raw_rows()[0][3] == "5");
 
-    dataframe df2{simple_df.data()};
+    hp::dataframe df2{simple_df.data()};
     BOOST_CHECK_THROW(df2.insert_col(
       std::vector<int>{5, 6, 7}, /* extra header */ "X"), std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(test_drop_col)
 {
-    dataframe df{simple_df};
+    hp::dataframe df{simple_df};
     BOOST_CHECK_THROW(df.drop_col("X"), std::out_of_range);
     BOOST_CHECK_THROW(df.drop_icol(3), std::out_of_range);
     df.drop_col("B");
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_drop_col)
 
 BOOST_AUTO_TEST_CASE(test_drop_row)
 {
-    dataframe df{simple_df};
+    hp::dataframe df{simple_df};
     BOOST_CHECK_THROW(df.drop_row(3), std::out_of_range);
     df.drop_row(1);
     BOOST_TEST(df.n_cols() == 3UL);
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(test_drop_row)
 
 BOOST_AUTO_TEST_CASE(test_insert_row)
 {
-    dataframe df{simple_df};
+    hp::dataframe df{simple_df};
     // tuple variant
     BOOST_CHECK_THROW(df.insert_row(std::make_tuple("too few")), std::invalid_argument);
     BOOST_CHECK_THROW(df.insert_row(std::make_tuple("t", "o", "o", "much")), std::invalid_argument);
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_insert_row)
 
 BOOST_AUTO_TEST_CASE(test_raw_col_read)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     BOOST_CHECK_THROW(df.raw_icol(3), std::out_of_range);
     BOOST_CHECK_THROW(df.raw_col("D"), std::out_of_range);
     for (int i = 0; i < 3; ++i) {
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(test_raw_col_read)
 
 BOOST_AUTO_TEST_CASE(test_raw_col_write)
 {
-    dataframe df{simple_df};
+    hp::dataframe df{simple_df};
     auto id_col = df.raw_col("Id");
     test_ranges_equal(id_col, std::vector<std::string>{"1", "2", "3"});
     id_col = df.raw_icol(0);
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(test_raw_col_write)
 
 BOOST_AUTO_TEST_CASE(test_col)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     BOOST_CHECK_THROW(df.col<std::string>("D"), std::out_of_range);
     BOOST_CHECK_THROW(df.icol<double>(3), std::out_of_range);
     auto b_col = df.col<double>("B");
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(test_col)
 
 BOOST_AUTO_TEST_CASE(test_raw_cols_read)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     BOOST_CHECK_THROW((df.raw_icols({0, 3})), std::out_of_range);
     BOOST_CHECK_THROW((df.raw_cols({"Id", "D"})), std::out_of_range);
     test_ranges_equal(df.raw_icols({0, 2})[0], std::vector<std::string>{"1", "2", "3"});
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(test_raw_cols_read)
 
 BOOST_AUTO_TEST_CASE(test_raw_cols_write)
 {
-    dataframe df{simple_df};
+    hp::dataframe df{simple_df};
     auto cols = df.raw_cols();
     for (int i = 0; i < 3; ++i) {
         cols[1][i][0] = 'c';
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(test_raw_cols_write)
 
 BOOST_AUTO_TEST_CASE(test_cols)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     BOOST_CHECK_THROW((df.cols<std::string, double>({"A", "D"})), std::out_of_range);
     BOOST_CHECK_THROW((df.icols<std::string, double>({0, 3})), std::out_of_range);
     auto cols = df.cols<std::string, double>({"A", "B"});
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(test_cols)
 
 BOOST_AUTO_TEST_CASE(test_raw_rows_read)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     BOOST_CHECK_THROW((df.raw_rows({"X", "Id"})), std::out_of_range);
     BOOST_CHECK_THROW((df.raw_irows({3, 0})), std::out_of_range);
     test_ranges_equal(df.raw_rows()[0], std::vector<std::string>{"1", "a1", "1.1"});
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(test_raw_rows_read)
 
 BOOST_AUTO_TEST_CASE(test_raw_rows_write)
 {
-    dataframe df{simple_df};
+    hp::dataframe df{simple_df};
     auto rows = df.raw_rows();
     for (int i = 0; i < 3; ++i) {
         rows[1][i][0] = 'c';
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(test_raw_rows_write)
 
 BOOST_AUTO_TEST_CASE(test_rows)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     auto rows = df.rows<std::string, double>({"A", "B"});
     BOOST_TEST(std::get<0>(rows[0]) == "a1");
     BOOST_TEST(std::get<1>(rows[0]) == 1.1);
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(test_rows)
 
 BOOST_AUTO_TEST_CASE(test_print)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     std::ostringstream ss;
     ss << df;
     BOOST_TEST(ss.str() == "  Id|   A|    B\n"
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE(test_print)
 
 BOOST_AUTO_TEST_CASE(test_no_header)
 {
-    dataframe df{
+    hp::dataframe df{
       std::make_tuple(
         std::vector<int>{1, 2, 3},
         std::vector<std::string>{"a1", "a2", "a3"},
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE(test_no_header)
 
 BOOST_AUTO_TEST_CASE(test_index_col)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     BOOST_CHECK_THROW((df.index_icol<char, bool>(3, 0)), std::out_of_range);
     BOOST_CHECK_THROW((df.index_col<int, double>("Id", "X")), std::out_of_range);
     auto indexed_irow = df.index_icol<int, double>(0, 2)
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(test_index_col)
 
 BOOST_AUTO_TEST_CASE(test_index_cols)
 {
-    const dataframe df{simple_df};
+    const hp::dataframe df{simple_df};
     BOOST_CHECK_THROW((df.index_icols<int, char, bool>(0, {1, 3})), std::out_of_range);
     BOOST_CHECK_THROW((df.index_cols<double, bool, bool>("Id", {"X", "Id"})), std::out_of_range);
     auto indexed_irows =
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(test_index_cols)
 BOOST_AUTO_TEST_CASE(test_set_header)
 {
     // insert new header
-    dataframe df{simple_df.data()};
+    hp::dataframe df{simple_df.data()};
     BOOST_CHECK_THROW(df.header({"too", "few"}), std::invalid_argument);
     BOOST_CHECK_THROW(df.header({"wa", "ay", "too", "many"}), std::invalid_argument);
     BOOST_CHECK_THROW(df.header({"invalid", "", "header"}), std::invalid_argument);

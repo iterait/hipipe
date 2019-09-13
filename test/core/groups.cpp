@@ -22,7 +22,7 @@
 #include <random>
 #include <vector>
 
-using namespace hipipe;
+namespace hp = hipipe;
 
 // test with a seeded random generator
 std::mt19937 prng{1000003};
@@ -38,7 +38,7 @@ std::size_t n_groups(const std::vector<std::size_t>& groups, std::size_t group)
 
 BOOST_AUTO_TEST_CASE(test_generate_groups)
 {
-    std::vector<std::size_t> groups = generate_groups(10, {1.5, 1.5}, prng);
+    std::vector<std::size_t> groups = hp::generate_groups(10, {1.5, 1.5}, prng);
     BOOST_TEST(groups.size() == 10UL);
     BOOST_TEST(n_groups(groups, 0) == 5UL);
     BOOST_TEST(n_groups(groups, 1) == 5UL);
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_generate_groups)
 
 BOOST_AUTO_TEST_CASE(test_generate_groups_zero_ratio)
 {
-    std::vector<std::size_t> groups = generate_groups(10, {1.5, 0, 1.5}, prng);
+    std::vector<std::size_t> groups = hp::generate_groups(10, {1.5, 0, 1.5}, prng);
     BOOST_TEST(groups.size() == 10UL);
     BOOST_TEST(n_groups(groups, 0) == 5UL);
     BOOST_TEST(n_groups(groups, 1) == 0UL);
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(test_generate_groups_zero_ratio)
 
 BOOST_AUTO_TEST_CASE(test_generate_groups_not_divisible)
 {
-    std::vector<std::size_t> groups = generate_groups(11, {0, 8, 3, 3, 0}, prng);
+    std::vector<std::size_t> groups = hp::generate_groups(11, {0, 8, 3, 3, 0}, prng);
     BOOST_TEST(groups.size() == 11UL);
     BOOST_TEST(n_groups(groups, 0) == 0UL);
 
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(test_generate_groups_not_divisible)
 BOOST_AUTO_TEST_CASE(test_generate_many_groups)
 {
     std::vector<std::vector<std::size_t>> groups =
-      generate_groups(2, 20, {0.3, 0.3}, {0.2, 0.2}, prng);
+      hp::generate_groups(2, 20, {0.3, 0.3}, {0.2, 0.2}, prng);
 
     BOOST_TEST(groups.size() == 2UL);
     BOOST_TEST(groups[0].size() == 20UL);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(test_generate_many_groups)
 BOOST_AUTO_TEST_CASE(test_generate_many_groups_zero_ratio)
 {
     std::vector<std::vector<std::size_t>> groups =
-      generate_groups(2, 20, {0.3, 0, 0, 0.3}, {0.2, 0, 0, 0.2}, prng);
+      hp::generate_groups(2, 20, {0.3, 0, 0, 0.3}, {0.2, 0, 0, 0.2}, prng);
 
     BOOST_TEST(groups.size() == 2UL);
     BOOST_TEST(groups[0].size() == 20UL);

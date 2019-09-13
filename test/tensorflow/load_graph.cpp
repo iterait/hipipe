@@ -15,12 +15,11 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace hipipe::tensorflow;
-using namespace boost;
+namespace htf = hipipe::tensorflow;
 
 BOOST_AUTO_TEST_CASE(test_simple_load)
 {
-    auto sess = load_graph("transpose_add_one_2_3_net.pb");
+    auto sess = htf::load_graph("transpose_add_one_2_3_net.pb");
     BOOST_CHECK(sess);
     // further testing performed in run_graph.cpp
 }
