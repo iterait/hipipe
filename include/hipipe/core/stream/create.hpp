@@ -13,6 +13,7 @@
 #include <hipipe/core/stream/stream_t.hpp>
 #include <hipipe/core/utility/tuple.hpp>
 
+#include <range/v3/functional/bind_back.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/chunk.hpp>
 
@@ -59,13 +60,6 @@ namespace detail {
 
     template<typename... Columns>
     class create_fn {
-    private:
-        friend rgv::view_access;
-
-        static auto bind(create_fn<Columns...> fun, std::size_t batch_size = 1)
-        {
-            return rg::make_pipeable(std::bind(fun, std::placeholders::_1, batch_size));
-        }
     public:
         CPP_template(class Rng)(requires rg::forward_range<Rng>)
         forward_stream_t operator()(Rng&& rng, std::size_t batch_size = 1) const
@@ -75,14 +69,10 @@ namespace detail {
               create_impl<Columns...>{});
         }
 
-        /// \cond
-        CPP_template(class Rng)(requires !rg::forward_range<Rng>)
-        void operator()(Rng&&, std::size_t batch_size = 1) const
+        auto operator()(std::size_t batch_size = 1) const
         {
-            CONCEPT_ASSERT_MSG(rg::forward_range<Rng>(),
-              "stream::create only works on ranges satisfying the forward_range concept.");
+            return rg::make_view_closure(rg::bind_back(create_fn{}, batch_size));
         }
-        /// \endcond
     };
 
 }  // namespace detail
@@ -111,6 +101,6 @@ namespace detail {
 ///
 /// \param batch_size The requested batch size of the new stream.
 template<typename... Columns>
-rgv::view<detail::create_fn<Columns...>> create{};
+rgv::view_closure<detail::create_fn<Columns...>> create{};
 
 } // end namespace hipipe::stream

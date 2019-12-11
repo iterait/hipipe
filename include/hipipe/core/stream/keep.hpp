@@ -23,14 +23,6 @@ namespace detail {
 
     template<typename... Columns>
     class keep_fn {
-    private:
-        friend rgv::view_access;
-
-        static auto bind(keep_fn<Columns...> fun)
-        {
-            return rg::make_pipeable(std::bind(fun, std::placeholders::_1));
-        }
-
     public:
         CPP_template(typename Rng)(requires rg::input_range<Rng>)
         forward_stream_t operator()(Rng&& rng) const
@@ -42,15 +34,6 @@ namespace detail {
                   return result;
             });
         }
-
-        /// \cond
-        CPP_template(typename Rng)(requires !rg::input_range<Rng>)
-        void operator()(Rng&&) const
-        {
-            CONCEPT_ASSERT_MSG(rg::input_range<Rng>(),
-              "stream::keep only works on ranges satisfying the input_range concept.");
-        }
-        /// \endcond
     };
 
 }  // namespace detail
@@ -67,6 +50,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | keep<value>;  // now it has only the value column
 /// \endcode
 template <typename... Columns>
-rgv::view<detail::keep_fn<Columns...>> keep{};
+rgv::view_closure<detail::keep_fn<Columns...>> keep{};
 
 }  // end namespace hipipe::stream

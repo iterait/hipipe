@@ -24,14 +24,6 @@ namespace detail {
 
     template<typename... Columns>
     class drop_fn {
-    private:
-        friend rgv::view_access;
-
-        static auto bind(drop_fn<Columns...> fun)
-        {
-            return rg::make_pipeable(std::bind(fun, std::placeholders::_1));
-        }
-
     public:
         CPP_template(class Rng)(requires rg::input_range<Rng>)
         forward_stream_t operator()(Rng&& rng) const
@@ -42,15 +34,6 @@ namespace detail {
                   return batch;
             });
         }
-
-        /// \cond
-        CPP_template(class Rng)(requires !rg::input_range<Rng>)
-        void operator()(Rng&&) const
-        {
-            CONCEPT_ASSERT_MSG(rg::input_range<Rng>(),
-              "stream::drop only works on ranges satisfying the input_range concept.");
-        }
-        /// \endcond
     };
 
 }  // namespace detail
@@ -67,6 +50,6 @@ namespace detail {
 ///     auto rng = data | create<id, value>() | drop<id>;
 /// \endcode
 template <typename... Columns>
-rgv::view<detail::drop_fn<Columns...>> drop{};
+rgv::view_closure<detail::drop_fn<Columns...>> drop{};
 
 }  // end namespace hipipe::stream
