@@ -70,7 +70,7 @@ public:
     std::vector<std::size_t> index_for(const std::vector<T>& vals) const
     {
         return rg::to_vector(rgv::transform(
-          vals, [this](const T& val) {
+          vals, [this](const T& val) -> std::size_t {
               return this->index_for(val);
           }));
     }
@@ -79,7 +79,7 @@ public:
     std::vector<std::size_t> index_for(const std::vector<T>& vals, std::size_t defval) const
     {
         return rg::to_vector(rgv::transform(
-          vals, [this, defval](const T& val) {
+          vals, [this, defval](const T& val) -> std::size_t {
               return this->index_for(val, defval);
           }));
     }
@@ -103,7 +103,7 @@ public:
     std::vector<T> at(const std::vector<std::size_t>& idxs) const
     {
         return rg::to_vector(rgv::transform(
-          idxs, [this](std::size_t idx) {
+          idxs, [this](std::size_t idx) -> T {
               return this->at(idx);
           }));
     }

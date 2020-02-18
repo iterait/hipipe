@@ -14,6 +14,7 @@
 #include <hipipe/core/thread.hpp>
 
 #include <range/v3/core.hpp>
+#include <range/v3/functional/bind_back.hpp>
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/view.hpp>
 
@@ -139,16 +140,6 @@ public:
 };
 
 class buffer_fn {
-private:
-    /// \cond
-    friend rgv::view_access;
-    /// \endcond
-
-    static auto bind(buffer_fn buffer, std::size_t n = std::numeric_limits<std::size_t>::max())
-    {
-        return rg::make_pipeable(std::bind(buffer, std::placeholders::_1, n));
-    }
-
 public:
     CPP_template(typename Rng)(requires rg::forward_range<Rng>)
     buffer_view<rgv::all_t<Rng>>
@@ -157,14 +148,10 @@ public:
         return {rgv::all(std::forward<Rng>(rng)), n};
     }
 
-    /// \cond
-    CPP_template(typename Rng)(requires !rg::forward_range<Rng>)
-    void operator()(Rng&&, std::size_t n = 0) const
+    auto operator()(std::size_t n = std::numeric_limits<std::size_t>::max()) const
     {
-        CONCEPT_ASSERT_MSG(rg::forward_range<Rng>(),
-          "stream::buffer only works on ranges satisfying the forward_range concept.");
+        return rg::make_view_closure(rg::bind_back(buffer_fn{}, n));
     }
-    /// \endcond
 };
 
 /// \ingroup Stream
@@ -187,7 +174,7 @@ public:
 ///       | rgv::transform([](int v) { return v + 1; })
 ///       | buffer(2);
 /// \endcode
-inline rgv::view<buffer_fn> buffer{};
+inline rgv::view_closure<buffer_fn> buffer{};
 
 }  // end namespace hipipe::stream
 #endif

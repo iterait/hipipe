@@ -69,16 +69,6 @@ namespace detail {
     };
 
     class partial_transform_fn {
-    private:
-        friend rgv::view_access;
-
-        template <typename From, typename To, typename Fun>
-        static auto bind(partial_transform_fn transformer, From f, To t, Fun fun)
-        {
-            return rg::make_pipeable(
-              std::bind(transformer, std::placeholders::_1, f, t, std::move(fun)));
-        }
-
     public:
         template <typename... FromTypes, typename... ToTypes, typename Fun>
         forward_stream_t operator()(
@@ -91,6 +81,14 @@ namespace detail {
               trans_fun{std::move(fun)};
 
             return rgv::transform(std::move(rng), std::move(trans_fun));
+        }
+
+        template <typename... FromTypes, typename... ToTypes, typename Fun>
+        auto operator()(
+          from_t<FromTypes...> f, to_t<ToTypes...> t, Fun fun) const
+        {
+            return rg::make_view_closure(
+              rg::bind_back(partial_transform_fn{}, f, t, std::move(fun)));
         }
     };
 
@@ -105,7 +103,7 @@ namespace detail {
 //
 // This transformer is used internally by stream::transform and should not
 // be used directly by the end user of the library.
-inline rgv::view<detail::partial_transform_fn> partial_transform{};
+inline rgv::view_closure<detail::partial_transform_fn> partial_transform{};
 
 // transform //
 

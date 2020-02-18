@@ -13,6 +13,7 @@
 #include <hipipe/core/stream/stream_t.hpp>
 
 #include <range/v3/core.hpp>
+#include <range/v3/functional/bind_back.hpp>
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/view.hpp>
 
@@ -128,21 +129,16 @@ public:
 };  // class rebatch_view
 
 class rebatch_fn {
-private:
-    /// \cond
-    friend rgv::view_access;
-    /// \endcond
-
-    static auto bind(rebatch_fn rebatch, std::size_t n)
-    {
-        return rg::make_pipeable(std::bind(rebatch, std::placeholders::_1, n));
-    }
-
 public:
     CPP_template(class Rng)(requires rg::input_range<Rng>)
     rebatch_view<rgv::all_t<Rng>> operator()(Rng&& rng, std::size_t n) const
     {
         return {rgv::all(std::forward<Rng>(rng)), n};
+    }
+
+    auto operator()(std::size_t n) const
+    {
+        return rg::make_view_closure(rg::bind_back(rebatch_fn{}, n));
     }
 };  // class rebatch_fn
 
@@ -167,6 +163,6 @@ public:
 ///       | create<value>(2)  // batches the data by two examples
 ///       | rebatch(3);       // changes the batch size to three examples
 /// \endcode
-inline rgv::view<rebatch_fn> rebatch{};
+inline rgv::view_closure<rebatch_fn> rebatch{};
 
 }  // namespace hipipe::stream
