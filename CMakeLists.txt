@@ -98,7 +98,6 @@ add_library(
 set_target_properties(
   hipipe_core PROPERTIES
     EXPORT_NAME Core
-    INTERFACE_COMPILE_OPTIONS "-std=c++17"
     VERSION ${PROJECT_VERSION}
 )
 target_link_libraries(
@@ -188,10 +187,6 @@ if(HIPIPE_BUILD_TENSORFLOW)
       hipipe_tensorflow
       PUBLIC TensorflowCC::Shared
     )
-    set_target_properties(
-      TensorflowCC::Shared
-      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++17"
-    )
   # fallback to the static library
   # static library is linked privately to avoid multiple funtion definitions,
   # but the include directories are propagated as public
@@ -204,10 +199,6 @@ if(HIPIPE_BUILD_TENSORFLOW)
     target_link_libraries(
       hipipe_tensorflow
       PRIVATE TensorflowCC::Static
-    )
-    set_target_properties(
-      TensorflowCC::Static
-      PROPERTIES INTERFACE_COMPILE_OPTIONS "-std=c++17"
     )
   endif()
   set_target_properties(
