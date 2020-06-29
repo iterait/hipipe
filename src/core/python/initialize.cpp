@@ -33,7 +33,7 @@ namespace hipipe::python {
 static void* init_array()
 {
     import_array();
-    return NUMPY_IMPORT_ARRAY_RETVAL;
+    return NULL;
 }
 
 void initialize()
