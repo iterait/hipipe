@@ -243,7 +243,7 @@ public:
         throw_check_insert_col_name(col_name);
         throw_check_insert_col_size(rg::size(rng));
         if (col_name.size()) header_.insert(col_name);
-        data_.emplace_back(rgv::transform(rng, cvt));
+        data_.emplace_back(rg::to_vector(rgv::transform(rng, cvt)));
         return n_cols() - 1;
     }
 
