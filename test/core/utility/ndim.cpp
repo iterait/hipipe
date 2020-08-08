@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(test_reshape_2d)
       {{10, 11, 12}, {13, 14, 15}}
     };
     auto rvec =
-      rg::to<std::vector<std::vector<int>>>(hpu::reshaped_view<2>(vec, {3, 5}));
+      rgv::transform(hpu::reshaped_view<2>(vec, {3, 5}), rg::to_vector) | rg::to_vector;
     BOOST_TEST(rvec.size() == 3);
     for (std::size_t i = 0; i < 3; ++i) {
         BOOST_TEST(rvec[i].size() == 5);
@@ -302,8 +302,16 @@ BOOST_AUTO_TEST_CASE(test_reshape_3d)
       {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}},
       {{10, 11, 12}, {13, 14, 15}}
     };
-    auto rvec =
-      rg::to<std::vector<std::vector<std::vector<int>>>>(hpu::reshaped_view<3>(vec, {3, 1, 5}));
+    std::vector<std::vector<std::vector<int>>> rvec;
+    for (auto&& x : hpu::reshaped_view<3>(vec, {3, 1, 5})) {
+        rvec.push_back({});
+        for (auto&& y : x) {
+            rvec.back().push_back({});
+            for (auto&& z : y) {
+                rvec.back().back().push_back(z);
+            }
+        }
+    }
     BOOST_TEST(rvec.size() == 3);
     for (std::size_t i = 0; i < 3; ++i) {
         BOOST_TEST(rvec[i].size() == 1);
@@ -318,9 +326,9 @@ BOOST_AUTO_TEST_CASE(test_reshape_auto_dimension)
       {{10, 11, 12}, {13, 14, 15}}
     };
     auto rvec1 =
-      rg::to<std::vector<std::vector<int>>>(hpu::reshaped_view<2>(vec, {3, -1}));
+      rgv::transform(hpu::reshaped_view<2>(vec, {3, -1}), rg::to_vector) | rg::to_vector;
     auto rvec2 =
-      rg::to<std::vector<std::vector<int>>>(hpu::reshaped_view<2>(vec, {-1, 5}));
+      rgv::transform(hpu::reshaped_view<2>(vec, {-1, 5}), rg::to_vector) | rg::to_vector;
     BOOST_TEST(rvec1.size() == 3);
     BOOST_TEST(rvec2.size() == 3);
     for (std::size_t i = 0; i < 3; ++i) {
