@@ -420,7 +420,7 @@ public:
     ///
     /// Example:
     /// \code
-    ///     std::tuple<std::vector<int>, std::vector<double>> data = df.icols<int, double>({1, 2});
+    ///     auto [col1, col2] = df.icols<int, double>({1, 2});
     /// \endcode
     ///
     /// \returns A tuple of ranges of Ts.
@@ -441,7 +441,7 @@ public:
     ///
     /// Example:
     /// \code
-    ///     std::tuple<std::vector<int>, std::vector<double>> data =
+    ///     auto [col1, col2] data =
     ///       df.cols<int, double>({"column 1", "column 2"});
     /// \endcode
     ///
@@ -523,7 +523,7 @@ public:
     ///
     /// Example:
     /// \code
-    ///     std::vector<long> data = df.icol<long>(3);
+    ///     std::vector<long> data = df.icol<long>(3) | ranges::to_vector;
     /// \endcode
     ///
     /// \returns A range of T.
@@ -542,7 +542,7 @@ public:
     ///
     /// Example:
     /// \code
-    ///     std::vector<long> data = df.col<long>("long column");
+    ///     std::vector<long> data = df.col<long>("long column") | ranges::to_vector;
     /// \endcode
     ///
     /// \returns A range of T.
@@ -645,7 +645,7 @@ public:
     /// Example:
     /// \code
     ///     std::vector<std::tuple<int, double>> data =
-    ///       df.irows<int, double>({0, 2});
+    ///       df.irows<int, double>({0, 2}) | ranges::to_vector;
     /// \endcode
     ///
     /// \returns A range of tuples of Ts.
@@ -667,7 +667,7 @@ public:
     /// Example:
     /// \code
     ///     std::vector<std::tuple<int, double>> data =
-    ///       df.rows<int, double>({"int_col", "double_col"});
+    ///         df.rows<int, double>({"int_col", "double_col"}) | ranges::to_vector;
     /// \endcode
     ///
     /// \returns A range of tuples of Ts.
