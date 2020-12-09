@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(
   "hipipe"
-  VERSION 0.7.2
+  VERSION 0.7.3
 )
 set(PROJECT_DESCRIPTION "C++17 data pipeline with Python bindings.")
 
@@ -41,7 +41,8 @@ configure_file(
 # Compiler Flags
 # --------------
 
-set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -pedantic ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "-Wall -pedantic ${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g1")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 

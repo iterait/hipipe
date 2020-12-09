@@ -200,9 +200,8 @@ BOOST_AUTO_TEST_CASE(test_compare_after_write_and_read)
     write_csv(oss, df1, '|', '*', '+');
     const hp::dataframe df2 = hp::read_csv(oss, 0, true, '|', '*', '+');
     test_ranges_equal(df1.header(), df2.header());
-    // TODO The following causes a warning in clang++ 8
-    auto df1_cols = rg::to<std::vector<std::vector<std::string>>>(df1.raw_cols());
-    auto df2_cols = rg::to<std::vector<std::vector<std::string>>>(df2.raw_cols());
+    auto df1_cols = df1.raw_cols() | rg::to<std::vector<std::vector<std::string>>>;
+    auto df2_cols = df2.raw_cols() | rg::to<std::vector<std::vector<std::string>>>;
     BOOST_CHECK(df1_cols == df2_cols);
 }
 
@@ -226,9 +225,8 @@ BOOST_AUTO_TEST_CASE(test_file_write_and_read)
     const hp::dataframe df2 = hp::read_csv(csv_file, 0, true, '|', '*', '+');
     fs::remove(csv_file);
     test_ranges_equal(df1.header(), df2.header());
-    // TODO The following causes a warning in clang++ 8
-    auto df1_cols = rg::to<std::vector<std::vector<std::string>>>(df1.raw_cols());
-    auto df2_cols = rg::to<std::vector<std::vector<std::string>>>(df2.raw_cols());
+    auto df1_cols = df1.raw_cols() | rg::to<std::vector<std::vector<std::string>>>;
+    auto df2_cols = df2.raw_cols() | rg::to<std::vector<std::vector<std::string>>>;
     BOOST_CHECK(df1_cols == df2_cols);
 }
 

@@ -70,7 +70,7 @@ private:
     {
         cls.def("__len__", &range<Rng>::len<>);
     }
-    CPP_template(int dummy = 0)(requires !rg::sized_range<const Rng>)
+    CPP_template(int dummy = 0)(requires (!rg::sized_range<const Rng>))
     static void register_len(boost::python::class_<range<Rng>>&)
     {
     }
@@ -81,7 +81,7 @@ private:
     {
         cls.def("__getitem__", &range<Rng>::getitem<>);
     }
-    CPP_template(int dummy = 0)(requires !rg::random_access_range<const Rng>)
+    CPP_template(int dummy = 0)(requires (!rg::random_access_range<const Rng>))
     static void register_getitem(boost::python::class_<range<Rng>>&)
     {
     }

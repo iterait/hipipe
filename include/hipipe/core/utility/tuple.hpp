@@ -214,7 +214,7 @@ namespace detail {
     {
         return rg::size(rng);
     }
-    CPP_template(class Rng)(requires !rg::sized_range<Rng>)
+    CPP_template(class Rng)(requires (!rg::sized_range<Rng>))
     std::size_t safe_reserve_size(Rng&& rng)
     {
         return 0;
@@ -255,7 +255,7 @@ namespace detail {
 ///     std::vector<double> vb;
 ///     std::tie(va, vb) = unzip(data);
 /// \endcode
-CPP_template(class Rng)(requires rg::range<Rng> && !rg::view_<Rng>)
+CPP_template(class Rng)(requires rg::range<Rng> && (!rg::view_<Rng>))
 auto unzip(Rng range_of_tuples)
 {
     // copy the given container and move elements out of it

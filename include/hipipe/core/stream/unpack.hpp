@@ -53,7 +53,7 @@ namespace detail {
             // flatten the values in each column upto the given dimension
             return utility::tuple_transform(std::move(tuple_of_batches), [](auto&& batch_range) {
                 // make sure to convert the flat view to std::vector to avoid dangling ref
-                return rgv::move(utility::flat_view<Dim+1>(batch_range));
+                return rg::to_vector(rgv::move(utility::flat_view<Dim+1>(batch_range)));
             });
         }
     };
