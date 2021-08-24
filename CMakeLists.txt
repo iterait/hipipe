@@ -128,7 +128,7 @@ endif()
 
 if(HIPIPE_BUILD_PYTHON)
   find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
-  find_package(Boost 1.61 REQUIRED COMPONENTS python3)
+  find_package(Boost 1.61 REQUIRED COMPONENTS python)
   target_link_libraries(
     hipipe_core
     PUBLIC Python3::Python
