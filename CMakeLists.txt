@@ -107,7 +107,7 @@ target_include_directories(
   hipipe_core
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> # build_config.hpp is here
-  PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+  PUBLIC $<INSTALL_INTERFACE:include>
 )
 
 # -----------------------------
@@ -118,7 +118,7 @@ if(HIPIPE_BUILTIN_RANGEV3)
   target_include_directories(
     hipipe_core
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/range-v3/include>
-    PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/hipipe/third_party/range-v3>
+    PUBLIC $<INSTALL_INTERFACE:include/hipipe/third_party/range-v3>
   )
 endif()
 
