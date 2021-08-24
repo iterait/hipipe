@@ -131,7 +131,7 @@ if(HIPIPE_BUILD_PYTHON)
   find_package(Boost 1.61 REQUIRED COMPONENTS python3)
   target_link_libraries(
     hipipe_core
-    PUBLIC Python3::Module
+    PUBLIC Python3::Python
     PUBLIC Python3::NumPy
     PUBLIC Boost::python3
   )
