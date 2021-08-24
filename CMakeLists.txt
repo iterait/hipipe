@@ -133,7 +133,7 @@ if(HIPIPE_BUILD_PYTHON)
     hipipe_core
     PUBLIC Python3::Python
     PUBLIC Python3::NumPy
-    PUBLIC Boost::python3
+    PUBLIC Boost::python
   )
 
   # -------------------------------------------------
