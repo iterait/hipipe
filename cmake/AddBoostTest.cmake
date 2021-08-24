@@ -6,14 +6,9 @@ function(add_boost_test EXECUTABLE_FILE_NAME SOURCE_FILE_NAME LIBRARIES)
 
   target_link_libraries(
     ${EXECUTABLE_FILE_NAME}
-    hipipe_core
-    ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+    PUBLIC hipipe_core
+    PUBLIC Boost::unit_test_framework
     ${LIBRARIES}
-  )
-
-  target_include_directories(
-    ${EXECUTABLE_FILE_NAME}
-    PRIVATE ${Boost_INCLUDE_DIRS}
   )
 
   # find all BOOST_AUTO_TEST_CASE(*) lines

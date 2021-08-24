@@ -58,35 +58,9 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_CXX_FLAGS "-fmax-errors=2 ${CMAKE_CXX_FLAGS}")
 endif()
 
-# ---------------------
-# Find Common Libraries
-# ---------------------
-
-if(HIPIPE_BUILD_PYTHON)
-  find_package(PythonInterp 3 REQUIRED)
-  find_package(PythonLibs 3 REQUIRED)
-  find_package(PythonNumPy REQUIRED)
-  find_package(BoostPython3 REQUIRED)
-
-  if(HIPIPE_BUILD_PYTHON_OPENCV)
-    find_package(OpenCV COMPONENTS core REQUIRED)
-  endif()
-endif()
-
-if(HIPIPE_BUILD_DOC)
-  find_package(Git REQUIRED)
-  find_package(Doxygen REQUIRED)
-endif()
-
-if(HIPIPE_BUILD_TEST)
-  find_package(Boost 1.61 COMPONENTS system thread unit_test_framework REQUIRED)
-else()
-  find_package(Boost 1.61 COMPONENTS system thread REQUIRED)
-endif()
-
-# ------------------
-# Build hipipe core
-# ------------------
+# -----------------
+# Setup Core Target
+# -----------------
 
 file(GLOB_RECURSE
   hipipe_core_sources
@@ -101,15 +75,36 @@ set_target_properties(
     EXPORT_NAME Core
     VERSION ${PROJECT_VERSION}
 )
+
+# ---------------------
+# Find Common Libraries
+# ---------------------
+
+if(HIPIPE_BUILD_DOC)
+  find_package(Git REQUIRED)
+  find_package(Doxygen REQUIRED)
+endif()
+
+if(HIPIPE_BUILD_TEST)
+  find_package(Boost 1.61 REQUIRED COMPONENTS system thread unit_test_framework REQUIRED)
+else()
+  find_package(Boost 1.61 REQUIRED COMPONENTS system thread REQUIRED)
+endif()
+
+# ------------------
+# Build hipipe core
+# ------------------
+
 target_link_libraries(
   hipipe_core
-  PUBLIC ${Boost_LIBRARIES}
+  PUBLIC Boost::boost
+  PUBLIC Boost::system
+  PUBLIC Boost::thread
   PUBLIC pthread
   PUBLIC stdc++fs
 )
 target_include_directories(
   hipipe_core
-  PUBLIC ${Boost_INCLUDE_DIRS}
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> # build_config.hpp is here
   PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
@@ -132,16 +127,13 @@ endif()
 # --------------------------------------
 
 if(HIPIPE_BUILD_PYTHON)
-  target_include_directories(
-    hipipe_core
-    PUBLIC ${PYTHON_INCLUDE_DIRS}
-    PUBLIC ${PYTHON_NUMPY_INCLUDE_DIR}
-    PUBLIC ${BoostPython3_INCLUDE_DIRS}
-  )
+  find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
+  find_package(Boost 1.61 REQUIRED COMPONENTS python3)
   target_link_libraries(
     hipipe_core
-    PUBLIC ${PYTHON_LIBRARIES}
-    PUBLIC ${BoostPython3_LIBRARIES}
+    PUBLIC Python3::Module
+    PUBLIC Python3::NumPy
+    PUBLIC Boost::python3
   )
 
   # -------------------------------------------------
@@ -149,14 +141,8 @@ if(HIPIPE_BUILD_PYTHON)
   # -------------------------------------------------
 
   if(HIPIPE_BUILD_PYTHON_OPENCV)
-    target_include_directories(
-      hipipe_core
-      PUBLIC ${OpenCV_INCLUDE_DIRS}
-    )
-    target_link_libraries(
-      hipipe_core
-      PUBLIC ${OpenCV_LIBRARIES}
-    )
+    find_package(OpenCV COMPONENTS core REQUIRED)
+    target_link_libraries(hipipe_core PUBLIC opencv_core)
   endif()
 endif()
 
