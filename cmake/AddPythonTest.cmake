@@ -8,7 +8,7 @@ function(add_python_test TEST_NAME SCRIPT_NAME)
 
   add_test(
     NAME "${TEST_NAME}"
-    COMMAND "${PYTHON_EXECUTABLE}"
+    COMMAND "${Python3_EXECUTABLE}"
       "${CMAKE_CURRENT_BINARY_DIR}/${SCRIPT_NAME}"
   )
 
