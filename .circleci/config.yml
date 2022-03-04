@@ -150,10 +150,10 @@ workflows:
       # increase, uncomment the following:
       # - test_ubuntu_latest_gcc_tf_static
 
-  nightly:
+  weekly:
     triggers:
       - schedule:
-          cron: "46 4 * * *"
+          cron: "46 4 */7 * *"
           filters:
             branches:
               only:
