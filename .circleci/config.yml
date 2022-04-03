@@ -36,7 +36,7 @@ references:
     run:
       name: Install dependencies on Arch Linux.
       command: |
-        pacman -Syu --noconfirm base-devel cmake clang \
+        pacman -Syu --noconfirm --needed base-devel cmake clang \
           opencv boost python python-numpy git openssh
 
   build_by_gcc: &build_by_gcc
