@@ -19,6 +19,7 @@
 #include <boost/python.hpp>
 #include <numpy/ndarrayobject.h>
 
+#include <cstdint>
 #include <stdexcept>
 #include <vector>
 
