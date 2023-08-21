@@ -35,7 +35,7 @@ def main():
 
     # test bool vector - 1d
     assert(isinstance(pycpp.py_vectorbool(), np.ndarray))
-    assert(pycpp.py_vectorbool().dtype == np.bool)
+    assert(pycpp.py_vectorbool().dtype == bool)
     assert(np.array_equal(pycpp.py_vectorbool(), [True, False, True]))
 
     # test slicing

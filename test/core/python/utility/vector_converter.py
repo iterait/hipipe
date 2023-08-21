@@ -8,7 +8,7 @@ def main():
     test_data = pycpp.test_data()
 
     # list arithmetic value types
-    types = [(np.bool_,      "bool"),
+    types = [(bool,          "bool"),
              (np.int8,       "std::int8_t"),
              (np.uint8,      "std::uint8_t"),
              (np.int16,      "std::int16_t"),
@@ -52,7 +52,7 @@ def main():
     ptr_array = test_data.shared_ptr_array()
     # this should have generic np.object dtype
     assert(isinstance(ptr_array, np.ndarray))
-    assert(ptr_array.dtype == np.object)
+    assert(ptr_array.dtype == object)
     assert(len(ptr_array) == 3)
     assert([ptr.value() for ptr in ptr_array] == [1, 2, 3])
     # check that memory is properly deallocated when references disappear
